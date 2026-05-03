@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6"/>
+      <stop offset="100%" style="stop-color:#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff15"/>
+      <stop offset="100%" style="stop-color:#ffffff00"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" rx="20" fill="url(#bg)"/>
+  <rect width="400" height="400" rx="20" fill="url(#shine)"/>
+  <circle cx="200" cy="190" r="100" fill="#ffffff20" stroke="#ffffff30" stroke-width="2"/>
+  <text x="200" y="165" text-anchor="middle" font-size="80">🚙</text>
+  <text x="200" y="315" text-anchor="middle" font-size="15" fill="#ffffffCC" font-family="sans-serif" font-weight="600">Volkswagen ID.4 Pro</text>
+  <text x="200" y="338" text-anchor="middle" font-size="11" fill="#ffffff99" font-family="sans-serif">SUV điện Đức, 310km range, 204 mã lực •…</text>
+  <text x="200" y="365" text-anchor="middle" font-size="13" fill="#ffffffBB" font-family="sans-serif" font-weight="500">1.8B</text>
+</svg>

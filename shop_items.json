@@ -1,0 +1,6641 @@
+[
+  {
+    "id": "food_banhmisaigon",
+    "name": "Bánh mì Sài Gòn đặc biệt",
+    "description": "Bánh mì thịt nguội, pate, rau thơm — chuẩn vị Sài Thành",
+    "category": "🍽️ Ẩm thực",
+    "price": 25000,
+    "emoji": "🥖",
+    "stars": 1,
+    "expire_h": 4,
+    "effect_list": [
+      {
+        "type": "xp_bonus",
+        "value": 600,
+        "duration": 0,
+        "cards": 10,
+        "expire_h": 4,
+        "name": "Bánh Mì 🥖",
+        "desc": "+600đ/thẻ trong 10 thẻ — bánh mì Sài Gòn nạp năng lượng nhanh!"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 1,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 4,
+        "name": "Trì Trệ No 🥖",
+        "desc": "-1 thể lực mỗi thẻ — ăn bánh mì khô dễ mệt!"
+      }
+    ]
+  },
+  {
+    "id": "food_chekhucbach",
+    "name": "Chè khúc bạch đường phèn",
+    "description": "Chè khúc bạch hạt sen, nhãn nhục, đường phèn thanh mát",
+    "category": "🍽️ Ẩm thực",
+    "price": 25000,
+    "emoji": "🥣",
+    "stars": 1,
+    "expire_h": 3,
+    "effect_list": [
+      {
+        "type": "reward_multiplier",
+        "value": 1.2,
+        "duration": 600,
+        "cards": 0,
+        "expire_h": 3,
+        "name": "Chè Ngọt 🥣",
+        "desc": "×1.2 tiền thưởng trong 10 phút — ngọt ngào, học nhanh!"
+      },
+      {
+        "type": "reward_penalty",
+        "value": 0.05,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 3,
+        "name": "Mơ Màng Sau Đường 🥣",
+        "desc": "-5% tiền thưởng — đường nhiều gây hại não về lâu dài!"
+      }
+    ]
+  },
+  {
+    "id": "food_banhcuon",
+    "name": "Bánh cuốn nóng Thanh Trì",
+    "description": "Bánh cuốn trứng, chả lụa, nước mắm chấm đặc biệt",
+    "category": "🍽️ Ẩm thực",
+    "price": 30000,
+    "emoji": "🫓",
+    "stars": 1,
+    "expire_h": 3,
+    "effect_list": [
+      {
+        "type": "double_easy",
+        "value": 2.0,
+        "duration": 900,
+        "cards": 0,
+        "expire_h": 3,
+        "name": "Bánh Cuốn 🫓",
+        "desc": "×2 Easy trong 15 phút"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 1,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 3,
+        "name": "Hao Hụt No 🫓",
+        "desc": "-1 thể lực mỗi thẻ — bánh cuốn nhẹ bụng không trụ lâu!"
+      }
+    ]
+  },
+  {
+    "id": "food_com_tam",
+    "name": "Cơm tấm Sườn Bì",
+    "description": "Cơm tấm sườn ống, bì chả trứng — ngon như mẹ nấu",
+    "category": "🍽️ Ẩm thực",
+    "price": 35000,
+    "emoji": "🍚",
+    "stars": 1,
+    "expire_h": 6,
+    "effect_list": [
+      {
+        "type": "reward_multiplier",
+        "value": 1.15,
+        "duration": 900,
+        "cards": 0,
+        "expire_h": 6,
+        "name": "Cơm Tấm Tăng Lực 🍚",
+        "desc": "×1.15 tiền thưởng trong 15 phút"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 1,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 6,
+        "name": "Buồn Ngủ No 🍚",
+        "desc": "-1 thể lực mỗi thẻ — ăn no dễ buồn ngủ!"
+      }
+    ]
+  },
+  {
+    "id": "food_comrang",
+    "name": "Cơm rang dưa bò",
+    "description": "Cơm rang dưa chua, thịt bò xào, hành phi thơm",
+    "category": "🍽️ Ẩm thực",
+    "price": 35000,
+    "emoji": "🍛",
+    "stars": 1,
+    "expire_h": 4,
+    "effect_list": [
+      {
+        "type": "xp_bonus",
+        "value": 700,
+        "duration": 0,
+        "cards": 12,
+        "expire_h": 4,
+        "name": "Cơm Rang 🍛",
+        "desc": "+700đ/thẻ trong 12 thẻ tiếp"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 1,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 4,
+        "name": "Mệt Dầu Mỡ 🍛",
+        "desc": "-1 thể lực mỗi thẻ — cơm rang nhiều dầu không tốt!"
+      }
+    ]
+  },
+  {
+    "id": "food_hutieu",
+    "name": "Hủ tiếu Nam Vang",
+    "description": "Hủ tiếu mì khô, tôm, thịt bằm, trứng cút — nước dùng xương",
+    "category": "🍽️ Ẩm thực",
+    "price": 35000,
+    "emoji": "🍜",
+    "stars": 1,
+    "expire_h": 4,
+    "effect_list": [
+      {
+        "type": "interval_boost",
+        "value": 0.05,
+        "duration": 0,
+        "cards": 10,
+        "expire_h": 4,
+        "name": "Hủ Tiếu Trí Nhớ 🍜",
+        "desc": "+5% khoảng cách ôn trong 10 thẻ — nước hầm xương tốt cho trí nhớ!"
+      },
+      {
+        "type": "reward_penalty",
+        "value": 0.05,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 4,
+        "name": "Mơ Màng No 🍜",
+        "desc": "-5% tiền thưởng — ăn hủ tiếu no quá học uể oải!"
+      }
+    ]
+  },
+  {
+    "id": "food_banhxeo",
+    "name": "Bánh xèo Miền Tây",
+    "description": "Bánh xèo giòn rụm, tôm thịt, rau sống, nước mắm chua ngọt",
+    "category": "🍽️ Ẩm thực",
+    "price": 40000,
+    "emoji": "🥞",
+    "stars": 2,
+    "expire_h": 4,
+    "effect_list": [
+      {
+        "type": "factor_boost",
+        "value": 0.02,
+        "duration": 0,
+        "cards": 15,
+        "expire_h": 4,
+        "name": "Bánh Xèo Tập Trung 🥞",
+        "desc": "+2% ease factor trong 15 thẻ — rau sống giúp sáng mắt!"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 1,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 4,
+        "name": "Mệt Dầu Mỡ 🥞",
+        "desc": "-1 thể lực mỗi thẻ — bánh xèo chiên dầu ăn nhiều hại gan!"
+      }
+    ]
+  },
+  {
+    "id": "food_pho_tai_nam",
+    "name": "Phở bò tái nạm",
+    "description": "Phở bò Việt Nam, nước dùng đậm đà, thịt tái mềm",
+    "category": "🍽️ Ẩm thực",
+    "price": 45000,
+    "emoji": "🍜",
+    "stars": 1,
+    "expire_h": 4,
+    "effect_list": [
+      {
+        "type": "reward_multiplier",
+        "value": 1.2,
+        "duration": 1200,
+        "cards": 0,
+        "expire_h": 4,
+        "name": "Phở Nóng 🍜",
+        "desc": "×1.2 tiền thưởng trong 20 phút"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 1,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 4,
+        "name": "Hao Hụt No 🍜",
+        "desc": "-1 thể lực mỗi thẻ — ăn phở no nhanh đờ!"
+      }
+    ]
+  },
+  {
+    "id": "food_bunrieu",
+    "name": "Bún riêu cua đồng",
+    "description": "Bún riêu cua, đậu phụ rán, huyết, mắm tôm",
+    "category": "🍽️ Ẩm thực",
+    "price": 45000,
+    "emoji": "🦀",
+    "stars": 2,
+    "expire_h": 4,
+    "effect_list": [
+      {
+        "type": "xp_bonus",
+        "value": 900,
+        "duration": 0,
+        "cards": 15,
+        "expire_h": 4,
+        "name": "Bún Riêu 🦀",
+        "desc": "+900đ/thẻ trong 15 thẻ — cua đồng bổ sung canxi!"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 1,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 4,
+        "name": "Nóng Bụng 🦀",
+        "desc": "-1 thể lực mỗi thẻ — bún riêu ăn nóng dễ mệt!"
+      }
+    ]
+  },
+  {
+    "id": "food_miquang",
+    "name": "Mì Quảng",
+    "description": "Mì Quảng tôm thịt, bánh tráng mè, đậu phộng, rau thơm",
+    "category": "🍽️ Ẩm thực",
+    "price": 50000,
+    "emoji": "🍝",
+    "stars": 2,
+    "expire_h": 4,
+    "effect_list": [
+      {
+        "type": "xp_bonus",
+        "value": 800,
+        "duration": 0,
+        "cards": 15,
+        "expire_h": 4,
+        "name": "Mì Quảng 🍝",
+        "desc": "+800đ/thẻ trong 15 thẻ tiếp"
+      },
+      {
+        "type": "reward_penalty",
+        "value": 0.05,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 4,
+        "name": "Carb Fog 🍝",
+        "desc": "-5% tiền thưởng — mì Quảng nhiều bột dễ đầy bụng!"
+      }
+    ]
+  },
+  {
+    "id": "food_bunbohue",
+    "name": "Bún bò Huế",
+    "description": "Bún bò Huế đặc biệt — cay nồng, thơm ngon",
+    "category": "🍽️ Ẩm thực",
+    "price": 50000,
+    "emoji": "🍲",
+    "stars": 2,
+    "expire_h": 4,
+    "effect_list": [
+      {
+        "type": "reward_multiplier",
+        "value": 1.25,
+        "duration": 1200,
+        "cards": 0,
+        "expire_h": 4,
+        "name": "Bún Bò Huế 🍲",
+        "desc": "×1.25 tiền thưởng trong 20 phút"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 2,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 4,
+        "name": "Mệt Cay 🍲",
+        "desc": "-2 thể lực mỗi thẻ — cay quá ra mệt!"
+      }
+    ]
+  },
+  {
+    "id": "food_comga",
+    "name": "Cơm gà Hải Nam",
+    "description": "Cơm gà luộc, nước chấm gừng đặc biệt",
+    "category": "🍽️ Ẩm thực",
+    "price": 55000,
+    "emoji": "🍗",
+    "stars": 2,
+    "expire_h": 6,
+    "effect_list": [
+      {
+        "type": "double_easy",
+        "value": 2.0,
+        "duration": 1500,
+        "cards": 0,
+        "expire_h": 6,
+        "name": "Gà Luộc 🍗",
+        "desc": "×2 Easy trong 25 phút"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 1,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 6,
+        "name": "Hao Hụt No 🍗",
+        "desc": "-1 thể lực mỗi thẻ — gà luộc ăn no dễ ngủ gật!"
+      }
+    ]
+  },
+  {
+    "id": "food_buncha",
+    "name": "Bún chả Hà Nội",
+    "description": "Bún chả thịt nướng than hoa, nước mắm pha chua cay",
+    "category": "🍽️ Ẩm thực",
+    "price": 55000,
+    "emoji": "🍖",
+    "stars": 2,
+    "expire_h": 5,
+    "effect_list": [
+      {
+        "type": "xp_bonus",
+        "value": 1000,
+        "duration": 0,
+        "cards": 15,
+        "expire_h": 5,
+        "name": "Bún Chả 🍖",
+        "desc": "+1.000đ/thẻ trong 15 thẻ tiếp"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 1,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 5,
+        "name": "Char Tax 🍖",
+        "desc": "-1 thể lực mỗi thẻ — thịt nướng than có chất gây ung thư!"
+      }
+    ]
+  },
+  {
+    "id": "food_comnieu",
+    "name": "Cơm niêu đất",
+    "description": "Cơm niêu cháy với thịt kho tàu",
+    "category": "🍽️ Ẩm thực",
+    "price": 60000,
+    "emoji": "🏺",
+    "stars": 2,
+    "expire_h": 6,
+    "effect_list": [
+      {
+        "type": "energy_burst",
+        "value": 30,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 6,
+        "name": "Năng Lượng Bùng Nổ 🏺",
+        "desc": "⚡ Hồi 30 năng lượng tức thì — cơm niêu đất ấm bụng bổ dưỡng!"
+      },
+      {
+        "type": "reward_penalty",
+        "value": 0.1,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 6,
+        "name": "Mơ Màng No 🏺",
+        "desc": "-10% tiền thưởng — ăn no nê học lười hơn!"
+      }
+    ]
+  },
+  {
+    "id": "food_caolau",
+    "name": "Cao lầu Hội An",
+    "description": "Mì cao lầu, thịt xá xíu, rau sống, bánh đa nướng",
+    "category": "🍽️ Ẩm thực",
+    "price": 65000,
+    "emoji": "🍜",
+    "stars": 2,
+    "expire_h": 5,
+    "effect_list": [
+      {
+        "type": "reward_multiplier",
+        "value": 1.3,
+        "duration": 1200,
+        "cards": 0,
+        "expire_h": 5,
+        "name": "Cao Lầu 🏮",
+        "desc": "×1.3 tiền thưởng trong 20 phút"
+      },
+      {
+        "type": "xp_bonus",
+        "value": 500,
+        "duration": 0,
+        "cards": 15,
+        "expire_h": 5,
+        "name": "Cao Lầu Bổ 🏮",
+        "desc": "+500đ/thẻ trong 15 thẻ"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 2,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 5,
+        "name": "Carb Load 🏮",
+        "desc": "-2 thể lực mỗi thẻ — cao lầu nhiều bột nặng bụng!"
+      }
+    ]
+  },
+  {
+    "id": "food_amthucduongpho",
+    "name": "Set Ẩm thực Đường phố Sài Gòn",
+    "description": "Bánh tráng trộn + bò bía + đùi gà chiên nước mắm + sữa đá",
+    "category": "🍽️ Ẩm thực",
+    "price": 180000,
+    "emoji": "🛵",
+    "stars": 3,
+    "expire_h": 5,
+    "effect_list": [
+      {
+        "type": "xp_bonus",
+        "value": 1400,
+        "duration": 0,
+        "cards": 20,
+        "expire_h": 5,
+        "name": "Street Food 🛵",
+        "desc": "+1.400đ/thẻ trong 20 thẻ tiếp"
+      },
+      {
+        "type": "energy_burst",
+        "value": 20,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 5,
+        "name": "Năng Lượng Bùng Nổ 🛵",
+        "desc": "⚡ Hồi 20 năng lượng tức thì — no nê học tiếp!"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 2,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 5,
+        "name": "Mệt Dầu Mỡ 🛵",
+        "desc": "-2 thể lực mỗi thẻ — đồ ăn đường phố nhiều dầu mỡ!"
+      }
+    ]
+  },
+  {
+    "id": "food_jollibee",
+    "name": "Jollibee Burger & Spaghetti",
+    "description": "Combo burger gà + spaghetti + cola",
+    "category": "🍽️ Ẩm thực",
+    "price": 150000,
+    "emoji": "🍔",
+    "stars": 3,
+    "expire_h": 6,
+    "effect_list": [
+      {
+        "type": "reward_multiplier",
+        "value": 1.25,
+        "duration": 1800,
+        "cards": 0,
+        "expire_h": 6,
+        "name": "Jollibee 🍔",
+        "desc": "×1.25 tiền thưởng trong 30 phút"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 3,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 6,
+        "name": "Mệt Dầu Mỡ 🍔",
+        "desc": "-3 thể lực mỗi thẻ — gà rán nhiều dầu khiến bạn ì ạch!"
+      }
+    ]
+  },
+  {
+    "id": "food_kfc",
+    "name": "KFC Gà rán Combo",
+    "description": "4 miếng gà + khoai tây + nước ngọt",
+    "category": "🍽️ Ẩm thực",
+    "price": 185000,
+    "emoji": "🍗",
+    "stars": 3,
+    "expire_h": 8,
+    "effect_list": [
+      {
+        "type": "reward_multiplier",
+        "value": 1.35,
+        "duration": 1800,
+        "cards": 0,
+        "expire_h": 8,
+        "name": "Gà Rán KFC 🍗",
+        "desc": "×1.35 tiền thưởng trong 30 phút — gà rán giòn tan!"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 3,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 8,
+        "name": "Mệt Dầu Mỡ 🍗",
+        "desc": "-3 thể lực mỗi thẻ — đồ chiên rán nhiều dầu không tốt!"
+      }
+    ]
+  },
+  {
+    "id": "food_pizza",
+    "name": "Pizza Domino's",
+    "description": "Size L, 2 vị tùy chọn, viền phô mai",
+    "category": "🍽️ Ẩm thực",
+    "price": 250000,
+    "emoji": "🍕",
+    "stars": 3,
+    "expire_h": 6,
+    "effect_list": [
+      {
+        "type": "xp_bonus",
+        "value": 2000,
+        "duration": 0,
+        "cards": 30,
+        "expire_h": 6,
+        "name": "Pizza Tăng Lực 🍕",
+        "desc": "+2.000đ/thẻ trong 30 thẻ tiếp theo"
+      },
+      {
+        "type": "factor_boost",
+        "value": 0.03,
+        "duration": 0,
+        "cards": 30,
+        "expire_h": 6,
+        "name": "Pizza Tập Trung 🍕",
+        "desc": "+3% ease factor cho 30 thẻ"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 3,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 6,
+        "name": "Carb Load 🍕",
+        "desc": "-3 thể lực mỗi thẻ — pizza nhiều phô mai nặng bụng!"
+      }
+    ]
+  },
+  {
+    "id": "food_lau_thai",
+    "name": "Lẩu Thái hải sản",
+    "description": "Lẩu Thái chua cay, hải sản tươi, bún tươi",
+    "category": "🍽️ Ẩm thực",
+    "price": 350000,
+    "emoji": "🫕",
+    "stars": 4,
+    "expire_h": 8,
+    "effect_list": [
+      {
+        "type": "xp_bonus",
+        "value": 3000,
+        "duration": 0,
+        "cards": 40,
+        "expire_h": 8,
+        "name": "Lẩu Thái 🫕",
+        "desc": "+3.000đ/thẻ trong 40 thẻ tiếp"
+      },
+      {
+        "type": "energy_burst",
+        "value": 40,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 8,
+        "name": "Năng Lượng Bùng Nổ 🔥",
+        "desc": "⚡ Hồi 40 năng lượng tức thì — nước lẩu bổ dưỡng!"
+      },
+      {
+        "type": "reward_penalty",
+        "value": 0.12,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 8,
+        "name": "Mờ Cay 🫕",
+        "desc": "-12% tiền thưởng — lẩu cay quá mất tập trung!"
+      }
+    ]
+  },
+  {
+    "id": "food_lau_bo",
+    "name": "Lẩu bò nhúng dấm",
+    "description": "Lẩu bò nhúng dấm, bún tươi, rau muống, chấm tương ớt",
+    "category": "🍽️ Ẩm thực",
+    "price": 380000,
+    "emoji": "🥘",
+    "stars": 4,
+    "expire_h": 8,
+    "effect_list": [
+      {
+        "type": "reward_multiplier",
+        "value": 1.4,
+        "duration": 2400,
+        "cards": 0,
+        "expire_h": 8,
+        "name": "Lẩu Bò 🥘",
+        "desc": "×1.4 tiền thưởng trong 40 phút"
+      },
+      {
+        "type": "energy_burst",
+        "value": 30,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 8,
+        "name": "Năng Lượng Bùng Nổ 🫕",
+        "desc": "⚡ Hồi 30 năng lượng tức thì — thịt bò giàu protein!"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 4,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 8,
+        "name": "Quá Tải Đạm 🥘",
+        "desc": "-4 thể lực mỗi thẻ — thịt bò nhiều đạm, ăn nhiều hại thận!"
+      }
+    ]
+  },
+  {
+    "id": "food_sushi",
+    "name": "Sushi Nhật cao cấp",
+    "description": "12 miếng sushi tươi sống, kèm miso soup",
+    "category": "🍽️ Ẩm thực",
+    "price": 380000,
+    "emoji": "🍣",
+    "stars": 4,
+    "expire_h": 8,
+    "effect_list": [
+      {
+        "type": "reward_multiplier",
+        "value": 1.5,
+        "duration": 2700,
+        "cards": 0,
+        "expire_h": 8,
+        "name": "Sushi Deluxe 🍣",
+        "desc": "×1.5 tiền thưởng trong 45 phút"
+      },
+      {
+        "type": "xp_bonus",
+        "value": 1000,
+        "duration": 0,
+        "cards": 50,
+        "expire_h": 8,
+        "name": "Sushi XP 🍣",
+        "desc": "+1.000đ/thẻ trong 50 thẻ — cá tươi tốt cho trí não!"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 4,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 8,
+        "name": "Rủi Ro Tiêu Hóa 🍣",
+        "desc": "-4 thể lực mỗi thẻ — đồ sống dễ gây dị ứng, mất sức!"
+      }
+    ]
+  },
+  {
+    "id": "food_korean_bbq",
+    "name": "BBQ Hàn Quốc Set",
+    "description": "300g thịt bò Mỹ + 200g thịt ba chỉ + món phụ",
+    "category": "🍽️ Ẩm thực",
+    "price": 450000,
+    "emoji": "🥩",
+    "stars": 4,
+    "expire_h": 10,
+    "effect_list": [
+      {
+        "type": "double_easy",
+        "value": 2.5,
+        "duration": 2400,
+        "cards": 0,
+        "expire_h": 10,
+        "name": "BBQ Thịnh Soạn 🥩",
+        "desc": "×2.5 Easy + ×1.3 reward trong 40 phút"
+      },
+      {
+        "type": "reward_multiplier",
+        "value": 1.3,
+        "duration": 2400,
+        "cards": 0,
+        "expire_h": 10,
+        "name": "BBQ Tăng Lực 🥩",
+        "desc": "×1.3 tiền thưởng trong 40 phút"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 4,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 10,
+        "name": "Quá Tải Đạm 🥩",
+        "desc": "-4 thể lực mỗi thẻ — ăn BBQ nhiều thịt khiến bạn uể oải!"
+      }
+    ]
+  },
+  {
+    "id": "food_haidilao",
+    "name": "Buffet Lẩu Haidilao",
+    "description": "Lẩu Tứ Xuyên 2 nước, thịt bò Mỹ, hải sản, tôm viên",
+    "category": "🍽️ Ẩm thực",
+    "price": 480000,
+    "emoji": "🫕",
+    "stars": 4,
+    "expire_h": 10,
+    "effect_list": [
+      {
+        "type": "reward_multiplier",
+        "value": 1.5,
+        "duration": 1800,
+        "cards": 0,
+        "expire_h": 10,
+        "name": "Haidilao 🔥",
+        "desc": "×1.5 tiền thưởng trong 30 phút"
+      },
+      {
+        "type": "energy_limit",
+        "value": 15,
+        "duration": 1800,
+        "cards": 0,
+        "expire_h": 10,
+        "name": "Haidilao Tràn Đầy 🔥",
+        "desc": "⚡ +15 năng lượng tối đa trong 30 phút"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 5,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 10,
+        "name": "Mệt Cay 🔥",
+        "desc": "-5 thể lực mỗi thẻ — lẩu Tứ Xuyên cay quá hại dạ dày!"
+      }
+    ]
+  },
+  {
+    "id": "food_french",
+    "name": "Nhà hàng Pháp Le Bistrot",
+    "description": "Set 5 món cao cấp, rượu vang, phô mai",
+    "category": "🍽️ Ẩm thực",
+    "price": 1200000,
+    "emoji": "🥂",
+    "stars": 5,
+    "expire_h": 12,
+    "effect_list": [
+      {
+        "type": "reward_multiplier",
+        "value": 2.0,
+        "duration": 3600,
+        "cards": 0,
+        "expire_h": 12,
+        "name": "French Luxury 🥂",
+        "desc": "×2 tiền thưởng trong 60 phút"
+      },
+      {
+        "type": "xp_bonus",
+        "value": 2000,
+        "duration": 0,
+        "cards": 60,
+        "expire_h": 12,
+        "name": "French Wine 🥂",
+        "desc": "+2.000đ/thẻ trong 60 thẻ — rượu vang kích thích sáng tạo!"
+      },
+      {
+        "type": "reward_penalty",
+        "value": 0.2,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 12,
+        "name": "Say Rượu 🥂",
+        "desc": "-20% tiền thưởng — rượu vang say quá không học nổi!"
+      }
+    ]
+  },
+  {
+    "id": "food_steakhouse",
+    "name": "Steakhouse USDA Prime",
+    "description": "Bít tết USDA Prime 300g, kèm rượu vang đỏ",
+    "category": "🍽️ Ẩm thực",
+    "price": 1800000,
+    "emoji": "🥩",
+    "stars": 5,
+    "expire_h": 12,
+    "effect_list": [
+      {
+        "type": "double_easy",
+        "value": 3.0,
+        "duration": 3000,
+        "cards": 0,
+        "expire_h": 12,
+        "name": "Bít Tết Hảo Hạng 🥩",
+        "desc": "×3 Easy + ×1.5 Good trong 50 phút"
+      },
+      {
+        "type": "xp_bonus",
+        "value": 3000,
+        "duration": 0,
+        "cards": 50,
+        "expire_h": 12,
+        "name": "Bít Tết Tăng Lực 🥩",
+        "desc": "+3.000đ/thẻ trong 50 thẻ"
+      },
+      {
+        "type": "energy_limit",
+        "value": 20,
+        "duration": 3000,
+        "cards": 0,
+        "expire_h": 12,
+        "name": "Bít Tết Năng Lượng 🥩",
+        "desc": "⚡ +20 năng lượng tối đa trong 50 phút"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 6,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 12,
+        "name": "Quá Tải Đạm 🥩",
+        "desc": "-6 thể lực mỗi thẻ — thịt đỏ nhiều đạm, tiêu hao nhiều năng lượng!"
+      }
+    ]
+  },
+  {
+    "id": "food_omakase",
+    "name": "Omakase Nhật Bản",
+    "description": "10 món sushi chef's selection, cá tươi nhập khẩu",
+    "category": "🍽️ Ẩm thực",
+    "price": 2000000,
+    "emoji": "🍣",
+    "stars": 5,
+    "expire_h": 12,
+    "effect_list": [
+      {
+        "type": "reward_multiplier",
+        "value": 1.8,
+        "duration": 2700,
+        "cards": 0,
+        "expire_h": 12,
+        "name": "Omakase 🍣",
+        "desc": "×1.8 tiền thưởng trong 45 phút"
+      },
+      {
+        "type": "xp_bonus",
+        "value": 5000,
+        "duration": 0,
+        "cards": 45,
+        "expire_h": 12,
+        "name": "Omakase Premium 🍣",
+        "desc": "+5.000đ/thẻ trong 45 thẻ — cá tươi nhập khẩu bổ não!"
+      },
+      {
+        "type": "factor_boost",
+        "value": 0.05,
+        "duration": 0,
+        "cards": 45,
+        "expire_h": 12,
+        "name": "Omakase Focus 🍣",
+        "desc": "+5% ease factor cho 45 thẻ"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 6,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 12,
+        "name": "Nguy Cơ Đồ Sống 🍣",
+        "desc": "-6 thể lực mỗi thẻ — đồ sống nhập khẩu rủi ro vệ sinh!"
+      }
+    ]
+  },
+  {
+    "id": "food_nuoc_mia",
+    "name": "Nước mía nguyên chất",
+    "description": "Nước mía ép tươi nguyên chất, cam vắt, đá viên",
+    "category": "🥤 Đồ uống",
+    "price": 10000,
+    "emoji": "🧃",
+    "stars": 1,
+    "expire_h": 2,
+    "effect_list": [
+      {
+        "type": "reward_multiplier",
+        "value": 1.15,
+        "duration": 600,
+        "cards": 0,
+        "expire_h": 2,
+        "name": "Nước Mía 🧃",
+        "desc": "×1.15 tiền thưởng trong 10 phút — rẻ mà hiệu quả!"
+      },
+      {
+        "type": "reward_penalty",
+        "value": 0.03,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 2,
+        "name": "Mơ Màng Sau Đường 🧃",
+        "desc": "-3% tiền thưởng — đường mía lên men nhanh gây xỉn!"
+      }
+    ]
+  },
+  {
+    "id": "food_sua_chua_nep",
+    "name": "Sữa chua nếp cái hoa vàng",
+    "description": "Sữa chua men cái, nếp cái say mật ong — bổ dưỡng",
+    "category": "🥤 Đồ uống",
+    "price": 20000,
+    "emoji": "🥛",
+    "stars": 1,
+    "expire_h": 3,
+    "effect_list": [
+      {
+        "type": "xp_bonus",
+        "value": 500,
+        "duration": 0,
+        "cards": 8,
+        "expire_h": 3,
+        "name": "Sữa Chua 🥛",
+        "desc": "+500đ/thẻ trong 8 thẻ tiếp — nhẹ nhàng, dễ tiêu"
+      },
+      {
+        "type": "factor_boost",
+        "value": 0.02,
+        "duration": 0,
+        "cards": 8,
+        "expire_h": 3,
+        "name": "Sữa Chua Lợi Khuẩn 🥛",
+        "desc": "+2% ease factor cho 8 thẻ"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 1,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 3,
+        "name": "Cold Drain 🥛",
+        "desc": "-1 thể lực mỗi thẻ — sữa chua lạnh dễ đau bụng!"
+      }
+    ]
+  },
+  {
+    "id": "food_tra_dao_cam_sa",
+    "name": "Trà đào Cam Sả",
+    "description": "Trà đào mát lạnh, cam sả thơm — giải khát học bài",
+    "category": "🥤 Đồ uống",
+    "price": 20000,
+    "emoji": "🧊",
+    "stars": 1,
+    "expire_h": 3,
+    "effect_list": [
+      {
+        "type": "reward_multiplier",
+        "value": 1.2,
+        "duration": 600,
+        "cards": 0,
+        "expire_h": 3,
+        "name": "Trà Đào 🧊",
+        "desc": "×1.2 tiền thưởng trong 10 phút — giải khát tức thì!"
+      },
+      {
+        "type": "energy_burst",
+        "value": 15,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 3,
+        "name": "Năng Lượng Bùng Nổ 🧊",
+        "desc": "⚡ Hồi 15 năng lượng tức thì — giải khát, tỉnh táo!"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 1,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 3,
+        "name": "Tụt Đường 🧊",
+        "desc": "-1 thể lực mỗi thẻ — trà đào nhiều đường tụt đường!"
+      }
+    ]
+  },
+  {
+    "id": "food_ca_phe_trung",
+    "name": "Cà phê trứng Hà Nội",
+    "description": "Cà phê đen pha, trứng gà đánh bông, bột cacao — thức tỉnh đầu óc",
+    "category": "🥤 Đồ uống",
+    "price": 30000,
+    "emoji": "☕",
+    "stars": 2,
+    "expire_h": 4,
+    "effect_list": [
+      {
+        "type": "reward_multiplier",
+        "value": 1.35,
+        "duration": 900,
+        "cards": 0,
+        "expire_h": 4,
+        "name": "Cà Phê Trứng ☕",
+        "desc": "×1.35 tiền thưởng trong 15 phút — tỉnh táo tối đa!"
+      },
+      {
+        "type": "energy_burst",
+        "value": 20,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 4,
+        "name": "Bùng Nổ Caffeine ☕",
+        "desc": "⚡ Hồi 20 năng lượng tức thì — cà phê trứng thức tỉnh ngay!"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 2,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 4,
+        "name": "Sụt Giảm Caffeine ☕",
+        "desc": "-2 thể lực mỗi thẻ — cà phê nhiều caffeine gây mất ngủ!"
+      }
+    ]
+  },
+  {
+    "id": "food_ca_phe_den_da",
+    "name": "Cà phê đen đá",
+    "description": "Cà phê đen nguyên chất, đá lạnh — thức uống của dân văn phòng",
+    "category": "🥤 Đồ uống",
+    "price": 15000,
+    "emoji": "☕",
+    "stars": 1,
+    "expire_h": 3,
+    "effect_list": [
+      {
+        "type": "reward_multiplier",
+        "value": 1.25,
+        "duration": 720,
+        "cards": 0,
+        "expire_h": 3,
+        "name": "Cà Phê Đen ☕",
+        "desc": "×1.25 tiền thưởng trong 12 phút"
+      },
+      {
+        "type": "energy_burst",
+        "value": 15,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 3,
+        "name": "Bùng Nổ Caffeine ☕",
+        "desc": "⚡ Hồi 15 năng lượng tức thì — cà phê đen nhanh chóng!"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 2,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 3,
+        "name": "Bồn Chồn Caffeine ☕",
+        "desc": "-2 thể lực mỗi thẻ — cà phê đen nhiều caffeine làm tim đập nhanh!"
+      }
+    ]
+  },
+  {
+    "id": "food_nuoc_ep_cam",
+    "name": "Nước ép cam tươi",
+    "description": "Cam tươi vắt nguyên chất, giàu vitamin C",
+    "category": "🥤 Đồ uống",
+    "price": 25000,
+    "emoji": "🍊",
+    "stars": 1,
+    "expire_h": 3,
+    "effect_list": [
+      {
+        "type": "double_easy",
+        "value": 2.0,
+        "duration": 900,
+        "cards": 0,
+        "expire_h": 3,
+        "name": "Cam Vitamin 🍊",
+        "desc": "×2 Easy trong 15 phút — vitamin C giúp sáng mắt!"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 1,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 3,
+        "name": "Axit Dạ Dày 🍊",
+        "desc": "-1 thể lực mỗi thẻ — cam chua nhiều axit hại dạ dày!"
+      }
+    ]
+  },
+  {
+    "id": "food_sinh_to_bo",
+    "name": "Sinh tố bơ đậu",
+    "description": "Sinh tố bơ sáp, sữa đặc, đậu phộng rang — béo ngậy bổ dưỡng",
+    "category": "🥤 Đồ uống",
+    "price": 40000,
+    "emoji": "🥑",
+    "stars": 2,
+    "expire_h": 4,
+    "effect_list": [
+      {
+        "type": "reward_multiplier",
+        "value": 1.25,
+        "duration": 1200,
+        "cards": 0,
+        "expire_h": 4,
+        "name": "Sinh Tố Bơ 🥑",
+        "desc": "×1.25 tiền thưởng trong 20 phút"
+      },
+      {
+        "type": "energy_limit",
+        "value": 10,
+        "duration": 1200,
+        "cards": 0,
+        "expire_h": 4,
+        "name": "Bơ Năng Lượng 🥑",
+        "desc": "⚡ +10 năng lượng tối đa trong 20 phút"
+      },
+      {
+        "type": "reward_penalty",
+        "value": 0.08,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 4,
+        "name": "Ngấy Béo 🥑",
+        "desc": "-8% tiền thưởng — bơ nhiều chất béo gây đầy bụng!"
+      }
+    ]
+  },
+  {
+    "id": "food_matcha_latte",
+    "name": "Matcha Latte",
+    "description": "Trà xanh matcha Nhật, sữa tươi, đá viên — thanh mát tỉnh táo",
+    "category": "🥤 Đồ uống",
+    "price": 45000,
+    "emoji": "🍵",
+    "stars": 2,
+    "expire_h": 4,
+    "effect_list": [
+      {
+        "type": "xp_bonus",
+        "value": 900,
+        "duration": 0,
+        "cards": 15,
+        "expire_h": 4,
+        "name": "Matcha Tập Trung 🍵",
+        "desc": "+900đ/thẻ trong 15 thẻ — L-theanine giúp tập trung sâu!"
+      },
+      {
+        "type": "factor_boost",
+        "value": 0.03,
+        "duration": 0,
+        "cards": 15,
+        "expire_h": 4,
+        "name": "Matcha Thư Thái 🍵",
+        "desc": "+3% ease factor cho 15 thẻ"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 2,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 4,
+        "name": "Lợi Tiểu 🍵",
+        "desc": "-2 thể lực mỗi thẻ — matcha lợi tiểu mất nước!"
+      },
+      {
+        "type": "energy_reduce",
+        "value": 0.5,
+        "duration": 0,
+        "cards": 15,
+        "expire_h": 4,
+        "name": "Matcha Bảo Vệ 🍵",
+        "desc": "Giảm 50% tốn năng lượng trong 15 thẻ — L-theanine bảo vệ thần kinh!"
+      }
+    ]
+  },
+  {
+    "id": "food_tra_sua",
+    "name": "Trà sữa trân châu",
+    "description": "Trà sữa Đài Loan, trân châu đen, pudding trứng",
+    "category": "🥤 Đồ uống",
+    "price": 50000,
+    "emoji": "🧋",
+    "stars": 2,
+    "expire_h": 4,
+    "effect_list": [
+      {
+        "type": "energy_burst",
+        "value": 35,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 4,
+        "name": "Phấn Khích Đường 🦹",
+        "desc": "⚡ Hồi 35 năng lượng tức thì — đường nạp năng lượng nhanh!"
+      },
+      {
+        "type": "xp_bonus",
+        "value": 500,
+        "duration": 0,
+        "cards": 20,
+        "expire_h": 4,
+        "name": "Trà Sữa Học 🧋",
+        "desc": "+500đ/thẻ trong 20 thẻ"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 2,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 4,
+        "name": "Tụt Đường 🧋",
+        "desc": "-2 thể lực mỗi thẻ — trà sữa nhiều đường gây tụt đường!"
+      }
+    ]
+  },
+  {
+    "id": "food_smoothie_bo",
+    "name": "Smoothie trái cây mix",
+    "description": "Smoothie dâu, chuối, xoài, sữa chua — đầy vitamin",
+    "category": "🥤 Đồ uống",
+    "price": 55000,
+    "emoji": "🥤",
+    "stars": 2,
+    "expire_h": 5,
+    "effect_list": [
+      {
+        "type": "energy_limit",
+        "value": 15,
+        "duration": 1200,
+        "cards": 0,
+        "expire_h": 5,
+        "name": "Sinh Tố Năng Lượng 🥤",
+        "desc": "⚡ +15 năng lượng tối đa trong 20 phút"
+      },
+      {
+        "type": "xp_bonus",
+        "value": 700,
+        "duration": 0,
+        "cards": 15,
+        "expire_h": 5,
+        "name": "Sinh Tố Vitamin 🥤",
+        "desc": "+700đ/thẻ trong 15 thẻ"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 2,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 5,
+        "name": "Lạnh Bụng 🥤",
+        "desc": "-2 thể lực mỗi thẻ — smoothie lạnh co thắt dạ dày!"
+      },
+      {
+        "type": "energy_shield",
+        "value": 1,
+        "duration": 0,
+        "cards": 10,
+        "expire_h": 5,
+        "name": "Khiên Vitamin 🥤",
+        "desc": "Không tốn năng lượng trong 10 thẻ tiếp — vitamin C bảo vệ năng lượng!"
+      }
+    ]
+  },
+  {
+    "id": "food_banh_trang_tron",
+    "name": "Bánh tráng trộn",
+    "description": "Bánh tráng cắt sợi, khô bò, trứng cút, tôm khô, rau răm",
+    "category": "🍽️ Ẩm thực",
+    "price": 15000,
+    "emoji": "🫔",
+    "stars": 1,
+    "expire_h": 2,
+    "effect_list": [
+      {
+        "type": "reward_multiplier",
+        "value": 1.15,
+        "duration": 600,
+        "cards": 0,
+        "expire_h": 2,
+        "name": "Bánh Tráng 🫔",
+        "desc": "×1.15 tiền thưởng trong 10 phút — snack vỉa hè quốc dân"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 1,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 2,
+        "name": "Mệt Cay 🫔",
+        "desc": "-1 thể lực mỗi thẻ — bánh tráng trộn cay quá mệt!"
+      }
+    ]
+  },
+  {
+    "id": "food_bo_bia",
+    "name": "Bò bía Nhật Tân",
+    "description": "Bò bía rau củ, tôm khô, lạp xưởng, cuộn mỏng — chấm tương đen",
+    "category": "🍽️ Ẩm thực",
+    "price": 20000,
+    "emoji": "🥟",
+    "stars": 1,
+    "expire_h": 3,
+    "effect_list": [
+      {
+        "type": "xp_bonus",
+        "value": 600,
+        "duration": 0,
+        "cards": 10,
+        "expire_h": 3,
+        "name": "Bò Bía 🥟",
+        "desc": "+600đ/thẻ trong 10 thẻ tiếp"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 1,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 3,
+        "name": "Buồn Ngủ No 🥟",
+        "desc": "-1 thể lực mỗi thẻ — bò bía nhiều bột nặng bụng!"
+      }
+    ]
+  },
+  {
+    "id": "food_nom_bo_kho",
+    "name": "Nộm bò khô",
+    "description": "Nộm đu đủ, bò khô, lạc rang, rau thơm, nước mắm chua cay",
+    "category": "🍽️ Ẩm thực",
+    "price": 40000,
+    "emoji": "🥗",
+    "stars": 1,
+    "expire_h": 4,
+    "effect_list": [
+      {
+        "type": "double_easy",
+        "value": 2.0,
+        "duration": 600,
+        "cards": 0,
+        "expire_h": 4,
+        "name": "Nộm Bò 🥗",
+        "desc": "×2 Easy trong 10 phút"
+      },
+      {
+        "type": "reward_penalty",
+        "value": 0.05,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 4,
+        "name": "Mơ Màng No 🥗",
+        "desc": "-5% tiền thưởng — bò khô dai nhai mỏi hàm!"
+      }
+    ]
+  },
+  {
+    "id": "food_chao_long",
+    "name": "Cháo lòng",
+    "description": "Cháo trắng nóng hổi, lòng non, tiết canh, dồi, quẩy",
+    "category": "🍽️ Ẩm thực",
+    "price": 35000,
+    "emoji": "🥣",
+    "stars": 1,
+    "expire_h": 4,
+    "effect_list": [
+      {
+        "type": "reward_multiplier",
+        "value": 1.2,
+        "duration": 900,
+        "cards": 0,
+        "expire_h": 4,
+        "name": "Cháo Lòng 🥣",
+        "desc": "×1.2 tiền thưởng trong 15 phút — ấm bụng học bài"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 1,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 4,
+        "name": "Mệt Dầu Mỡ 🥣",
+        "desc": "-1 thể lực mỗi thẻ — lòng giàu cholesterol!"
+      }
+    ]
+  },
+  {
+    "id": "food_com_chay_kho_quet",
+    "name": "Cơm cháy kho quẹt",
+    "description": "Cơm cháy giòn rụm, kho quẹt tôm mỡ hành, ăn hoài không ngán",
+    "category": "🍽️ Ẩm thực",
+    "price": 35000,
+    "emoji": "🍘",
+    "stars": 2,
+    "expire_h": 4,
+    "effect_list": [
+      {
+        "type": "xp_bonus",
+        "value": 900,
+        "duration": 0,
+        "cards": 12,
+        "expire_h": 4,
+        "name": "Cơm Cháy 🍘",
+        "desc": "+900đ/thẻ trong 12 thẻ tiếp"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 1,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 4,
+        "name": "Mỏi Hàm 🍘",
+        "desc": "-1 thể lực mỗi thẻ — cơm cháy cứng nhai mỏi miệng!"
+      }
+    ]
+  },
+  {
+    "id": "food_banh_can",
+    "name": "Bánh căn Phan Rang",
+    "description": "Bánh căn trứng cút, mực, tôm — chấm nước mắm me cay",
+    "category": "🍽️ Ẩm thực",
+    "price": 40000,
+    "emoji": "🥚",
+    "stars": 2,
+    "expire_h": 4,
+    "effect_list": [
+      {
+        "type": "factor_boost",
+        "value": 0.03,
+        "duration": 0,
+        "cards": 15,
+        "expire_h": 4,
+        "name": "Bánh Căn Tập Trung 🥚",
+        "desc": "+3% ease factor cho 15 thẻ"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 1,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 4,
+        "name": "Bụng Rỗng 🥚",
+        "desc": "-1 thể lực mỗi thẻ — bánh căn nhỏ không đủ no!"
+      }
+    ]
+  },
+  {
+    "id": "food_bun_thit_nuong",
+    "name": "Bún thịt nướng",
+    "description": "Bún tươi, thịt nướng than, nem nướng, chả giò, nước mắm pha",
+    "category": "🍽️ Ẩm thực",
+    "price": 45000,
+    "emoji": "🍜",
+    "stars": 2,
+    "expire_h": 5,
+    "effect_list": [
+      {
+        "type": "reward_multiplier",
+        "value": 1.2,
+        "duration": 1200,
+        "cards": 0,
+        "expire_h": 5,
+        "name": "Bún Nướng 🍜",
+        "desc": "×1.2 tiền thưởng trong 20 phút"
+      },
+      {
+        "type": "xp_bonus",
+        "value": 500,
+        "duration": 0,
+        "cards": 12,
+        "expire_h": 5,
+        "name": "Bún Nướng Thêm 🍜",
+        "desc": "+500đ/thẻ trong 12 thẻ"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 1,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 5,
+        "name": "Char Tax 🍜",
+        "desc": "-1 thể lực mỗi thẻ — thịt nướng than hại sức khỏe!"
+      }
+    ]
+  },
+  {
+    "id": "food_hutieu_sa_te",
+    "name": "Hủ tiếu sa tế",
+    "description": "Hủ tiếu sa tế tôm thịt, cay nồng, nước dùng xương heo",
+    "category": "🍽️ Ẩm thực",
+    "price": 50000,
+    "emoji": "🍜",
+    "stars": 2,
+    "expire_h": 4,
+    "effect_list": [
+      {
+        "type": "reward_multiplier",
+        "value": 1.3,
+        "duration": 900,
+        "cards": 0,
+        "expire_h": 4,
+        "name": "Hủ Tiếu Sa Tế 🌶️",
+        "desc": "×1.3 tiền thưởng trong 15 phút — cay tê!"
+      },
+      {
+        "type": "reward_penalty",
+        "value": 0.08,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 4,
+        "name": "Mờ Cay 🌶️",
+        "desc": "-8% tiền thưởng — cay quá mất tập trung!"
+      }
+    ]
+  },
+  {
+    "id": "food_com_ga_xoi_mo",
+    "name": "Cơm gà xối mỡ",
+    "description": "Gà ta luộc xối mỡ hành, cơm trắng, nước gà chấm muối tiêu",
+    "category": "🍽️ Ẩm thực",
+    "price": 55000,
+    "emoji": "🍗",
+    "stars": 2,
+    "expire_h": 5,
+    "effect_list": [
+      {
+        "type": "double_easy",
+        "value": 2.0,
+        "duration": 1200,
+        "cards": 0,
+        "expire_h": 5,
+        "name": "Gà Xối Mỡ 🍗",
+        "desc": "×2 Easy trong 20 phút"
+      },
+      {
+        "type": "xp_bonus",
+        "value": 600,
+        "duration": 0,
+        "cards": 15,
+        "expire_h": 5,
+        "name": "Gà Xối Bổ 🍗",
+        "desc": "+600đ/thẻ trong 15 thẻ"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 2,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 5,
+        "name": "Mệt Dầu Mỡ 🍗",
+        "desc": "-2 thể lực mỗi thẻ — mỡ hành nhiều nặng bụng!"
+      }
+    ]
+  },
+  {
+    "id": "food_oc_hap_sa",
+    "name": "Ốc hấp sả",
+    "description": "Ốc hấp sả, gừng, lá chanh — chấm nước mắm gừng cay",
+    "category": "🍽️ Ẩm thực",
+    "price": 60000,
+    "emoji": "🐌",
+    "stars": 2,
+    "expire_h": 5,
+    "effect_list": [
+      {
+        "type": "xp_bonus",
+        "value": 1100,
+        "duration": 0,
+        "cards": 15,
+        "expire_h": 5,
+        "name": "Ốc Hấp Sả 🐌",
+        "desc": "+1.100đ/thẻ trong 15 thẻ tiếp"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 2,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 5,
+        "name": "Khó Tiêu 🐌",
+        "desc": "-2 thể lực mỗi thẻ — ốc dai khó nhai, mất sức!"
+      }
+    ]
+  },
+  {
+    "id": "food_muc_nuong_sa_te",
+    "name": "Mực nướng sa tế",
+    "description": "Mực ống tươi nướng sa tế, chấm muối ớt xanh — cực kích thích",
+    "category": "🍽️ Ẩm thực",
+    "price": 80000,
+    "emoji": "🦑",
+    "stars": 3,
+    "expire_h": 6,
+    "effect_list": [
+      {
+        "type": "reward_multiplier",
+        "value": 1.35,
+        "duration": 1500,
+        "cards": 0,
+        "expire_h": 6,
+        "name": "Mực Nướng 🦑",
+        "desc": "×1.35 tiền thưởng trong 25 phút — hải sản kích thích não!"
+      },
+      {
+        "type": "energy_burst",
+        "value": 25,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 6,
+        "name": "Năng Lượng Bùng Nổ 🦑",
+        "desc": "⚡ Hồi 25 năng lượng tức thì — hải sản bổ dưỡng!"
+      },
+      {
+        "type": "stamina_cost",
+        "value": 2,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 6,
+        "name": "Char Tax 🦑",
+        "desc": "-2 thể lực mỗi thẻ — mực nướng cháy có chất gây ung thư!"
+      }
+    ]
+  },
+  {
+    "id": "car_toyota_altis",
+    "name": "Toyota Altis 2024",
+    "description": "Sedan hạng C, tiết kiệm xăng, 1.8L • Giảm 5% mật độ ôn tập bài, ×1.05 XP",
+    "category": "🚗 Showroom xe",
+    "price": 650000000,
+    "emoji": "🚗",
+    "brand": "Toyota",
+    "origin": "Châu Á",
+    "vehicle_group": "Ô tô",
+    "car_type": "Sedan",
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.05,
+        "name": "Tiết Kiệm 🌿",
+        "desc": "Giảm 5% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.05,
+        "name": "Xe Mới 🚗",
+        "desc": "×1.05 tổng XP"
+      }
+    ]
+  },
+  {
+    "id": "car_honda_civic",
+    "name": "Honda Civic 2024",
+    "description": "Sedan thể thao, 1.5L Turbo, 180 mã lực • Giảm 7% mật độ ôn tập, ×1.07 XP",
+    "category": "🚗 Showroom xe",
+    "price": 720000000,
+    "emoji": "🚙",
+    "brand": "Honda",
+    "origin": "Châu Á",
+    "vehicle_group": "Ô tô",
+    "car_type": "Sedan",
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.07,
+        "name": "Thể Thao 🌿",
+        "desc": "Giảm 7% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.07,
+        "name": "Speed Boost 🚙",
+        "desc": "×1.07 tổng XP"
+      }
+    ]
+  },
+  {
+    "id": "car_hyundai_sonata",
+    "name": "Hyundai Sonata 2024",
+    "description": "Sedan hạng D, thiết kế sang trọng, 2.5L • Giảm 8% mật độ ôn tập, ×1.08 XP",
+    "category": "🚗 Showroom xe",
+    "price": 750000000,
+    "emoji": "🚗",
+    "brand": "Hyundai",
+    "origin": "Châu Á",
+    "vehicle_group": "Ô tô",
+    "car_type": "Sedan",
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.08,
+        "name": "Sang Trọng 🌿",
+        "desc": "Giảm 8% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.08,
+        "name": "Executive 🚗",
+        "desc": "×1.08 tổng XP"
+      }
+    ]
+  },
+  {
+    "id": "car_kia_sportage",
+    "name": "Kia Sportage 2024",
+    "description": "SUV đô thị, 2.0L, ghế da, panoramic • Giảm 8% mật độ ôn tập, ×1.08 XP",
+    "category": "🚗 Showroom xe",
+    "price": 800000000,
+    "emoji": "🚙",
+    "brand": "Kia",
+    "origin": "Châu Á",
+    "vehicle_group": "Ô tô",
+    "car_type": "SUV",
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.08,
+        "name": "SUV Rộng Rãi 🌿",
+        "desc": "Giảm 8% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.08,
+        "name": "Comfort Ride 🚙",
+        "desc": "×1.08 tổng XP"
+      }
+    ]
+  },
+  {
+    "id": "car_mitsubishi_xpander",
+    "name": "Mitsubishi Xpander 2024",
+    "description": "MPV 7 chỗ, linh hoạt đa dụng • Giảm 5% mật độ ôn tập, ×1.05 XP",
+    "category": "🚗 Showroom xe",
+    "price": 550000000,
+    "emoji": "🚐",
+    "brand": "Mitsubishi",
+    "origin": "Châu Á",
+    "vehicle_group": "Ô tô",
+    "car_type": "MPV",
+    "stars": 1,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.05,
+        "name": "Đa Dụng 🌿",
+        "desc": "Giảm 5% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "equipment_slot",
+        "value": 1,
+        "name": "Gia Đình 🚐",
+        "desc": "+1 slot trang bị — chở cả nhà đi học!"
+      }
+    ]
+  },
+  {
+    "id": "car_nissan_qashqai",
+    "name": "Nissan Qashqai 2024",
+    "description": "Crossover hạng C, 1.3L Turbo, an toàn 5 sao • Giảm 8% mật độ ôn tập, ×1.08 XP",
+    "category": "🚗 Showroom xe",
+    "price": 780000000,
+    "emoji": "🚙",
+    "brand": "Nissan",
+    "origin": "Châu Á",
+    "vehicle_group": "Ô tô",
+    "car_type": "Crossover",
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.08,
+        "name": "An Toàn 🌿",
+        "desc": "Giảm 8% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.08,
+        "name": "Safe Drive 🚙",
+        "desc": "×1.08 tổng XP"
+      }
+    ]
+  },
+  {
+    "id": "car_mazda_cx5",
+    "name": "Mazda CX-5 2024",
+    "description": "SUV hạng C, 2.5L, thiết kế Kodo • Giảm 10% mật độ ôn tập, ×1.1 XP",
+    "category": "🚗 Showroom xe",
+    "price": 820000000,
+    "emoji": "🚙",
+    "brand": "Mazda",
+    "origin": "Châu Á",
+    "vehicle_group": "Ô tô",
+    "car_type": "SUV",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.1,
+        "name": "Kodo Design 🌿",
+        "desc": "Giảm 10% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.1,
+        "name": "Zoom Zoom 🚙",
+        "desc": "×1.1 tổng XP"
+      }
+    ]
+  },
+  {
+    "id": "car_subaru_forester",
+    "name": "Subaru Forester 2024",
+    "description": "SUV 4 bánh toàn thời gian, Boxer 2.5L • Giảm 10% mật độ ôn tập, ×1.1 XP",
+    "category": "🚗 Showroom xe",
+    "price": 950000000,
+    "emoji": "🚙",
+    "brand": "Subaru",
+    "origin": "Châu Á",
+    "vehicle_group": "Ô tô",
+    "car_type": "SUV",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.1,
+        "name": "Boxer Power 🌿",
+        "desc": "Giảm 10% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.1,
+        "name": "AWD Focus 🚙",
+        "desc": "×1.1 tổng XP"
+      }
+    ]
+  },
+  {
+    "id": "car_lexus_nx",
+    "name": "Lexus NX 350h",
+    "description": "SUV Hybrid sang trọng, 2.5L Hybrid • Giảm 15% mật độ ôn tập, ×1.15 XP, giảm 5% cooldown CK",
+    "category": "🚗 Showroom xe",
+    "price": 2500000000,
+    "emoji": "🚙",
+    "brand": "Lexus",
+    "origin": "Châu Á",
+    "vehicle_group": "Ô tô",
+    "car_type": "SUV",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.15,
+        "name": "Lexus Luxury 🌿",
+        "desc": "Giảm 15% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.15,
+        "name": "Hybrid Efficiency 🚙",
+        "desc": "×1.15 tổng XP"
+      },
+      {
+        "type": "stock_cooldown_reduction",
+        "value": 0.05,
+        "name": "Lexus Finance 📉",
+        "desc": "Giảm 5% cooldown chứng khoán"
+      }
+    ]
+  },
+  {
+    "id": "car_suzuki_swift",
+    "name": "Suzuki Swift 2024",
+    "description": "Hatchback nhỏ gọn, 1.2L, tiết kiệm xăng • Giảm 4% mật độ ôn tập, ×1.04 XP",
+    "category": "🚗 Showroom xe",
+    "price": 350000000,
+    "emoji": "🚗",
+    "brand": "Suzuki",
+    "origin": "Châu Á",
+    "vehicle_group": "Ô tô",
+    "car_type": "Hatchback",
+    "stars": 1,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.04,
+        "name": "Nhỏ Gọn 🌿",
+        "desc": "Giảm 4% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.04,
+        "name": "Tiết Kiệm 🚗",
+        "desc": "×1.04 tổng XP"
+      }
+    ]
+  },
+  {
+    "id": "car_toyota_camry",
+    "name": "Toyota Camry 2024",
+    "description": "Sedan hạng D sang trọng, 2.5L Hybrid, êm ái • Giảm 12% mật độ ôn tập, ×1.12 XP",
+    "category": "🚗 Showroom xe",
+    "price": 1100000000,
+    "emoji": "🚗",
+    "brand": "Toyota",
+    "origin": "Châu Á",
+    "vehicle_group": "Ô tô",
+    "car_type": "Sedan",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.12,
+        "name": "Camry Comfort 🌿",
+        "desc": "Giảm 12% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.12,
+        "name": "Hybrid Drive 🚗",
+        "desc": "×1.12 tổng XP"
+      }
+    ]
+  },
+  {
+    "id": "car_honda_crv",
+    "name": "Honda CR-V 2024",
+    "description": "SUV gia đình, 1.5L Turbo, 7 chỗ, an toàn 5 sao • Giảm 10% mật độ ôn tập, ×1.1 XP",
+    "category": "🚗 Showroom xe",
+    "price": 950000000,
+    "emoji": "🚙",
+    "brand": "Honda",
+    "origin": "Châu Á",
+    "vehicle_group": "Ô tô",
+    "car_type": "SUV",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.1,
+        "name": "Gia Đình 🌿",
+        "desc": "Giảm 10% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.1,
+        "name": "Family Safe 🚙",
+        "desc": "×1.1 tổng XP"
+      },
+      {
+        "type": "equipment_slot",
+        "value": 1,
+        "name": "CR-V Rộng 🚙",
+        "desc": "+1 slot trang bị"
+      }
+    ]
+  },
+  {
+    "id": "car_isuzu_dmax",
+    "name": "Isuzu D-Max 2024",
+    "description": "Bán tải mạnh mẽ, 1.9L Diesel, 4x4, tải 1 tấn • Giảm 6% mật độ ôn tập, ×1.06 XP",
+    "category": "🚗 Showroom xe",
+    "price": 650000000,
+    "emoji": "🛻",
+    "brand": "Isuzu",
+    "origin": "Châu Á",
+    "vehicle_group": "Ô tô",
+    "car_type": "Truck",
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.06,
+        "name": "Mạnh Mẽ 🌿",
+        "desc": "Giảm 6% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.06,
+        "name": "Truck Power 🛻",
+        "desc": "×1.06 tổng XP"
+      }
+    ]
+  },
+  {
+    "id": "car_mazda_cx30",
+    "name": "Mazda CX-30 2024",
+    "description": "Crossover đô thị, 2.0L SkyActiv, thiết kế Nhật • Giảm 8% mật độ ôn tập, ×1.08 XP",
+    "category": "🚗 Showroom xe",
+    "price": 720000000,
+    "emoji": "🚙",
+    "brand": "Mazda",
+    "origin": "Châu Á",
+    "vehicle_group": "Ô tô",
+    "car_type": "Crossover",
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.08,
+        "name": "SkyActiv 🌿",
+        "desc": "Giảm 8% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.08,
+        "name": "Japanese Craft 🚙",
+        "desc": "×1.08 tổng XP"
+      }
+    ]
+  },
+  {
+    "id": "car_vinfast_vf8",
+    "name": "VinFast VF 8 Eco",
+    "description": "SUV điện Việt Nam, 420km range, ADAS • Giảm 12% mật độ ôn tập, ×1.12 XP, giảm 5% thuế",
+    "category": "🚗 Showroom xe",
+    "price": 1100000000,
+    "emoji": "🚙",
+    "brand": "VinFast",
+    "origin": "Châu Á",
+    "vehicle_group": "Ô tô",
+    "car_type": "SUV",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.12,
+        "name": "XE ĐIỆN 🌿",
+        "desc": "Giảm 12% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.12,
+        "name": "Made in Vietnam 🚙",
+        "desc": "×1.12 tổng XP"
+      },
+      {
+        "type": "tax_reduction",
+        "value": 0.05,
+        "name": "VinFast Green 🌱",
+        "desc": "Giảm 5% thuế — xe điện thân thiện!"
+      }
+    ]
+  },
+  {
+    "id": "car_byd_seal",
+    "name": "BYD Seal 2024",
+    "description": "Sedan điện Trung Quốc, 570km range, 3.8s 0-100 • Giảm 10% mật độ ôn tập, ×1.1 XP, giảm 5% cooldown Crypto",
+    "category": "🚗 Showroom xe",
+    "price": 880000000,
+    "emoji": "🚗",
+    "brand": "BYD",
+    "origin": "Châu Á",
+    "vehicle_group": "Ô tô",
+    "car_type": "Sedan",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.1,
+        "name": "Electric Speed 🌿",
+        "desc": "Giảm 10% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.1,
+        "name": "BYD Tech 🚗",
+        "desc": "×1.1 tổng XP"
+      },
+      {
+        "type": "crypto_cooldown_reduction",
+        "value": 0.05,
+        "name": "Crypto Seal 🪙",
+        "desc": "Giảm 5% cooldown Crypto"
+      }
+    ]
+  },
+  {
+    "id": "car_mg_hs",
+    "name": "MG HS 2024",
+    "description": "SUV Anh-Trung, 1.5L Turbo, nội thất da cao cấp • Giảm 7% mật độ ôn tập, ×1.07 XP",
+    "category": "🚗 Showroom xe",
+    "price": 650000000,
+    "emoji": "🚙",
+    "brand": "MG",
+    "origin": "Châu Á",
+    "vehicle_group": "Ô tô",
+    "car_type": "SUV",
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.07,
+        "name": "British Style 🌿",
+        "desc": "Giảm 7% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.07,
+        "name": "MG Power 🚙",
+        "desc": "×1.07 tổng XP"
+      }
+    ]
+  },
+  {
+    "id": "car_mercedes_c300",
+    "name": "Mercedes-Benz C300 AMG",
+    "description": "Sedan hạng sang, 2.0L Turbo, 255 mã lực • Giảm 15% mật độ ôn tập, ×1.2 XP, +5% lãi suất",
+    "category": "🚗 Showroom xe",
+    "price": 1800000000,
+    "emoji": "🏎️",
+    "brand": "Mercedes-Benz",
+    "origin": "Châu Âu",
+    "vehicle_group": "Ô tô",
+    "car_type": "Sedan",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.15,
+        "name": "Mercedes Speed 🌿",
+        "desc": "Giảm 15% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.2,
+        "name": "AMG Power 🏎️",
+        "desc": "×1.2 tổng XP"
+      },
+      {
+        "type": "interest_bonus",
+        "value": 0.05,
+        "name": "Mercedes Finance 🏦",
+        "desc": "+5% lãi suất ngân hàng"
+      }
+    ]
+  },
+  {
+    "id": "car_bmw_330i",
+    "name": "BMW 330i M Sport",
+    "description": "Sedan thể thao Đức, 2.0L, 258 mã lực • Giảm 15% mật độ ôn tập, ×1.2 XP, +5% lãi suất",
+    "category": "🚗 Showroom xe",
+    "price": 1900000000,
+    "emoji": "🏎️",
+    "brand": "BMW",
+    "origin": "Châu Âu",
+    "vehicle_group": "Ô tô",
+    "car_type": "Sedan",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.15,
+        "name": "BMW Efficiency 🌿",
+        "desc": "Giảm 15% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.2,
+        "name": "M Sport Boost 🏎️",
+        "desc": "×1.2 tổng XP"
+      },
+      {
+        "type": "interest_bonus",
+        "value": 0.05,
+        "name": "BMW Wealth 🏦",
+        "desc": "+5% lãi suất ngân hàng"
+      }
+    ]
+  },
+  {
+    "id": "car_audi_q5",
+    "name": "Audi Q5 50 TFSI",
+    "description": "SUV hạng sang, 2.0L, 265 mã lực, Quattro • Giảm 18% mật độ ôn tập, ×1.2 XP, giảm 10% cooldown CK",
+    "category": "🚗 Showroom xe",
+    "price": 2200000000,
+    "emoji": "🚙",
+    "brand": "Audi",
+    "origin": "Châu Âu",
+    "vehicle_group": "Ô tô",
+    "car_type": "SUV",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.18,
+        "name": "Quattro Grip 🌿",
+        "desc": "Giảm 18% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.2,
+        "name": "TFSI Boost 🚙",
+        "desc": "×1.2 tổng XP"
+      },
+      {
+        "type": "stock_cooldown_reduction",
+        "value": 0.1,
+        "name": "Audi Finance 📉",
+        "desc": "Giảm 10% cooldown chứng khoán"
+      }
+    ]
+  },
+  {
+    "id": "car_vw_tiguan",
+    "name": "Volkswagen Tiguan 2024",
+    "description": "SUV hạng C Đức, 2.0L, 7 chỗ • Giảm 12% mật độ ôn tập, ×1.12 XP",
+    "category": "🚗 Showroom xe",
+    "price": 1200000000,
+    "emoji": "🚙",
+    "brand": "Volkswagen",
+    "origin": "Châu Âu",
+    "vehicle_group": "Ô tô",
+    "car_type": "SUV",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.12,
+        "name": "German Engineering 🌿",
+        "desc": "Giảm 12% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.12,
+        "name": "VW Reliability 🚙",
+        "desc": "×1.12 tổng XP"
+      }
+    ]
+  },
+  {
+    "id": "car_porsche_cayenne",
+    "name": "Porsche Cayenne S",
+    "description": "SUV siêu sang, V6 2.9L, 440 mã lực • Giảm 25% mật độ ôn tập, ×1.5 XP, giảm 15% cooldown CK",
+    "category": "🚗 Showroom xe",
+    "price": 6500000000,
+    "emoji": "🏎️",
+    "brand": "Porsche",
+    "origin": "Châu Âu",
+    "vehicle_group": "Ô tô",
+    "car_type": "SUV",
+    "stars": 5,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.25,
+        "name": "Porsche Turbo 🌿",
+        "desc": "Giảm 25% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.5,
+        "name": "Cayenne Power 🏎️",
+        "desc": "×1.5 tổng XP"
+      },
+      {
+        "type": "stock_cooldown_reduction",
+        "value": 0.15,
+        "name": "Porsche Wealth 📉",
+        "desc": "Giảm 15% cooldown chứng khoán"
+      },
+      {
+        "type": "interest_bonus",
+        "value": 0.1,
+        "name": "Porsche Banking 🏦",
+        "desc": "+10% lãi suất ngân hàng"
+      }
+    ]
+  },
+  {
+    "id": "car_ferrari_sf90",
+    "name": "Ferrari SF90 Stradale",
+    "description": "Siêu xe hybrid, 986 mã lực, 340km/h • Giảm 35% mật độ ôn tập, ×2 XP, giảm 20% cooldown CK/Crypto",
+    "category": "🚗 Showroom xe",
+    "price": 40000000000,
+    "emoji": "🏎️",
+    "brand": "Ferrari",
+    "origin": "Châu Âu",
+    "vehicle_group": "Ô tô",
+    "car_type": "Supercar",
+    "stars": 5,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.35,
+        "name": "Ferrari Speed 🌿",
+        "desc": "Giảm 35% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 2.0,
+        "name": "SF90 Stradale 🏎️",
+        "desc": "×2 tổng XP"
+      },
+      {
+        "type": "stock_cooldown_reduction",
+        "value": 0.2,
+        "name": "Ferrari Finance 📉",
+        "desc": "Giảm 20% cooldown chứng khoán"
+      },
+      {
+        "type": "crypto_cooldown_reduction",
+        "value": 0.2,
+        "name": "Ferrari Crypto 🪙",
+        "desc": "Giảm 20% cooldown Crypto"
+      }
+    ]
+  },
+  {
+    "id": "car_lamborghini_urus",
+    "name": "Lamborghini Urus",
+    "description": "SUV siêu sang, V8 4.0L, 650 mã lực • Giảm 30% mật độ ôn tập, ×1.8 XP, giảm 15% cooldown CK",
+    "category": "🚗 Showroom xe",
+    "price": 19000000000,
+    "emoji": "🏎️",
+    "brand": "Lamborghini",
+    "origin": "Châu Âu",
+    "vehicle_group": "Ô tô",
+    "car_type": "SUV",
+    "stars": 5,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.3,
+        "name": "Lambo Power 🌿",
+        "desc": "Giảm 30% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.8,
+        "name": "Urus Beast 🏎️",
+        "desc": "×1.8 tổng XP"
+      },
+      {
+        "type": "stock_cooldown_reduction",
+        "value": 0.15,
+        "name": "Lamborghini Wealth 📉",
+        "desc": "Giảm 15% cooldown chứng khoán"
+      },
+      {
+        "type": "passive_income_bonus",
+        "value": 0.2,
+        "name": "Urus Empire 🏠",
+        "desc": "+20% thu nhập thụ động"
+      }
+    ]
+  },
+  {
+    "id": "car_rollsroyce_ghost",
+    "name": "Rolls-Royce Ghost",
+    "description": "Sedan siêu sang Anh Quốc, V12 6.75L • Giảm 40% mật độ ôn tập, ×2.5 XP, giảm 25% cooldown CK, +15% lãi suất",
+    "category": "🚗 Showroom xe",
+    "price": 65000000000,
+    "emoji": "🏎️",
+    "brand": "Rolls-Royce",
+    "origin": "Châu Âu",
+    "vehicle_group": "Ô tô",
+    "car_type": "Sedan",
+    "stars": 5,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.4,
+        "name": "Rolls-Royce Silent 🌿",
+        "desc": "Giảm 40% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 2.5,
+        "name": "Ghost Prestige 🏎️",
+        "desc": "×2.5 tổng XP"
+      },
+      {
+        "type": "stock_cooldown_reduction",
+        "value": 0.25,
+        "name": "Rolls-Royce Finance 📉",
+        "desc": "Giảm 25% cooldown chứng khoán"
+      },
+      {
+        "type": "interest_bonus",
+        "value": 0.15,
+        "name": "Rolls-Royce Banking 🏦",
+        "desc": "+15% lãi suất ngân hàng"
+      },
+      {
+        "type": "passive_income_bonus",
+        "value": 0.3,
+        "name": "Ghost Empire 🏠",
+        "desc": "+30% thu nhập thụ động"
+      }
+    ]
+  },
+  {
+    "id": "car_bentley_flying",
+    "name": "Bentley Flying Spur",
+    "description": "Grand tourer hạng sang, W12, 626 mã lực • Giảm 35% mật độ ôn tập, ×2 XP, giảm 20% cooldown CK, +10% lãi suất",
+    "category": "🚗 Showroom xe",
+    "price": 28000000000,
+    "emoji": "🏎️",
+    "brand": "Bentley",
+    "origin": "Châu Âu",
+    "vehicle_group": "Ô tô",
+    "car_type": "Sedan",
+    "stars": 5,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.35,
+        "name": "Bentley Luxury 🌿",
+        "desc": "Giảm 35% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 2.0,
+        "name": "Flying Spur 🏎️",
+        "desc": "×2 tổng XP"
+      },
+      {
+        "type": "stock_cooldown_reduction",
+        "value": 0.2,
+        "name": "Bentley Wealth 📉",
+        "desc": "Giảm 20% cooldown chứng khoán"
+      },
+      {
+        "type": "interest_bonus",
+        "value": 0.1,
+        "name": "Bentley Banking 🏦",
+        "desc": "+10% lãi suất ngân hàng"
+      }
+    ]
+  },
+  {
+    "id": "car_jaguar_fpace",
+    "name": "Jaguar F-PACE SVR",
+    "description": "SUV hiệu suất cao Anh Quốc, V8 siêu nạp • Giảm 20% mật độ ôn tập, ×1.3 XP, giảm 10% cooldown CK",
+    "category": "🚗 Showroom xe",
+    "price": 3800000000,
+    "emoji": "🚙",
+    "brand": "Jaguar",
+    "origin": "Châu Âu",
+    "vehicle_group": "Ô tô",
+    "car_type": "SUV",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.2,
+        "name": "Jaguar Sprint 🌿",
+        "desc": "Giảm 20% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.3,
+        "name": "SVR Power 🚙",
+        "desc": "×1.3 tổng XP"
+      },
+      {
+        "type": "stock_cooldown_reduction",
+        "value": 0.1,
+        "name": "Jaguar Finance 📉",
+        "desc": "Giảm 10% cooldown chứng khoán"
+      }
+    ]
+  },
+  {
+    "id": "car_volvo_xc90",
+    "name": "Volvo XC90 Recharge",
+    "description": "SUV Thụy Điển, Plug-in Hybrid, 455 mã lực, an toàn số 1 • Giảm 18% mật độ ôn tập, ×1.2 XP, +5% kháng bệnh",
+    "category": "🚗 Showroom xe",
+    "price": 3200000000,
+    "emoji": "🚙",
+    "brand": "Volvo",
+    "origin": "Châu Âu",
+    "vehicle_group": "Ô tô",
+    "car_type": "SUV",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.18,
+        "name": "Volvo Safety 🌿",
+        "desc": "Giảm 18% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.2,
+        "name": "Recharge Boost 🚙",
+        "desc": "×1.2 tổng XP"
+      },
+      {
+        "type": "disease_resistance",
+        "value": 0.05,
+        "name": "Volvo Health 💪",
+        "desc": "+5% kháng bệnh"
+      }
+    ]
+  },
+  {
+    "id": "car_range_rover_sport",
+    "name": "Range Rover Sport",
+    "description": "SUV hạng sang Anh, 3.0L Ingenium, 400 mã lực • Giảm 22% mật độ ôn tập, ×1.35 XP, giảm 12% cooldown CK",
+    "category": "🚗 Showroom xe",
+    "price": 5500000000,
+    "emoji": "🚙",
+    "brand": "Land Rover",
+    "origin": "Châu Âu",
+    "vehicle_group": "Ô tô",
+    "car_type": "SUV",
+    "stars": 5,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.22,
+        "name": "Range Rover Luxury 🌿",
+        "desc": "Giảm 22% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.35,
+        "name": "Sport Mode 🚙",
+        "desc": "×1.35 tổng XP"
+      },
+      {
+        "type": "stock_cooldown_reduction",
+        "value": 0.12,
+        "name": "Range Rover Finance 📉",
+        "desc": "Giảm 12% cooldown chứng khoán"
+      }
+    ]
+  },
+  {
+    "id": "car_mini_cooper",
+    "name": "MINI Cooper S",
+    "description": "Hatchback Anh Quốc, 2.0L Turbo, 189 mã lực — cá tính • Giảm 12% mật độ ôn tập, ×1.15 XP",
+    "category": "🚗 Showroom xe",
+    "price": 1500000000,
+    "emoji": "🚗",
+    "brand": "MINI",
+    "origin": "Châu Âu",
+    "vehicle_group": "Ô tô",
+    "car_type": "Hatchback",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.12,
+        "name": "MINI Go-Kart 🌿",
+        "desc": "Giảm 12% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.15,
+        "name": "Cooper Spirit 🚗",
+        "desc": "×1.15 tổng XP"
+      }
+    ]
+  },
+  {
+    "id": "car_porsche_taycan",
+    "name": "Porsche Taycan Turbo",
+    "description": "Sedan điện Đức, 761 mã lực, 2.6s 0-100, 450km range • Giảm 28% mật độ ôn tập, ×1.6 XP, giảm 15% cooldown CK/Crypto",
+    "category": "🚗 Showroom xe",
+    "price": 8000000000,
+    "emoji": "🏎️",
+    "brand": "Porsche",
+    "origin": "Châu Âu",
+    "vehicle_group": "Ô tô",
+    "car_type": "Sedan",
+    "stars": 5,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.28,
+        "name": "Taycan Electric 🌿",
+        "desc": "Giảm 28% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.6,
+        "name": "Turbo S 🏎️",
+        "desc": "×1.6 tổng XP"
+      },
+      {
+        "type": "stock_cooldown_reduction",
+        "value": 0.15,
+        "name": "Taycan Finance 📉",
+        "desc": "Giảm 15% cooldown chứng khoán"
+      },
+      {
+        "type": "crypto_cooldown_reduction",
+        "value": 0.15,
+        "name": "Taycan Crypto 🪙",
+        "desc": "Giảm 15% cooldown Crypto"
+      }
+    ]
+  },
+  {
+    "id": "car_mercedes_glc",
+    "name": "Mercedes-Benz GLC 300",
+    "description": "SUV hạng sang Đức, 2.0L Turbo, 255 mã lực • Giảm 18% mật độ ôn tập, ×1.25 XP, +5% lãi suất",
+    "category": "🚗 Showroom xe",
+    "price": 2800000000,
+    "emoji": "🚙",
+    "brand": "Mercedes-Benz",
+    "origin": "Châu Âu",
+    "vehicle_group": "Ô tô",
+    "car_type": "SUV",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.18,
+        "name": "GLC Comfort 🌿",
+        "desc": "Giảm 18% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.25,
+        "name": "Mercedes Power 🚙",
+        "desc": "×1.25 tổng XP"
+      },
+      {
+        "type": "interest_bonus",
+        "value": 0.05,
+        "name": "GLC Banking 🏦",
+        "desc": "+5% lãi suất ngân hàng"
+      }
+    ]
+  },
+  {
+    "id": "car_bmw_x5",
+    "name": "BMW X5 xDrive40i",
+    "description": "SUV Đức thể thao, 3.0L Turbo, 335 mã lực • Giảm 20% mật độ ôn tập, ×1.3 XP, +8% lãi suất",
+    "category": "🚗 Showroom xe",
+    "price": 3500000000,
+    "emoji": "🚙",
+    "brand": "BMW",
+    "origin": "Châu Âu",
+    "vehicle_group": "Ô tô",
+    "car_type": "SUV",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.2,
+        "name": "X5 Power 🌿",
+        "desc": "Giảm 20% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.3,
+        "name": "xDrive Boost 🚙",
+        "desc": "×1.3 tổng XP"
+      },
+      {
+        "type": "interest_bonus",
+        "value": 0.08,
+        "name": "X5 Banking 🏦",
+        "desc": "+8% lãi suất ngân hàng"
+      }
+    ]
+  },
+  {
+    "id": "car_audi_etron_gt",
+    "name": "Audi e-tron GT",
+    "description": "Gran turismo điện Đức, 590 mã lực, Quattro • Giảm 25% mật độ ôn tập, ×1.5 XP, giảm 15% cooldown CK/Crypto",
+    "category": "🚗 Showroom xe",
+    "price": 6000000000,
+    "emoji": "🏎️",
+    "brand": "Audi",
+    "origin": "Châu Âu",
+    "vehicle_group": "Ô tô",
+    "car_type": "Sedan",
+    "stars": 5,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.25,
+        "name": "e-tron Speed 🌿",
+        "desc": "Giảm 25% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.5,
+        "name": "GT Performance 🏎️",
+        "desc": "×1.5 tổng XP"
+      },
+      {
+        "type": "stock_cooldown_reduction",
+        "value": 0.15,
+        "name": "e-tron Finance 📉",
+        "desc": "Giảm 15% cooldown chứng khoán"
+      },
+      {
+        "type": "crypto_cooldown_reduction",
+        "value": 0.15,
+        "name": "e-tron Crypto 🪙",
+        "desc": "Giảm 15% cooldown Crypto"
+      }
+    ]
+  },
+  {
+    "id": "car_vw_id4",
+    "name": "Volkswagen ID.4 Pro",
+    "description": "SUV điện Đức, 310km range, 204 mã lực • Giảm 12% mật độ ôn tập, ×1.12 XP, giảm 5% thuế",
+    "category": "🚗 Showroom xe",
+    "price": 1800000000,
+    "emoji": "🚙",
+    "brand": "Volkswagen",
+    "origin": "Châu Âu",
+    "vehicle_group": "Ô tô",
+    "car_type": "SUV",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.12,
+        "name": "ID.4 Electric 🌿",
+        "desc": "Giảm 12% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.12,
+        "name": "EV Green 🚙",
+        "desc": "×1.12 tổng XP"
+      },
+      {
+        "type": "tax_reduction",
+        "value": 0.05,
+        "name": "ID.4 Tax 🌱",
+        "desc": "Giảm 5% thuế"
+      }
+    ]
+  },
+  {
+    "id": "car_peugeot_5008",
+    "name": "Peugeot 5008 GT",
+    "description": "SUV Pháp 7 chỗ, 1.6L Turbo, thiết kế i-Cockpit • Giảm 12% mật độ ôn tập, ×1.12 XP",
+    "category": "🚗 Showroom xe",
+    "price": 1200000000,
+    "emoji": "🚙",
+    "brand": "Peugeot",
+    "origin": "Châu Âu",
+    "vehicle_group": "Ô tô",
+    "car_type": "SUV",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.12,
+        "name": "French Design 🌿",
+        "desc": "Giảm 12% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.12,
+        "name": "i-Cockpit 🚙",
+        "desc": "×1.12 tổng XP"
+      }
+    ]
+  },
+  {
+    "id": "car_renault_arkana",
+    "name": "Renault Arkana R.S.",
+    "description": "Coupe SUV Pháp, 1.3L Turbo, 140 mã lực, thể thao • Giảm 10% mật độ ôn tập, ×1.1 XP",
+    "category": "🚗 Showroom xe",
+    "price": 900000000,
+    "emoji": "🚙",
+    "brand": "Renault",
+    "origin": "Châu Âu",
+    "vehicle_group": "Ô tô",
+    "car_type": "SUV",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.1,
+        "name": "Arkana Style 🌿",
+        "desc": "Giảm 10% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.1,
+        "name": "R.S. Line 🚙",
+        "desc": "×1.1 tổng XP"
+      }
+    ]
+  },
+  {
+    "id": "car_alfa_giulia",
+    "name": "Alfa Romeo Giulia Veloce",
+    "description": "Sedan thể thao Ý, 2.0L Turbo, 280 mã lực • Giảm 18% mật độ ôn tập, ×1.25 XP, giảm 8% cooldown CK",
+    "category": "🚗 Showroom xe",
+    "price": 2200000000,
+    "emoji": "🏎️",
+    "brand": "Alfa Romeo",
+    "origin": "Châu Âu",
+    "vehicle_group": "Ô tô",
+    "car_type": "Sedan",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.18,
+        "name": "Italian Passion 🌿",
+        "desc": "Giảm 18% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.25,
+        "name": "Veloce Boost 🏎️",
+        "desc": "×1.25 tổng XP"
+      },
+      {
+        "type": "stock_cooldown_reduction",
+        "value": 0.08,
+        "name": "Alfa Finance 📉",
+        "desc": "Giảm 8% cooldown chứng khoán"
+      }
+    ]
+  },
+  {
+    "id": "car_maserati_grecale",
+    "name": "Maserati Grecale Trofeo",
+    "description": "SUV Ý siêu sang, V6 3.0L, 530 mã lực • Giảm 25% mật độ ôn tập, ×1.5 XP, giảm 12% cooldown CK",
+    "category": "🚗 Showroom xe",
+    "price": 7000000000,
+    "emoji": "🚙",
+    "brand": "Maserati",
+    "origin": "Châu Âu",
+    "vehicle_group": "Ô tô",
+    "car_type": "SUV",
+    "stars": 5,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.25,
+        "name": "Italian Luxury 🌿",
+        "desc": "Giảm 25% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.5,
+        "name": "Trofeo Power 🚙",
+        "desc": "×1.5 tổng XP"
+      },
+      {
+        "type": "stock_cooldown_reduction",
+        "value": 0.12,
+        "name": "Maserati Finance 📉",
+        "desc": "Giảm 12% cooldown chứng khoán"
+      }
+    ]
+  },
+  {
+    "id": "car_tesla_model3",
+    "name": "Tesla Model 3 Performance",
+    "description": "Sedan điện Mỹ, 570km, 3.1s 0-100 • Giảm 18% mật độ ôn tập, ×1.3 XP, giảm 10% cooldown CK/Crypto",
+    "category": "🚗 Showroom xe",
+    "price": 1500000000,
+    "emoji": "⚡",
+    "brand": "Tesla",
+    "origin": "Châu Mỹ",
+    "vehicle_group": "Ô tô",
+    "car_type": "Sedan",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.18,
+        "name": "Tesla Tech 🌿",
+        "desc": "Giảm 18% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.3,
+        "name": "Performance ⚡",
+        "desc": "×1.3 tổng XP"
+      },
+      {
+        "type": "stock_cooldown_reduction",
+        "value": 0.1,
+        "name": "Tesla Finance 📉",
+        "desc": "Giảm 10% cooldown chứng khoán"
+      },
+      {
+        "type": "crypto_cooldown_reduction",
+        "value": 0.1,
+        "name": "Tesla Crypto 🪙",
+        "desc": "Giảm 10% cooldown Crypto"
+      }
+    ]
+  },
+  {
+    "id": "car_ford_mustang",
+    "name": "Ford Mustang GT",
+    "description": "Muscle car Mỹ, V8 5.0L, 450 mã lực • Giảm 18% mật độ ôn tập, ×1.25 XP, giảm 8% cooldown CK",
+    "category": "🚗 Showroom xe",
+    "price": 2500000000,
+    "emoji": "🏎️",
+    "brand": "Ford",
+    "origin": "Châu Mỹ",
+    "vehicle_group": "Ô tô",
+    "car_type": "Coupe",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.18,
+        "name": "Mustang Power 🌿",
+        "desc": "Giảm 18% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.25,
+        "name": "GT Muscle 🏎️",
+        "desc": "×1.25 tổng XP"
+      },
+      {
+        "type": "stock_cooldown_reduction",
+        "value": 0.08,
+        "name": "Mustang Finance 📉",
+        "desc": "Giảm 8% cooldown chứng khoán"
+      }
+    ]
+  },
+  {
+    "id": "car_chevrolet_camaro",
+    "name": "Chevrolet Camaro SS",
+    "description": "Muscle car Mỹ, V8 6.2L, 455 mã lực • Giảm 18% mật độ ôn tập, ×1.25 XP, giảm 8% cooldown CK",
+    "category": "🚗 Showroom xe",
+    "price": 2300000000,
+    "emoji": "🏎️",
+    "brand": "Chevrolet",
+    "origin": "Châu Mỹ",
+    "vehicle_group": "Ô tô",
+    "car_type": "Coupe",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.18,
+        "name": "Camaro Speed 🌿",
+        "desc": "Giảm 18% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.25,
+        "name": "SS Muscle 🏎️",
+        "desc": "×1.25 tổng XP"
+      },
+      {
+        "type": "stock_cooldown_reduction",
+        "value": 0.08,
+        "name": "Camaro Finance 📉",
+        "desc": "Giảm 8% cooldown chứng khoán"
+      }
+    ]
+  },
+  {
+    "id": "car_cadillac_escalade",
+    "name": "Cadillac Escalade V",
+    "description": "SUV full-size sang trọng, V8 6.2L • Giảm 22% mật độ ôn tập, ×1.35 XP, giảm 10% cooldown CK",
+    "category": "🚗 Showroom xe",
+    "price": 5500000000,
+    "emoji": "🚙",
+    "brand": "Cadillac",
+    "origin": "Châu Mỹ",
+    "vehicle_group": "Ô tô",
+    "car_type": "SUV",
+    "stars": 5,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.22,
+        "name": "Escalade Luxury 🌿",
+        "desc": "Giảm 22% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.35,
+        "name": "V8 Power 🚙",
+        "desc": "×1.35 tổng XP"
+      },
+      {
+        "type": "stock_cooldown_reduction",
+        "value": 0.1,
+        "name": "Cadillac Finance 📉",
+        "desc": "Giảm 10% cooldown chứng khoán"
+      }
+    ]
+  },
+  {
+    "id": "car_jeep_wrangler",
+    "name": "Jeep Wrangler Rubicon",
+    "description": "SUV off-road huyền thoại, 4x4, 3.6L • Giảm 15% mật độ ôn tập, ×1.2 XP, +5% kháng bệnh",
+    "category": "🚗 Showroom xe",
+    "price": 2800000000,
+    "emoji": "🚙",
+    "brand": "Jeep",
+    "origin": "Châu Mỹ",
+    "vehicle_group": "Ô tô",
+    "car_type": "SUV",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.15,
+        "name": "Jeep Adventure 🌿",
+        "desc": "Giảm 15% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.2,
+        "name": "Rubicon 🚙",
+        "desc": "×1.2 tổng XP"
+      },
+      {
+        "type": "disease_resistance",
+        "value": 0.05,
+        "name": "Jeep Health 💪",
+        "desc": "+5% kháng bệnh — hít khí trời!"
+      }
+    ]
+  },
+  {
+    "id": "car_ford_f150",
+    "name": "Ford F-150 Raptor",
+    "description": "Bán tải Mỹ huyền thoại, V6 3.5L Ecoboost, 450 mã lực • Giảm 18% mật độ ôn tập, ×1.25 XP, +1 slot trang bị",
+    "category": "🚗 Showroom xe",
+    "price": 3800000000,
+    "emoji": "🛻",
+    "brand": "Ford",
+    "origin": "Châu Mỹ",
+    "vehicle_group": "Ô tô",
+    "car_type": "Truck",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.18,
+        "name": "Raptor Power 🌿",
+        "desc": "Giảm 18% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.25,
+        "name": "F-150 Beast 🛻",
+        "desc": "×1.25 tổng XP"
+      },
+      {
+        "type": "equipment_slot",
+        "value": 2,
+        "name": "Raptor Truck 🛻",
+        "desc": "+2 slot trang bị — chở đồ thoải mái!"
+      }
+    ]
+  },
+  {
+    "id": "car_chevrolet_silverado",
+    "name": "Chevrolet Silverado 1500",
+    "description": "Bán tải Mỹ full-size, V8 6.2L, 420 mã lực • Giảm 18% mật độ ôn tập, ×1.2 XP, +1 slot trang bị",
+    "category": "🚗 Showroom xe",
+    "price": 3500000000,
+    "emoji": "🛻",
+    "brand": "Chevrolet",
+    "origin": "Châu Mỹ",
+    "vehicle_group": "Ô tô",
+    "car_type": "Truck",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.18,
+        "name": "Silverado Tough 🌿",
+        "desc": "Giảm 18% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.2,
+        "name": "V8 Power 🛻",
+        "desc": "×1.2 tổng XP"
+      },
+      {
+        "type": "equipment_slot",
+        "value": 1,
+        "name": "Silverado Cargo 🛻",
+        "desc": "+1 slot trang bị"
+      }
+    ]
+  },
+  {
+    "id": "car_ram_1500",
+    "name": "Ram 1500 Rebel",
+    "description": "Bán tải Mỹ cao cấp, V6 3.6L, nội thất da sang • Giảm 18% mật độ ôn tập, ×1.2 XP, +1 slot trang bị",
+    "category": "🚗 Showroom xe",
+    "price": 3200000000,
+    "emoji": "🛻",
+    "brand": "Ram",
+    "origin": "Châu Mỹ",
+    "vehicle_group": "Ô tô",
+    "car_type": "Truck",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.18,
+        "name": "Ram Rebel 🌿",
+        "desc": "Giảm 18% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.2,
+        "name": "Rebel Spirit 🛻",
+        "desc": "×1.2 tổng XP"
+      },
+      {
+        "type": "equipment_slot",
+        "value": 1,
+        "name": "Ram Haul 🛻",
+        "desc": "+1 slot trang bị"
+      }
+    ]
+  },
+  {
+    "id": "car_dodge_charger",
+    "name": "Dodge Charger SRT Hellcat",
+    "description": "Sedan cơ bắp Mỹ, V8 6.2L siêu nạp, 707 mã lực • Giảm 20% mật độ ôn tập, ×1.3 XP, giảm 10% cooldown CK",
+    "category": "🚗 Showroom xe",
+    "price": 4000000000,
+    "emoji": "🏎️",
+    "brand": "Dodge",
+    "origin": "Châu Mỹ",
+    "vehicle_group": "Ô tô",
+    "car_type": "Sedan",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.2,
+        "name": "Hellcat Speed 🌿",
+        "desc": "Giảm 20% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.3,
+        "name": "SRT Beast 🏎️",
+        "desc": "×1.3 tổng XP"
+      },
+      {
+        "type": "stock_cooldown_reduction",
+        "value": 0.1,
+        "name": "Hellcat Finance 📉",
+        "desc": "Giảm 10% cooldown chứng khoán"
+      }
+    ]
+  },
+  {
+    "id": "car_gmc_yukon",
+    "name": "GMC Yukon Denali",
+    "description": "SUV Mỹ full-size, V8 6.2L, 420 mã lực, 9 chỗ • Giảm 20% mật độ ôn tập, ×1.3 XP, +1 slot trang bị",
+    "category": "🚗 Showroom xe",
+    "price": 5000000000,
+    "emoji": "🚙",
+    "brand": "GMC",
+    "origin": "Châu Mỹ",
+    "vehicle_group": "Ô tô",
+    "car_type": "SUV",
+    "stars": 5,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.2,
+        "name": "Yukon Comfort 🌿",
+        "desc": "Giảm 20% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.3,
+        "name": "Denali Luxury 🚙",
+        "desc": "×1.3 tổng XP"
+      },
+      {
+        "type": "equipment_slot",
+        "value": 2,
+        "name": "Yukon Large 🚙",
+        "desc": "+2 slot trang bị"
+      }
+    ]
+  },
+  {
+    "id": "car_lincoln_navigator",
+    "name": "Lincoln Navigator L",
+    "description": "SUV Mỹ siêu sang, V6 3.5L, 440 mã lực, 7 chỗ • Giảm 22% mật độ ôn tập, ×1.35 XP, +10% lãi suất",
+    "category": "🚗 Showroom xe",
+    "price": 6000000000,
+    "emoji": "🚙",
+    "brand": "Lincoln",
+    "origin": "Châu Mỹ",
+    "vehicle_group": "Ô tô",
+    "car_type": "SUV",
+    "stars": 5,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.22,
+        "name": "Navigator Luxury 🌿",
+        "desc": "Giảm 22% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.35,
+        "name": "Navigator Power 🚙",
+        "desc": "×1.35 tổng XP"
+      },
+      {
+        "type": "interest_bonus",
+        "value": 0.1,
+        "name": "Lincoln Banking 🏦",
+        "desc": "+10% lãi suất ngân hàng"
+      }
+    ]
+  },
+  {
+    "id": "car_hummer_ev",
+    "name": "GMC Hummer EV",
+    "description": "Pickup điện Mỹ, 1.000 mã lực, 3.5s 0-100, 563km range • Giảm 25% mật độ ôn tập, ×1.5 XP, giảm 15% thuế",
+    "category": "🚗 Showroom xe",
+    "price": 8000000000,
+    "emoji": "🛻",
+    "brand": "Hummer",
+    "origin": "Châu Mỹ",
+    "vehicle_group": "Ô tô",
+    "car_type": "Truck",
+    "stars": 5,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.25,
+        "name": "Hummer EV 🌿",
+        "desc": "Giảm 25% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.5,
+        "name": "EV Beast 🛻",
+        "desc": "×1.5 tổng XP"
+      },
+      {
+        "type": "tax_reduction",
+        "value": 0.15,
+        "name": "Hummer Green 🌱",
+        "desc": "Giảm 15% thuế — xe điện!"
+      }
+    ]
+  },
+  {
+    "id": "car_ford_bronco",
+    "name": "Ford Bronco Wildtrak",
+    "description": "SUV off-road Mỹ, 2.7L V6, 330 mã lực, 4x4 • Giảm 18% mật độ ôn tập, ×1.25 XP, +5% kháng bệnh",
+    "category": "🚗 Showroom xe",
+    "price": 3800000000,
+    "emoji": "🚙",
+    "brand": "Ford",
+    "origin": "Châu Mỹ",
+    "vehicle_group": "Ô tô",
+    "car_type": "SUV",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.18,
+        "name": "Bronco Adventure 🌿",
+        "desc": "Giảm 18% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.25,
+        "name": "Wildtrak 🚙",
+        "desc": "×1.25 tổng XP"
+      },
+      {
+        "type": "disease_resistance",
+        "value": 0.05,
+        "name": "Bronco Health 💪",
+        "desc": "+5% kháng bệnh"
+      }
+    ]
+  },
+  {
+    "id": "bike_honda_wave",
+    "name": "Honda Wave Alpha 2024",
+    "description": "Xe máy phổ thông, 110cc, 60km/l — đi học tiết kiệm • Giảm 3% mật độ ôn tập, ×1.03 XP",
+    "category": "🚗 Showroom xe",
+    "price": 20000000,
+    "emoji": "🏍️",
+    "brand": "Honda",
+    "origin": "Châu Á",
+    "vehicle_group": "Xe máy",
+    "bike_type": "Xe số",
+    "stars": 1,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.03,
+        "name": "Wave Tiết Kiệm 🌿",
+        "desc": "Giảm 3% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.03,
+        "name": "Wave Alpha 🏍️",
+        "desc": "×1.03 tổng XP"
+      }
+    ]
+  },
+  {
+    "id": "bike_honda_sh",
+    "name": "Honda SH 150i 2024",
+    "description": "Tay ga cao cấp, 150cc, ABS, smart key — xe nhà giàu • Giảm 8% mật độ ôn tập, ×1.08 XP",
+    "category": "🚗 Showroom xe",
+    "price": 80000000,
+    "emoji": "🏍️",
+    "brand": "Honda",
+    "origin": "Châu Á",
+    "vehicle_group": "Xe máy",
+    "bike_type": "Tay ga",
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.08,
+        "name": "SH Cao Cấp 🌿",
+        "desc": "Giảm 8% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.08,
+        "name": "SH Elite 🏍️",
+        "desc": "×1.08 tổng XP"
+      }
+    ]
+  },
+  {
+    "id": "bike_yamaha_exciter",
+    "name": "Yamaha Exciter 155",
+    "description": "Xe côn tay thể thao, 155cc VVA, phuộc sau đơn • Giảm 6% mật độ ôn tập, ×1.06 XP",
+    "category": "🚗 Showroom xe",
+    "price": 45000000,
+    "emoji": "🏍️",
+    "brand": "Yamaha",
+    "origin": "Châu Á",
+    "vehicle_group": "Xe máy",
+    "bike_type": "Côn tay",
+    "stars": 1,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.06,
+        "name": "Exciter Sport 🌿",
+        "desc": "Giảm 6% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.06,
+        "name": "Exciter Power 🏍️",
+        "desc": "×1.06 tổng XP"
+      }
+    ]
+  },
+  {
+    "id": "bike_yamaha_grande",
+    "name": "Yamaha Grande 125",
+    "description": "Tay ga Ý-Nhật, phong cách vintage, 125cc • Giảm 5% mật độ ôn tập, ×1.05 XP",
+    "category": "🚗 Showroom xe",
+    "price": 35000000,
+    "emoji": "🏍️",
+    "brand": "Yamaha",
+    "origin": "Châu Á",
+    "vehicle_group": "Xe máy",
+    "bike_type": "Tay ga",
+    "stars": 1,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.05,
+        "name": "Grande Style 🌿",
+        "desc": "Giảm 5% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.05,
+        "name": "Grande 🏍️",
+        "desc": "×1.05 tổng XP"
+      }
+    ]
+  },
+  {
+    "id": "bike_honda_airblade",
+    "name": "Honda Air Blade 160",
+    "description": "Tay ga thể thao, 160cc, đèn LED, cốp rộng • Giảm 5% mật độ ôn tập, ×1.05 XP",
+    "category": "🚗 Showroom xe",
+    "price": 40000000,
+    "emoji": "🏍️",
+    "brand": "Honda",
+    "origin": "Châu Á",
+    "vehicle_group": "Xe máy",
+    "bike_type": "Tay ga",
+    "stars": 1,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.05,
+        "name": "Air Blade 🌿",
+        "desc": "Giảm 5% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.05,
+        "name": "Air Blade 🏍️",
+        "desc": "×1.05 tổng XP"
+      }
+    ]
+  },
+  {
+    "id": "bike_yamaha_nvx",
+    "name": "Yamaha NVX 155",
+    "description": "Tay ga thể thao, 155cc, ABS, mâm đúc • Giảm 6% mật độ ôn tập, ×1.06 XP",
+    "category": "🚗 Showroom xe",
+    "price": 55000000,
+    "emoji": "🏍️",
+    "brand": "Yamaha",
+    "origin": "Châu Á",
+    "vehicle_group": "Xe máy",
+    "bike_type": "Tay ga",
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.06,
+        "name": "NVX Sport 🌿",
+        "desc": "Giảm 6% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.06,
+        "name": "NVX 🏍️",
+        "desc": "×1.06 tổng XP"
+      }
+    ]
+  },
+  {
+    "id": "bike_suzuki_raider",
+    "name": "Suzuki Raider 150",
+    "description": "Xe côn tay xé gió, 150cc, DOHC — nhẹ mà nhanh • Giảm 5% mật độ ôn tập, ×1.05 XP",
+    "category": "🚗 Showroom xe",
+    "price": 45000000,
+    "emoji": "🏍️",
+    "brand": "Suzuki",
+    "origin": "Châu Á",
+    "vehicle_group": "Xe máy",
+    "bike_type": "Côn tay",
+    "stars": 1,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.05,
+        "name": "Raider Speed 🌿",
+        "desc": "Giảm 5% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.05,
+        "name": "Raider 🏍️",
+        "desc": "×1.05 tổng XP"
+      }
+    ]
+  },
+  {
+    "id": "bike_piaggio_vespa",
+    "name": "Piaggio Vespa Primavera",
+    "description": "Tay ga Ý huyền thoại, 125cc, thời trang, cá tính • Giảm 7% mật độ ôn tập, ×1.07 XP",
+    "category": "🚗 Showroom xe",
+    "price": 70000000,
+    "emoji": "🏍️",
+    "brand": "Piaggio",
+    "origin": "Châu Âu",
+    "vehicle_group": "Xe máy",
+    "bike_type": "Tay ga",
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.07,
+        "name": "Vespa Style 🌿",
+        "desc": "Giảm 7% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.07,
+        "name": "Vespa 🏍️",
+        "desc": "×1.07 tổng XP"
+      }
+    ]
+  },
+  {
+    "id": "bike_honda_goldwing",
+    "name": "Honda Gold Wing Tour",
+    "description": "Tourer huyền thoại, 1.833cc, 6 xy-lanh — xe vua đường dài • Giảm 15% mật độ ôn tập, ×1.2 XP, +2 slot trang bị",
+    "category": "🚗 Showroom xe",
+    "price": 1200000000,
+    "emoji": "🏍️",
+    "brand": "Honda",
+    "origin": "Châu Á",
+    "vehicle_group": "Xe máy",
+    "bike_type": "Tourer",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.15,
+        "name": "Gold Wing Luxury 🌿",
+        "desc": "Giảm 15% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.2,
+        "name": "Gold Wing 🏍️",
+        "desc": "×1.2 tổng XP"
+      },
+      {
+        "type": "equipment_slot",
+        "value": 2,
+        "name": "Gold Wing Tour 🏍️",
+        "desc": "+2 slot trang bị"
+      }
+    ]
+  },
+  {
+    "id": "bike_bmw_r1250",
+    "name": "BMW R 1250 GS Adventure",
+    "description": "Adventure Đức, 1.254cc, boxer 2 xy-lanh • Giảm 12% mật độ ôn tập, ×1.15 XP, +5% kháng bệnh",
+    "category": "🚗 Showroom xe",
+    "price": 600000000,
+    "emoji": "🏍️",
+    "brand": "BMW",
+    "origin": "Châu Âu",
+    "vehicle_group": "Xe máy",
+    "bike_type": "Adventure",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.12,
+        "name": "GS Adventure 🌿",
+        "desc": "Giảm 12% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.15,
+        "name": "Boxer Power 🏍️",
+        "desc": "×1.15 tổng XP"
+      },
+      {
+        "type": "disease_resistance",
+        "value": 0.05,
+        "name": "GS Health 💪",
+        "desc": "+5% kháng bệnh"
+      }
+    ]
+  },
+  {
+    "id": "bike_ducati_monster",
+    "name": "Ducati Monster SP",
+    "description": "Naked bike Ý, 937cc V2, 111 mã lực • Giảm 10% mật độ ôn tập, ×1.12 XP, giảm 5% cooldown CK",
+    "category": "🚗 Showroom xe",
+    "price": 450000000,
+    "emoji": "🏍️",
+    "brand": "Ducati",
+    "origin": "Châu Âu",
+    "vehicle_group": "Xe máy",
+    "bike_type": "Naked",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.1,
+        "name": "Monster Speed 🌿",
+        "desc": "Giảm 10% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.12,
+        "name": "Italian Beast 🏍️",
+        "desc": "×1.12 tổng XP"
+      },
+      {
+        "type": "stock_cooldown_reduction",
+        "value": 0.05,
+        "name": "Monster Finance 📉",
+        "desc": "Giảm 5% cooldown chứng khoán"
+      }
+    ]
+  },
+  {
+    "id": "bike_ktm_duke",
+    "name": "KTM 390 Duke",
+    "description": "Naked bike Áo, 373cc, 44 mã lực — chiến binh đô thị • Giảm 7% mật độ ôn tập, ×1.07 XP",
+    "category": "🚗 Showroom xe",
+    "price": 150000000,
+    "emoji": "🏍️",
+    "brand": "KTM",
+    "origin": "Châu Âu",
+    "vehicle_group": "Xe máy",
+    "bike_type": "Naked",
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.07,
+        "name": "Duke Urban 🌿",
+        "desc": "Giảm 7% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.07,
+        "name": "KTM Duke 🏍️",
+        "desc": "×1.07 tổng XP"
+      }
+    ]
+  },
+  {
+    "id": "bike_triumph_bonneville",
+    "name": "Triumph Bonneville T100",
+    "description": "Classic Anh, 900cc, song hành — vintage nhưng chất • Giảm 10% mật độ ôn tập, ×1.1 XP",
+    "category": "🚗 Showroom xe",
+    "price": 350000000,
+    "emoji": "🏍️",
+    "brand": "Triumph",
+    "origin": "Châu Âu",
+    "vehicle_group": "Xe máy",
+    "bike_type": "Classic",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.1,
+        "name": "Bonneville Classic 🌿",
+        "desc": "Giảm 10% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.1,
+        "name": "British Legend 🏍️",
+        "desc": "×1.1 tổng XP"
+      }
+    ]
+  },
+  {
+    "id": "bike_harley_street",
+    "name": "Harley-Davidson Street Bob",
+    "description": "Cruiser Mỹ huyền thoại, 1.868cc V-Twin • Giảm 12% mật độ ôn tập, ×1.15 XP, +5% kháng bệnh",
+    "category": "🚗 Showroom xe",
+    "price": 700000000,
+    "emoji": "🏍️",
+    "brand": "Harley-Davidson",
+    "origin": "Châu Mỹ",
+    "vehicle_group": "Xe máy",
+    "bike_type": "Cruiser",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.12,
+        "name": "Harley Freedom 🌿",
+        "desc": "Giảm 12% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.15,
+        "name": "V-Twin 🏍️",
+        "desc": "×1.15 tổng XP"
+      },
+      {
+        "type": "disease_resistance",
+        "value": 0.05,
+        "name": "Harley Health 💪",
+        "desc": "+5% kháng bệnh"
+      }
+    ]
+  },
+  {
+    "id": "bike_honda_cbr650r",
+    "name": "Honda CBR650R",
+    "description": "Sportbike Nhật, 649cc 4 xy-lanh, 95 mã lực • Giảm 8% mật độ ôn tập, ×1.1 XP, giảm 5% cooldown CK",
+    "category": "🚗 Showroom xe",
+    "price": 250000000,
+    "emoji": "🏍️",
+    "brand": "Honda",
+    "origin": "Châu Á",
+    "vehicle_group": "Xe máy",
+    "bike_type": "Sport",
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.08,
+        "name": "CBR Sport 🌿",
+        "desc": "Giảm 8% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.1,
+        "name": "CBR650R 🏍️",
+        "desc": "×1.1 tổng XP"
+      },
+      {
+        "type": "stock_cooldown_reduction",
+        "value": 0.05,
+        "name": "CBR Finance 📉",
+        "desc": "Giảm 5% cooldown chứng khoán"
+      }
+    ]
+  },
+  {
+    "id": "ebike_vinfast_evo200",
+    "name": "VinFast Evo200",
+    "description": "Xe máy điện Việt, 200km range • Giảm 5% mật độ ôn tập, ×1.05 XP, giảm 3% thuế",
+    "category": "🚗 Showroom xe",
+    "price": 25000000,
+    "emoji": "🛵",
+    "brand": "VinFast",
+    "origin": "Châu Á",
+    "vehicle_group": "Xe máy điện",
+    "ebike_type": "Tay ga điện",
+    "charge_time_hours": 4,
+    "stars": 1,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.05,
+        "name": "Evo Electric 🌿",
+        "desc": "Giảm 5% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.05,
+        "name": "Eco Friendly 🛵",
+        "desc": "×1.05 tổng XP"
+      },
+      {
+        "type": "tax_reduction",
+        "value": 0.03,
+        "name": "VinFast Green 🌱",
+        "desc": "Giảm 3% thuế"
+      }
+    ]
+  },
+  {
+    "id": "ebike_vinfast_feliz_s",
+    "name": "VinFast Feliz S",
+    "description": "Xe máy điện nhẹ, 150km range • Giảm 4% mật độ ôn tập, ×1.04 XP, giảm 3% thuế",
+    "category": "🚗 Showroom xe",
+    "price": 30000000,
+    "emoji": "🛵",
+    "brand": "VinFast",
+    "origin": "Châu Á",
+    "vehicle_group": "Xe máy điện",
+    "ebike_type": "Tay ga điện",
+    "charge_time_hours": 3,
+    "stars": 1,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.04,
+        "name": "Feliz Electric 🌿",
+        "desc": "Giảm 4% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.04,
+        "name": "Feliz Style 🛵",
+        "desc": "×1.04 tổng XP"
+      },
+      {
+        "type": "tax_reduction",
+        "value": 0.03,
+        "name": "Feliz Green 🌱",
+        "desc": "Giảm 3% thuế"
+      }
+    ]
+  },
+  {
+    "id": "ebike_dat_bike_weaver",
+    "name": "Dat Bike Weaver 200",
+    "description": "Xe máy điện Việt, 200km range, 7kW motor • Giảm 6% mật độ ôn tập, ×1.06 XP, giảm 5% thuế",
+    "category": "🚗 Showroom xe",
+    "price": 45000000,
+    "emoji": "🛵",
+    "brand": "Dat Bike",
+    "origin": "Châu Á",
+    "vehicle_group": "Xe máy điện",
+    "ebike_type": "Tay ga điện",
+    "charge_time_hours": 4,
+    "stars": 1,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.06,
+        "name": "Weaver Electric 🌿",
+        "desc": "Giảm 6% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.06,
+        "name": "Made in Vietnam 🛵",
+        "desc": "×1.06 tổng XP"
+      },
+      {
+        "type": "tax_reduction",
+        "value": 0.05,
+        "name": "Dat Bike Green 🌱",
+        "desc": "Giảm 5% thuế"
+      }
+    ]
+  },
+  {
+    "id": "ebike_pega_aura",
+    "name": "Pega Aura E5",
+    "description": "Xe máy điện phổ thông, 120km range • Giảm 3% mật độ ôn tập, ×1.03 XP, giảm 2% thuế",
+    "category": "🚗 Showroom xe",
+    "price": 15000000,
+    "emoji": "🛵",
+    "brand": "Pega",
+    "origin": "Châu Á",
+    "vehicle_group": "Xe máy điện",
+    "ebike_type": "Tay ga điện",
+    "charge_time_hours": 2,
+    "stars": 1,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.03,
+        "name": "Aura Electric 🌿",
+        "desc": "Giảm 3% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.03,
+        "name": "Aura Eco 🛵",
+        "desc": "×1.03 tổng XP"
+      },
+      {
+        "type": "tax_reduction",
+        "value": 0.02,
+        "name": "Pega Green 🌱",
+        "desc": "Giảm 2% thuế"
+      }
+    ]
+  },
+  {
+    "id": "ebike_selex_wild",
+    "name": "Selex Wild 2000W",
+    "description": "Xe máy điện địa hình, 2000W motor • Giảm 4% mật độ ôn tập, ×1.04 XP, +3% kháng bệnh",
+    "category": "🚗 Showroom xe",
+    "price": 20000000,
+    "emoji": "🛵",
+    "brand": "Selex",
+    "origin": "Châu Á",
+    "vehicle_group": "Xe máy điện",
+    "ebike_type": "Xe điện địa hình",
+    "charge_time_hours": 3,
+    "stars": 1,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.04,
+        "name": "Wild Electric 🌿",
+        "desc": "Giảm 4% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.04,
+        "name": "Off-road 🛵",
+        "desc": "×1.04 tổng XP"
+      },
+      {
+        "type": "disease_resistance",
+        "value": 0.03,
+        "name": "Wild Health 💪",
+        "desc": "+3% kháng bệnh"
+      }
+    ]
+  },
+  {
+    "id": "ecar_vinfast_vf5",
+    "name": "VinFast VF 5 Plus",
+    "description": "Xe điện mini SUV Việt, 300km range • Giảm 8% mật độ ôn tập, ×1.08 XP, giảm 5% thuế",
+    "category": "🚗 Showroom xe",
+    "price": 458000000,
+    "emoji": "🚗",
+    "brand": "VinFast",
+    "origin": "Châu Á",
+    "vehicle_group": "Xe điện",
+    "ev_type": "Mini SUV",
+    "charge_time_hours": 6,
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.08,
+        "name": "VF5 Electric 🌿",
+        "desc": "Giảm 8% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.08,
+        "name": "VF5 Eco 🚗",
+        "desc": "×1.08 tổng XP"
+      },
+      {
+        "type": "tax_reduction",
+        "value": 0.05,
+        "name": "VF5 Green 🌱",
+        "desc": "Giảm 5% thuế"
+      }
+    ]
+  },
+  {
+    "id": "ecar_vinfast_vfe34",
+    "name": "VinFast VF e34",
+    "description": "SUV điện Việt, 400km range • Giảm 10% mật độ ôn tập, ×1.1 XP, giảm 5% thuế, giảm 5% cooldown Crypto",
+    "category": "🚗 Showroom xe",
+    "price": 580000000,
+    "emoji": "🚙",
+    "brand": "VinFast",
+    "origin": "Châu Á",
+    "vehicle_group": "Xe điện",
+    "ev_type": "SUV",
+    "charge_time_hours": 8,
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.1,
+        "name": "VFe34 Electric 🌿",
+        "desc": "Giảm 10% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.1,
+        "name": "VFe34 SUV 🚙",
+        "desc": "×1.1 tổng XP"
+      },
+      {
+        "type": "tax_reduction",
+        "value": 0.05,
+        "name": "VFe34 Green 🌱",
+        "desc": "Giảm 5% thuế"
+      },
+      {
+        "type": "crypto_cooldown_reduction",
+        "value": 0.05,
+        "name": "VFe34 Crypto 🪙",
+        "desc": "Giảm 5% cooldown Crypto"
+      }
+    ]
+  },
+  {
+    "id": "ecar_wuling_mini",
+    "name": "Wuling Mini EV",
+    "description": "Xe điện mini Trung Quốc, 170km range • Giảm 5% mật độ ôn tập, ×1.05 XP",
+    "category": "🚗 Showroom xe",
+    "price": 240000000,
+    "emoji": "🚗",
+    "brand": "Wuling",
+    "origin": "Châu Á",
+    "vehicle_group": "Xe điện",
+    "ev_type": "Mini Car",
+    "charge_time_hours": 4,
+    "stars": 1,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.05,
+        "name": "Wuling Mini 🌿",
+        "desc": "Giảm 5% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.05,
+        "name": "Mini City 🚗",
+        "desc": "×1.05 tổng XP"
+      }
+    ]
+  },
+  {
+    "id": "ecar_kia_ev6",
+    "name": "Kia EV6",
+    "description": "Crossover điện Hàn, 528km range, 800V sạc siêu nhanh • Giảm 15% mật độ ôn tập, ×1.2 XP, giảm 8% cooldown Crypto",
+    "category": "🚗 Showroom xe",
+    "price": 1500000000,
+    "emoji": "🚙",
+    "brand": "Kia",
+    "origin": "Châu Á",
+    "vehicle_group": "Xe điện",
+    "ev_type": "Crossover",
+    "charge_time_hours": 6,
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.15,
+        "name": "EV6 Fast 🌿",
+        "desc": "Giảm 15% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.2,
+        "name": "EV6 Crossover 🚙",
+        "desc": "×1.2 tổng XP"
+      },
+      {
+        "type": "crypto_cooldown_reduction",
+        "value": 0.08,
+        "name": "EV6 Crypto 🪙",
+        "desc": "Giảm 8% cooldown Crypto"
+      },
+      {
+        "type": "tax_reduction",
+        "value": 0.05,
+        "name": "EV6 Green 🌱",
+        "desc": "Giảm 5% thuế"
+      }
+    ]
+  },
+  {
+    "id": "ecar_hyundai_ioniq5",
+    "name": "Hyundai Ioniq 5",
+    "description": "Crossover điện Hàn, 481km range, V2L • Giảm 12% mật độ ôn tập, ×1.15 XP, giảm 5% cooldown Crypto",
+    "category": "🚗 Showroom xe",
+    "price": 1300000000,
+    "emoji": "🚙",
+    "brand": "Hyundai",
+    "origin": "Châu Á",
+    "vehicle_group": "Xe điện",
+    "ev_type": "Crossover",
+    "charge_time_hours": 8,
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.12,
+        "name": "Ioniq5 Tech 🌿",
+        "desc": "Giảm 12% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.15,
+        "name": "Ioniq5 🚙",
+        "desc": "×1.15 tổng XP"
+      },
+      {
+        "type": "crypto_cooldown_reduction",
+        "value": 0.05,
+        "name": "Ioniq5 Crypto 🪙",
+        "desc": "Giảm 5% cooldown Crypto"
+      }
+    ]
+  },
+  {
+    "id": "bicycle_martin",
+    "name": "Xe đạp Martin City",
+    "description": "Xe đạp thành phố, thép Cr-Mo, 7 tốc độ • 🚴 Đạp xe khỏe người: +2 sức khỏe, giảm 2% mật độ ôn tập",
+    "category": "🚗 Showroom xe",
+    "price": 3000000,
+    "emoji": "🚲",
+    "brand": "Martin",
+    "origin": "Châu Á",
+    "vehicle_group": "Xe đạp",
+    "cycle_type": "Xe đạp đô thị",
+    "stars": 1,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.02,
+        "name": "Martin City 🌿",
+        "desc": "Giảm 2% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "health_boost",
+        "value": 2,
+        "name": "Martin Health ❤️",
+        "desc": "+2 sức khỏe — đạp xe tốt cho tim mạch"
+      }
+    ]
+  },
+  {
+    "id": "bicycle_giant_escape",
+    "name": "Giant Escape 3",
+    "description": "Xe đạp địa hình Đài Loan, 21 tốc độ • 🚴 Đạp xe khỏe người: +3 sức khỏe, giảm 3% mật độ ôn tập",
+    "category": "🚗 Showroom xe",
+    "price": 12000000,
+    "emoji": "🚲",
+    "brand": "Giant",
+    "origin": "Châu Á",
+    "vehicle_group": "Xe đạp",
+    "cycle_type": "Xe đạp địa hình",
+    "stars": 1,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.03,
+        "name": "Giant Escape 🌿",
+        "desc": "Giảm 3% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "health_boost",
+        "value": 3,
+        "name": "Giant Health ❤️",
+        "desc": "+3 sức khỏe"
+      }
+    ]
+  },
+  {
+    "id": "bicycle_trifold",
+    "name": "Xe đạp điện Trifold",
+    "description": "Xe đạp điện gấp, 250W motor, 50km range • Giảm 4% mật độ ôn tập, ×1.04 XP, +1 sức khỏe",
+    "category": "🚗 Showroom xe",
+    "price": 12000000,
+    "emoji": "🚲",
+    "brand": "Trifold",
+    "origin": "Châu Á",
+    "vehicle_group": "Xe đạp",
+    "cycle_type": "Xe đạp điện",
+    "stars": 1,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.04,
+        "name": "Trifold E-Bike 🌿",
+        "desc": "Giảm 4% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.04,
+        "name": "Trifold Power 🚲",
+        "desc": "×1.04 tổng XP"
+      },
+      {
+        "type": "health_boost",
+        "value": 1,
+        "name": "Trifold Health ❤️",
+        "desc": "+1 sức khỏe"
+      }
+    ]
+  },
+  {
+    "id": "bicycle_trek_domane",
+    "name": "Trek Domane AL 3",
+    "description": "Xe đạp đua Mỹ, khung nhôm Carbon, 16 tốc độ • 🚴 +5 sức khỏe, giảm 5% mật độ ôn tập, ×1.05 XP",
+    "category": "🚗 Showroom xe",
+    "price": 40000000,
+    "emoji": "🚲",
+    "brand": "Trek",
+    "origin": "Châu Mỹ",
+    "vehicle_group": "Xe đạp",
+    "cycle_type": "Xe đạp đua",
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.05,
+        "name": "Trek Racing 🌿",
+        "desc": "Giảm 5% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "xp_multiplier",
+        "value": 1.05,
+        "name": "Trek Speed 🚲",
+        "desc": "×1.05 tổng XP"
+      },
+      {
+        "type": "health_boost",
+        "value": 5,
+        "name": "Trek Health ❤️",
+        "desc": "+5 sức khỏe — đạp xe đua thể lực!"
+      }
+    ]
+  },
+  {
+    "id": "bicycle_brompton",
+    "name": "Brompton C Line",
+    "description": "Xe đạp gấp Anh Quốc, siêu nhẹ, gấp trong 20s • 🚴 +4 sức khỏe, giảm 4% mật độ ôn tập, +1 slot trang bị",
+    "category": "🚗 Showroom xe",
+    "price": 35000000,
+    "emoji": "🚲",
+    "brand": "Brompton",
+    "origin": "Châu Âu",
+    "vehicle_group": "Xe đạp",
+    "cycle_type": "Xe đạp gấp",
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "density_reduction",
+        "value": 0.04,
+        "name": "Brompton Fold 🌿",
+        "desc": "Giảm 4% mật độ ôn tập — giãn cách an toàn"
+      },
+      {
+        "type": "health_boost",
+        "value": 4,
+        "name": "Brompton Health ❤️",
+        "desc": "+4 sức khỏe"
+      },
+      {
+        "type": "equipment_slot",
+        "value": 1,
+        "name": "Brompton Cargo 🚲",
+        "desc": "+1 slot trang bị — gấp gọn mang theo!"
+      }
+    ]
+  },
+  {
+    "id": "tech_airpods",
+    "name": "AirPods Pro 2",
+    "description": "Chống ồn chủ động thế hệ 2, chip H2 • 🎧 Học không ồn: giảm 3% cooldown kỹ năng",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 6000000,
+    "emoji": "🎧",
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "skill_cooldown_reduction",
+        "value": 0.03,
+        "name": "AirPods Focus 🎧",
+        "desc": "Giảm 3% cooldown kỹ năng"
+      }
+    ]
+  },
+  {
+    "id": "tech_ps5",
+    "name": "PlayStation 5 Slim",
+    "description": "Console thế hệ mới, SSD 1TB • 🎮 Giải trí sau học: +3% thu nhập thụ động",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 15000000,
+    "emoji": "🎮",
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "passive_income_bonus",
+        "value": 0.03,
+        "name": "PS5 Entertainment 🎮",
+        "desc": "+3% thu nhập thụ động — relax & earn!"
+      }
+    ]
+  },
+  {
+    "id": "tech_iphone16",
+    "name": "iPhone 16 Pro Max",
+    "description": "8GB RAM / 256GB — Titanium Black • 📱 Đồng bộ nhắc học: giảm 5% cooldown kỹ năng, +4 thẻ/ngày, +1% ease factor",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 40000000,
+    "emoji": "📱",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "skill_cooldown_reduction",
+        "value": 0.05,
+        "name": "iPhone Pro 📱",
+        "desc": "Giảm 5% cooldown kỹ năng"
+      },
+      {
+        "type": "review_count_bonus",
+        "value": 4,
+        "name": "iPhone Smart 📱",
+        "desc": "+4 thẻ ôn mỗi ngày"
+      },
+      {
+        "type": "factor_boost",
+        "value": 0.01,
+        "name": "Reminder Loop 📱",
+        "desc": "+1% ease factor nhờ nhắc học đều"
+      }
+    ]
+  },
+  {
+    "id": "tech_macbook_m3",
+    "name": "MacBook Pro M3",
+    "description": "16GB RAM / 512GB SSD, 14-inch • 💻 Bàn làm việc số: giảm 8% cooldown kỹ năng, +8 thẻ/ngày, +3% ease factor",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 45000000,
+    "emoji": "💻",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "skill_cooldown_reduction",
+        "value": 0.08,
+        "name": "MacBook M3 💻",
+        "desc": "Giảm 8% cooldown kỹ năng"
+      },
+      {
+        "type": "review_count_bonus",
+        "value": 8,
+        "name": "MacBook Pro 💻",
+        "desc": "+8 thẻ ôn mỗi ngày"
+      },
+      {
+        "type": "factor_boost",
+        "value": 0.03,
+        "name": "Luồng Làm Việc 💻",
+        "desc": "+3% ease factor nhờ workflow ổn định"
+      }
+    ]
+  },
+  {
+    "id": "tech_ipad_pro",
+    "name": "iPad Pro M4",
+    "description": "11-inch, OLED, 256GB, Apple Pencil Pro • 📱 Học mọi lúc: giảm 5% cooldown kỹ năng, +6 thẻ/ngày, +4% khoảng cách ôn",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 35000000,
+    "emoji": "📱",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "skill_cooldown_reduction",
+        "value": 0.05,
+        "name": "iPad Pro 📱",
+        "desc": "Giảm 5% cooldown kỹ năng"
+      },
+      {
+        "type": "review_count_bonus",
+        "value": 6,
+        "name": "iPad Study 📱",
+        "desc": "+6 thẻ ôn mỗi ngày"
+      },
+      {
+        "type": "interval_boost",
+        "value": 0.04,
+        "name": "Handwritten Recall 📱",
+        "desc": "+4% khoảng cách ôn nhờ ghi chú chủ động"
+      }
+    ]
+  },
+  {
+    "id": "tech_samsung_s25",
+    "name": "Samsung Galaxy S25 Ultra",
+    "description": "256GB, S Pen, 200MP camera • 📱 +5 thẻ/ngày, giảm 5% cooldown kỹ năng",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 35000000,
+    "emoji": "📱",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "skill_cooldown_reduction",
+        "value": 0.05,
+        "name": "Galaxy AI 📱",
+        "desc": "Giảm 5% cooldown kỹ năng"
+      },
+      {
+        "type": "review_count_bonus",
+        "value": 5,
+        "name": "S25 Ultra 📱",
+        "desc": "+5 thẻ ôn mỗi ngày"
+      }
+    ]
+  },
+  {
+    "id": "tech_apple_watch",
+    "name": "Apple Watch Ultra 2",
+    "description": "49mm, Titanium, GPS + Cellular • ⌚ Theo dõi sức khỏe: +3 sức khỏe, giảm 3% cooldown kỹ năng",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 22000000,
+    "emoji": "⌚",
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "health_boost",
+        "value": 3,
+        "name": "Apple Watch ❤️",
+        "desc": "+3 sức khỏe"
+      },
+      {
+        "type": "skill_cooldown_reduction",
+        "value": 0.03,
+        "name": "Watch Ultra ⌚",
+        "desc": "Giảm 3% cooldown kỹ năng"
+      }
+    ]
+  },
+  {
+    "id": "tech_rog_ally",
+    "name": "ASUS ROG Ally X",
+    "description": "Handheld gaming Windows, Z1 Extreme, 24GB RAM • 🎮 +5% thu nhập thụ động, giải trí đa năng",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 18000000,
+    "emoji": "🎮",
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "passive_income_bonus",
+        "value": 0.05,
+        "name": "ROG Ally 🎮",
+        "desc": "+5% thu nhập thụ động"
+      }
+    ]
+  },
+  {
+    "id": "tech_dell_xps",
+    "name": "Dell XPS 16",
+    "description": "Laptop cao cấp, Intel Ultra 9, 32GB RAM • 💻 Deep-work rig: giảm 10% cooldown kỹ năng, +8 thẻ/ngày, +4% ease factor",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 48000000,
+    "emoji": "💻",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "skill_cooldown_reduction",
+        "value": 0.1,
+        "name": "Dell XPS 💻",
+        "desc": "Giảm 10% cooldown kỹ năng"
+      },
+      {
+        "type": "review_count_bonus",
+        "value": 8,
+        "name": "XPS Power 💻",
+        "desc": "+8 thẻ ôn mỗi ngày"
+      },
+      {
+        "type": "factor_boost",
+        "value": 0.04,
+        "name": "Chế Độ Làm Việc Sâu 💻",
+        "desc": "+4% ease factor khi học tập trung dài phiên"
+      }
+    ]
+  },
+  {
+    "id": "tech_canon_r6",
+    "name": "Canon EOS R6 Mark II",
+    "description": "Mirrorless full-frame, 4K 60fps • 📷 +5% thu nhập thụ động, sáng tạo nội dung",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 55000000,
+    "emoji": "📷",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "passive_income_bonus",
+        "value": 0.05,
+        "name": "Canon Creator 📷",
+        "desc": "+5% thu nhập thụ động"
+      }
+    ]
+  },
+  {
+    "id": "tech_sony_wh",
+    "name": "Sony WH-1000XM5",
+    "description": "Chống ồn chủ động tốt nhất thị trường • 🎧 Giảm 5% cooldown kỹ năng, focus tối đa",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 7500000,
+    "emoji": "🎧",
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "skill_cooldown_reduction",
+        "value": 0.05,
+        "name": "Sony XM5 🎧",
+        "desc": "Giảm 5% cooldown kỹ năng"
+      }
+    ]
+  },
+  {
+    "id": "tech_logitech_mx",
+    "name": "Logitech MX Master 3S",
+    "description": "Chuột không dây cao cấp, ergonomic • 🖱️ Tăng tốc làm việc: giảm 2% cooldown kỹ năng",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 2500000,
+    "emoji": "🖱️",
+    "stars": 1,
+    "effect_list": [
+      {
+        "type": "skill_cooldown_reduction",
+        "value": 0.02,
+        "name": "MX Master 🖱️",
+        "desc": "Giảm 2% cooldown kỹ năng"
+      }
+    ]
+  },
+  {
+    "id": "tech_keychron_q1",
+    "name": "Keychron Q1 Pro",
+    "description": "Bàn phím cơ custom, Gateron Jupiter • ⌨️ Tăng tốc gõ: giảm 2% cooldown kỹ năng",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 3500000,
+    "emoji": "⌨️",
+    "stars": 1,
+    "effect_list": [
+      {
+        "type": "skill_cooldown_reduction",
+        "value": 0.02,
+        "name": "Keychron Q1 ⌨️",
+        "desc": "Giảm 2% cooldown kỹ năng"
+      }
+    ]
+  },
+  {
+    "id": "tech_samsung_odyssey",
+    "name": "Samsung Odyssey G9",
+    "description": "Màn 49\" cong, 240Hz, 1ms, 5K2K • 🖥️ Đa nhiệm đỉnh: giảm 8% cooldown kỹ năng, +5 thẻ/ngày",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 40000000,
+    "emoji": "🖥️",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "skill_cooldown_reduction",
+        "value": 0.08,
+        "name": "Odyssey G9 🖥️",
+        "desc": "Giảm 8% cooldown kỹ năng"
+      },
+      {
+        "type": "review_count_bonus",
+        "value": 5,
+        "name": "Odyssey Multi 🖥️",
+        "desc": "+5 thẻ ôn mỗi ngày"
+      }
+    ]
+  },
+  {
+    "id": "tech_anker_powerbank",
+    "name": "Anker Power Bank 25600",
+    "description": "Sạc dự phòng 25600mAh, 140W PD • 🔋 Luôn đầy pin: +1 slot trang bị",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 2000000,
+    "emoji": "🔋",
+    "stars": 1,
+    "effect_list": [
+      {
+        "type": "equipment_slot",
+        "value": 1,
+        "name": "Anker Power 🔋",
+        "desc": "+1 slot trang bị"
+      }
+    ]
+  },
+  {
+    "id": "tech_may_tinh_tai_chinh",
+    "name": "Máy Tính Tài Chính Casio",
+    "description": "Máy tính tài chính chuyên dụng — tính lãi kép, NPV, IRR siêu nhanh • Tăng 5% tốc độ lãi NH",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 5000000,
+    "emoji": "🧮",
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "interest_speed_boost",
+        "value": 0.05,
+        "name": "Casio Finance 🧮",
+        "desc": "⚡ Lãi NH +5% tốc độ — tính lãi siêu nhanh!"
+      }
+    ]
+  },
+  {
+    "id": "tech_phan_mem_chung_khoan",
+    "name": "Phần Mềm Chứng Khoán Pro",
+    "description": "Dashboard chứng khoán real-time, phân tích kỹ thuật AI • Tăng 8% tốc độ lãi NH, giảm 3% cooldown CK",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 15000000,
+    "emoji": "📊",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "interest_speed_boost",
+        "value": 0.08,
+        "name": "Chuyên Gia Chứng Khoán 📊",
+        "desc": "⚡ Lãi NH +8% tốc độ"
+      },
+      {
+        "type": "stock_cooldown_reduction",
+        "value": 0.03,
+        "name": "Phân Tích Chứng Khoán 📊",
+        "desc": "📉 Giảm 3% cooldown CK"
+      }
+    ]
+  },
+  {
+    "id": "tech_robot_tu_van_ai",
+    "name": "Robot Tư Vấn Tài Chính AI",
+    "description": "AI phân tích thị trường, gợi ý danh mục đầu tư thông minh • Tăng 12% tốc độ lãi NH",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 35000000,
+    "emoji": "🤖",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "interest_speed_boost",
+        "value": 0.12,
+        "name": "AI Advisor 🤖",
+        "desc": "⚡ Lãi NH +12% tốc độ — AI giúp bạn giàu nhanh hơn!"
+      }
+    ]
+  },
+  {
+    "id": "tech_khoa_hoc_dau_tu",
+    "name": "Khóa Học Đầu Tư Online",
+    "description": "Khóa học đầu tư chứng khoán, crypto, bất động sản • Tăng 10% tốc độ lãi NH, +5% thu nhập thụ động",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 12000000,
+    "emoji": "📚",
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "interest_speed_boost",
+        "value": 0.1,
+        "name": "Khóa Học Đầu Tư 📚",
+        "desc": "⚡ Lãi NH +10% tốc độ"
+      },
+      {
+        "type": "passive_income_bonus",
+        "value": 0.05,
+        "name": "Thu Nhập Khóa Học 📚",
+        "desc": "🏠 +5% thu nhập thụ động"
+      }
+    ]
+  },
+  {
+    "id": "tech_bang_dieu_khien_hoc_tap",
+    "name": "Bảng Điều Khiển Học Tập AI",
+    "description": "Dashboard AI phân tích tiến độ học — vĩnh viễn +10% khoảng cách ôn và +5% ease factor",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 65000000,
+    "emoji": "🖥️",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "interval_boost",
+        "value": 0.1,
+        "name": "Bảng Điều Khiển Học 📊",
+        "desc": "+10% khoảng cách ôn vĩnh viễn"
+      },
+      {
+        "type": "factor_boost",
+        "value": 0.05,
+        "name": "Thấu Hiểu Lịch Trình 🧠",
+        "desc": "+5% ease factor vĩnh viễn"
+      }
+    ]
+  },
+  {
+    "id": "tech_kinh_ap_trong_tam",
+    "name": "Kính Áp Tròng Tập Trung AR",
+    "description": "Lens AR hỗ trợ nhận diện độ chắc kiến thức — vĩnh viễn Easy +15% khoảng cách ôn, +3% ease factor",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 90000000,
+    "emoji": "🥽",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "easy_interval_bonus",
+        "value": 0.15,
+        "name": "AR Easy Lens 🥽",
+        "desc": "Easy +15% khoảng cách ôn vĩnh viễn"
+      },
+      {
+        "type": "factor_boost",
+        "value": 0.03,
+        "name": "AR Focus 🥽",
+        "desc": "+3% ease factor vĩnh viễn"
+      }
+    ]
+  },
+  {
+    "id": "tech_google_pixel_9",
+    "name": "Google Pixel 9 Pro",
+    "description": "Smartphone chụp ảnh AI hàng đầu • Tensor G4, 16GB RAM, 256GB • 📸 Giảm 5% cooldown kỹ năng, +5 thẻ ôn/ngày",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 25000000,
+    "emoji": "📱",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "skill_cooldown_reduction",
+        "value": 0.05,
+        "name": "Pixel AI 📱",
+        "desc": "Giảm 5% cooldown kỹ năng"
+      },
+      {
+        "type": "review_count_bonus",
+        "value": 5,
+        "name": "Pixel Photo 📱",
+        "desc": "+5 thẻ ôn mỗi ngày"
+      }
+    ]
+  },
+  {
+    "id": "tech_galaxy_tab_s10",
+    "name": "Samsung Galaxy Tab S10 Ultra",
+    "description": "Máy tính bảng Android mạnh nhất • 14.6\" Dynamic AMOLED, 12GB RAM, 256GB • 📝 Tăng 5% khoảng cách ôn, +6 thẻ ôn/ngày",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 28000000,
+    "emoji": "📝",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "interval_boost",
+        "value": 0.05,
+        "name": "Samsung Notes 📝",
+        "desc": "+5% khoảng cách ôn tập"
+      },
+      {
+        "type": "review_count_bonus",
+        "value": 6,
+        "name": "Samsung Dex 📝",
+        "desc": "+6 thẻ ôn mỗi ngày"
+      }
+    ]
+  },
+  {
+    "id": "tech_airpods_max",
+    "name": "AirPods Max USB-C",
+    "description": "Tai nghe over-ear cao cấp Apple • Active Noise Cancellation, Spatial Audio • 🎧 Giảm 8% cooldown kỹ năng, +3% ease factor",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 12000000,
+    "emoji": "🎧",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "skill_cooldown_reduction",
+        "value": 0.08,
+        "name": "Spatial Audio 🎧",
+        "desc": "Giảm 8% cooldown kỹ năng"
+      },
+      {
+        "type": "factor_boost",
+        "value": 0.03,
+        "name": "Premium Sound 🎧",
+        "desc": "+3% ease factor"
+      }
+    ]
+  },
+  {
+    "id": "tech_steam_deck",
+    "name": "Steam Deck OLED",
+    "description": "Máy chơi game cầm tay Valve • 7.4\" OLED 90Hz, AMD APU, 512GB • 🎮 Tăng 5% thu nhập thụ động, +1 slot trang bị",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 16000000,
+    "emoji": "🎮",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "passive_income_bonus",
+        "value": 0.05,
+        "name": "Steam Deck 🎮",
+        "desc": "+5% thu nhập thụ động"
+      },
+      {
+        "type": "equipment_slot",
+        "value": 1,
+        "name": "Chơi Game Cầm Tay 🎮",
+        "desc": "+1 slot trang bị"
+      }
+    ]
+  },
+  {
+    "id": "tech_nintendo_switch_2",
+    "name": "Nintendo Switch 2",
+    "description": "Máy chơi game thế hệ mới Nintendo • Màn hình lớn hơn, Joy-Con từ tính, 256GB • 🕹️ Giảm 5% cooldown kỹ năng, +4% thu nhập thụ động",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 12000000,
+    "emoji": "🕹️",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "skill_cooldown_reduction",
+        "value": 0.05,
+        "name": "Switch 2 🕹️",
+        "desc": "Giảm 5% cooldown kỹ năng"
+      },
+      {
+        "type": "passive_income_bonus",
+        "value": 0.04,
+        "name": "Nintendo Fun 🕹️",
+        "desc": "+4% thu nhập thụ động"
+      }
+    ]
+  },
+  {
+    "id": "tech_meta_quest_3",
+    "name": "Meta Quest 3S",
+    "description": "Kính thực tế ảo chân thực • Snapdragon XR2 Gen 2, 128GB, Mixed Reality • 🥽 Tăng 8% khoảng cách ôn, +4% ease factor",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 11000000,
+    "emoji": "🥽",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "interval_boost",
+        "value": 0.08,
+        "name": "VR Focus 🥽",
+        "desc": "+8% khoảng cách ôn tập"
+      },
+      {
+        "type": "factor_boost",
+        "value": 0.04,
+        "name": "MR Learning 🥽",
+        "desc": "+4% ease factor"
+      }
+    ]
+  },
+  {
+    "id": "tech_razer_blade_16",
+    "name": "Razer Blade 16",
+    "description": "Laptop gaming cao cấp • i9-14900HX, RTX 4070, 32GB RAM, 1TB SSD • 💻 Giảm 10% cooldown kỹ năng, +8 thẻ ôn/ngày, +4% ease factor",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 55000000,
+    "emoji": "💻",
+    "stars": 5,
+    "effect_list": [
+      {
+        "type": "skill_cooldown_reduction",
+        "value": 0.1,
+        "name": "Blade Performance 💻",
+        "desc": "Giảm 10% cooldown kỹ năng"
+      },
+      {
+        "type": "review_count_bonus",
+        "value": 8,
+        "name": "Blade Speed 💻",
+        "desc": "+8 thẻ ôn mỗi ngày"
+      },
+      {
+        "type": "factor_boost",
+        "value": 0.04,
+        "name": "Blade Precision 💻",
+        "desc": "+4% ease factor"
+      }
+    ]
+  },
+  {
+    "id": "tech_sony_a7v",
+    "name": "Sony A7 V",
+    "description": "Máy ảnh full-frame không gương lật • 61MP, 8K video, AI AF • 📷 Tăng 8% thu nhập thụ động, +3 điểm sức khỏe",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 65000000,
+    "emoji": "📷",
+    "stars": 5,
+    "effect_list": [
+      {
+        "type": "passive_income_bonus",
+        "value": 0.08,
+        "name": "Sony Alpha 📷",
+        "desc": "+8% thu nhập thụ động"
+      },
+      {
+        "type": "health_boost",
+        "value": 3,
+        "name": "Creative Therapy 📷",
+        "desc": "+3 điểm sức khỏe"
+      }
+    ]
+  },
+  {
+    "id": "tech_dji_mavic_4",
+    "name": "DJI Mavic 4 Pro",
+    "description": "Flycam chuyên nghiệp • 4/3 CMOS, 20MP, 45 phút bay, Omnidirectional Obstacle Avoidance • 🚁 Tăng 10% thu nhập thụ động, +5% lãi suất",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 55000000,
+    "emoji": "🚁",
+    "stars": 5,
+    "effect_list": [
+      {
+        "type": "passive_income_bonus",
+        "value": 0.1,
+        "name": "Aerial View 🚁",
+        "desc": "+10% thu nhập thụ động"
+      },
+      {
+        "type": "interest_bonus",
+        "value": 0.05,
+        "name": "Drone Survey 🚁",
+        "desc": "+5% lãi suất ngân hàng"
+      }
+    ]
+  },
+  {
+    "id": "tech_apple_vision_pro",
+    "name": "Apple Vision Pro",
+    "description": "Máy tính không gian Apple • M2+R1 chip, Micro-OLED 4K mỗi mắt, visionOS • 👓 Tăng 15% khoảng cách ôn, +5% ease factor, +5 thẻ ôn/ngày",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 90000000,
+    "emoji": "👓",
+    "stars": 5,
+    "effect_list": [
+      {
+        "type": "interval_boost",
+        "value": 0.15,
+        "name": "Máy Tính Không Gian 👓",
+        "desc": "+15% khoảng cách ôn tập"
+      },
+      {
+        "type": "factor_boost",
+        "value": 0.05,
+        "name": "Vision OS 👓",
+        "desc": "+5% ease factor"
+      },
+      {
+        "type": "review_count_bonus",
+        "value": 5,
+        "name": "Vải Vô Hạn 👓",
+        "desc": "+5 thẻ ôn mỗi ngày"
+      }
+    ]
+  },
+  {
+    "id": "tech_asus_zenbook_duo",
+    "name": "ASUS Zenbook Duo",
+    "description": "Laptop màn hình kép • 2×14\" OLED 120Hz, Intel Ultra 9, 32GB RAM • 🖥️ Tăng 8% khoảng cách ôn, +6 thẻ ôn/ngày, +3% ease factor",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 38000000,
+    "emoji": "🖥️",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "interval_boost",
+        "value": 0.08,
+        "name": "Màn Hình Kép 🖥️",
+        "desc": "+8% khoảng cách ôn tập"
+      },
+      {
+        "type": "review_count_bonus",
+        "value": 6,
+        "name": "Đa Nhiệm 🖥️",
+        "desc": "+6 thẻ ôn mỗi ngày"
+      },
+      {
+        "type": "factor_boost",
+        "value": 0.03,
+        "name": "Luồng Công Việc Kép 🖥️",
+        "desc": "+3% ease factor"
+      }
+    ]
+  },
+  {
+    "id": "tech_anker_soundcore",
+    "name": "Anker Soundcore Boom 2 Plus",
+    "description": "Loa Bluetooth công suất lớn • 140W, BassUp, IPX7, 20 giờ pin • 🔊 Giảm 5% cooldown kỹ năng, +2% ease factor",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 3500000,
+    "emoji": "🔊",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "skill_cooldown_reduction",
+        "value": 0.05,
+        "name": "Bass Boost 🔊",
+        "desc": "Giảm 5% cooldown kỹ năng"
+      },
+      {
+        "type": "factor_boost",
+        "value": 0.02,
+        "name": "Party Vibe 🔊",
+        "desc": "+2% ease factor"
+      }
+    ]
+  },
+  {
+    "id": "tech_garmin_fenix_8",
+    "name": "Garmin Fenix 8",
+    "description": "Đồng hồ thể thao đa năng • AMOLED, GPS đa băng tần, 30 ngày pin • ⌚ Tăng 5 điểm sức khỏe, giảm 5% cooldown kỹ năng",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 20000000,
+    "emoji": "⌚",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "health_boost",
+        "value": 5,
+        "name": "Garmin Health ⌚",
+        "desc": "+5 điểm sức khỏe"
+      },
+      {
+        "type": "skill_cooldown_reduction",
+        "value": 0.05,
+        "name": "Garmin Coach ⌚",
+        "desc": "Giảm 5% cooldown kỹ năng"
+      }
+    ]
+  },
+  {
+    "id": "tech_tp_link_wifi_7",
+    "name": "TP-Link Deco BE95",
+    "description": "Router WiFi 7 mesh cao cấp • BE33000, 10Gbps, 3-pack, phủ 600m² • 🌐 Giảm 8% cooldown kỹ năng, +5% lãi suất",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 15000000,
+    "emoji": "🌐",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "skill_cooldown_reduction",
+        "value": 0.08,
+        "name": "Tốc Độ WiFi 7 🌐",
+        "desc": "Giảm 8% cooldown kỹ năng"
+      },
+      {
+        "type": "interest_bonus",
+        "value": 0.05,
+        "name": "Mạng Lưới 🌐",
+        "desc": "+5% lãi suất ngân hàng"
+      }
+    ]
+  },
+  {
+    "id": "tech_logitech_g_pro_x",
+    "name": "Logitech G Pro X Superlight 2",
+    "description": "Chuột gaming không dây siêu nhẹ • 60g, Hero 2 Sensor, 95g, Lightspeed • 🖱️ Giảm 3% cooldown kỹ năng, +2% ease factor",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 3500000,
+    "emoji": "🖱️",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "skill_cooldown_reduction",
+        "value": 0.03,
+        "name": "Superlight 🖱️",
+        "desc": "Giảm 3% cooldown kỹ năng"
+      },
+      {
+        "type": "factor_boost",
+        "value": 0.02,
+        "name": "Pro Sensor 🖱️",
+        "desc": "+2% ease factor"
+      }
+    ]
+  },
+  {
+    "id": "tech_wacom_intuos_pro",
+    "name": "Wacom Intuos Pro Large",
+    "description": "Bảng vẽ điện tử chuyên nghiệp • 8K áp lực, Pro Pen 3, Bluetooth 5.4 • ✏️ Tăng 6% khoảng cách ôn, +4 thẻ ôn/ngày",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 12000000,
+    "emoji": "✏️",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "interval_boost",
+        "value": 0.06,
+        "name": "Digital Art ✏️",
+        "desc": "+6% khoảng cách ôn tập"
+      },
+      {
+        "type": "review_count_bonus",
+        "value": 4,
+        "name": "Pen Precision ✏️",
+        "desc": "+4 thẻ ôn mỗi ngày"
+      }
+    ]
+  },
+  {
+    "id": "tech_go_pro_hero_13",
+    "name": "GoPro Hero 13 Black",
+    "description": "Camera hành động chuyên nghiệp • 5.3K60, HyperSmooth 6.0, 10-bit, GPS • 🎬 Tăng 6% thu nhập thụ động, +2 điểm sức khỏe",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 12000000,
+    "emoji": "🎬",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "passive_income_bonus",
+        "value": 0.06,
+        "name": "Action Cam 🎬",
+        "desc": "+6% thu nhập thụ động"
+      },
+      {
+        "type": "health_boost",
+        "value": 2,
+        "name": "Adventure 🎬",
+        "desc": "+2 điểm sức khỏe"
+      }
+    ]
+  },
+  {
+    "id": "tech_philips_hue",
+    "name": "Philips Hue Starter Kit",
+    "description": "Hệ thống đèn thông minh • 3 bóng màu + Bridge, Zigbee, Alexa/Google • 💡 Tăng 5% khoảng cách ôn, +3% ease factor",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 5000000,
+    "emoji": "💡",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "interval_boost",
+        "value": 0.05,
+        "name": "Smart Light 💡",
+        "desc": "+5% khoảng cách ôn tập"
+      },
+      {
+        "type": "factor_boost",
+        "value": 0.03,
+        "name": "Ambient Mode 💡",
+        "desc": "+3% ease factor"
+      }
+    ]
+  },
+  {
+    "id": "tech_roomba_j9_plus",
+    "name": "iRobot Roomba j9+",
+    "description": "Robot hút bụi thông minh • Tự động đổ rác, AI nhận diện vật cản, 3 tầng lọc • 🤖 Tăng 8% thu nhập thụ động, +2 điểm sức khỏe",
+    "category": "💻 Cửa hàng đồ công nghệ",
+    "price": 18000000,
+    "emoji": "🤖",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "passive_income_bonus",
+        "value": 0.08,
+        "name": "Auto Clean 🤖",
+        "desc": "+8% thu nhập thụ động"
+      },
+      {
+        "type": "health_boost",
+        "value": 2,
+        "name": "Clean Home 🤖",
+        "desc": "+2 điểm sức khỏe"
+      }
+    ]
+  },
+  {
+    "id": "luxury_rolex",
+    "name": "Rolex Submariner Date",
+    "description": "Đồng hồ lặn huyền thoại, 41mm, Ceramic • ⌚ Giảm 15% cooldown CK, +8% lãi suất",
+    "category": "💎 Cửa hàng hàng hiệu",
+    "price": 400000000,
+    "emoji": "⌚",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "stock_cooldown_reduction",
+        "value": 0.15,
+        "name": "Rolex Finance 📉",
+        "desc": "Giảm 15% cooldown chứng khoán"
+      },
+      {
+        "type": "interest_bonus",
+        "value": 0.08,
+        "name": "Rolex Banking 🏦",
+        "desc": "+8% lãi suất ngân hàng"
+      }
+    ]
+  },
+  {
+    "id": "luxury_hermes",
+    "name": "Túi Hermès Birkin 30",
+    "description": "Túi da thật, Epsom da cá sấu, khoá vàng • 👜 +10% thu nhập thụ động, +10 slot kho đồ",
+    "category": "💎 Cửa hàng hàng hiệu",
+    "price": 500000000,
+    "emoji": "👜",
+    "stars": 5,
+    "effect_list": [
+      {
+        "type": "passive_income_bonus",
+        "value": 0.1,
+        "name": "Birkin Empire 👜",
+        "desc": "+10% thu nhập thụ động"
+      },
+      {
+        "type": "inventory_capacity",
+        "value": 10,
+        "name": "Birkin Bag 👜",
+        "desc": "+10 slot kho đồ — đựng đồ hiệu!"
+      }
+    ]
+  },
+  {
+    "id": "luxury_louisvuitton",
+    "name": "Louis Vuitton Neverfull MM",
+    "description": "Tote bag kinh điển, Monogram Canvas • 🛍️ +5 slot kho đồ, +3% thu nhập thụ động",
+    "category": "💎 Cửa hàng hàng hiệu",
+    "price": 35000000,
+    "emoji": "🛍️",
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "inventory_capacity",
+        "value": 5,
+        "name": "LV Neverfull 🛍️",
+        "desc": "+5 slot kho đồ"
+      },
+      {
+        "type": "passive_income_bonus",
+        "value": 0.03,
+        "name": "LV Style 🛍️",
+        "desc": "+3% thu nhập thụ động"
+      }
+    ]
+  },
+  {
+    "id": "luxury_chanel_221",
+    "name": "Chanel Classic Flap Bag",
+    "description": "Medium, da dê đen, khoá vàng 24K • 👜 +8 slot kho, +5% thu nhập thụ động",
+    "category": "💎 Cửa hàng hàng hiệu",
+    "price": 180000000,
+    "emoji": "👜",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "inventory_capacity",
+        "value": 8,
+        "name": "Chanel Classic 👜",
+        "desc": "+8 slot kho đồ"
+      },
+      {
+        "type": "passive_income_bonus",
+        "value": 0.05,
+        "name": "Chanel Elegance 👜",
+        "desc": "+5% thu nhập thụ động"
+      }
+    ]
+  },
+  {
+    "id": "luxury_gucci_belt",
+    "name": "Gucci GG Marmont Belt",
+    "description": "Thắt lưng da, khóa GG, 3.8cm • 🎗️ +3 slot kho, +2% thu nhập thụ động",
+    "category": "💎 Cửa hàng hàng hiệu",
+    "price": 18000000,
+    "emoji": "🎗️",
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "inventory_capacity",
+        "value": 3,
+        "name": "Gucci Belt 🎗️",
+        "desc": "+3 slot kho đồ"
+      },
+      {
+        "type": "passive_income_bonus",
+        "value": 0.02,
+        "name": "Gucci Style 🎗️",
+        "desc": "+2% thu nhập thụ động"
+      }
+    ]
+  },
+  {
+    "id": "luxury_prada_glasses",
+    "name": "Prada Symbole Sunglasses",
+    "description": "Kính mát thời trang, gọng chữ D • 🕶️ +2% thu nhập thụ động, +1 slot trang bị",
+    "category": "💎 Cửa hàng hàng hiệu",
+    "price": 15000000,
+    "emoji": "🕶️",
+    "stars": 1,
+    "effect_list": [
+      {
+        "type": "passive_income_bonus",
+        "value": 0.02,
+        "name": "Prada Style 🕶️",
+        "desc": "+2% thu nhập thụ động"
+      },
+      {
+        "type": "equipment_slot",
+        "value": 1,
+        "name": "Prada Glasses 🕶️",
+        "desc": "+1 slot trang bị"
+      }
+    ]
+  },
+  {
+    "id": "luxury_cartier_watch",
+    "name": "Cartier Tank Française",
+    "description": "Đồng hồ Pháp, thép không gỉ, mặt số vàng • ⌚ Giảm 10% cooldown CK, +5% lãi suất",
+    "category": "💎 Cửa hàng hàng hiệu",
+    "price": 250000000,
+    "emoji": "⌚",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "stock_cooldown_reduction",
+        "value": 0.1,
+        "name": "Cartier Finance 📉",
+        "desc": "Giảm 10% cooldown chứng khoán"
+      },
+      {
+        "type": "interest_bonus",
+        "value": 0.05,
+        "name": "Cartier Banking 🏦",
+        "desc": "+5% lãi suất ngân hàng"
+      }
+    ]
+  },
+  {
+    "id": "luxury_tiffany",
+    "name": "Tiffany & Co. Heart Tag",
+    "description": "Vòng cổ bạc sterling, mặt trái tim • 💎 +3% thu nhập thụ động, +2 slot kho",
+    "category": "💎 Cửa hàng hàng hiệu",
+    "price": 80000000,
+    "emoji": "💎",
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "passive_income_bonus",
+        "value": 0.03,
+        "name": "Tiffany Charm 💎",
+        "desc": "+3% thu nhập thụ động"
+      },
+      {
+        "type": "inventory_capacity",
+        "value": 2,
+        "name": "Tiffany Bag 💎",
+        "desc": "+2 slot kho đồ"
+      }
+    ]
+  },
+  {
+    "id": "luxury_dior_sneakers",
+    "name": "Dior B30 Sneakers",
+    "description": "Giày sneaker cao cấp, monogram Dior • 👟 +2% thu nhập thụ động, +2 slot kho",
+    "category": "💎 Cửa hàng hàng hiệu",
+    "price": 42000000,
+    "emoji": "👟",
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "passive_income_bonus",
+        "value": 0.02,
+        "name": "Dior Sneakers 👟",
+        "desc": "+2% thu nhập thụ động"
+      },
+      {
+        "type": "inventory_capacity",
+        "value": 2,
+        "name": "Dior Box 👟",
+        "desc": "+2 slot kho đồ"
+      }
+    ]
+  },
+  {
+    "id": "luxury_omega",
+    "name": "Omega Speedmaster Moonwatch",
+    "description": "Đồng hồ mặt trăng, lịch sử NASA • ⌚ Giảm 12% cooldown CK, +6% lãi suất",
+    "category": "💎 Cửa hàng hàng hiệu",
+    "price": 280000000,
+    "emoji": "⌚",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "stock_cooldown_reduction",
+        "value": 0.12,
+        "name": "Omega Finance 📉",
+        "desc": "Giảm 12% cooldown chứng khoán"
+      },
+      {
+        "type": "interest_bonus",
+        "value": 0.06,
+        "name": "Omega Banking 🏦",
+        "desc": "+6% lãi suất ngân hàng"
+      }
+    ]
+  },
+  {
+    "id": "re_chungcu",
+    "name": "Căn hộ chung cư",
+    "description": "2PN, trung tâm thành phố — cho thuê thu nhập thụ động",
+    "category": "🏠 Thị trường bất động sản",
+    "price": 3000000000,
+    "emoji": "🏢",
+    "is_real_estate": true,
+    "fair_rent": 12000000,
+    "re_desc": "Thu nhập thuê ổn định, khu vực trung tâm",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "passive_income_bonus",
+        "value": 0.03,
+        "name": "Chung Cư 🏢",
+        "desc": "+3% thu nhập thụ động"
+      }
+    ]
+  },
+  {
+    "id": "re_nhamat",
+    "name": "Nhà mặt tiền đường lớn",
+    "description": "4 tầng, 80m², kinh doanh được",
+    "category": "🏠 Thị trường bất động sản",
+    "price": 8000000000,
+    "emoji": "🏠",
+    "is_real_estate": true,
+    "fair_rent": 35000000,
+    "re_desc": "Vị trí đắc địa, phù hợp mặt bằng kinh doanh",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "passive_income_bonus",
+        "value": 0.08,
+        "name": "Mặt Tiền 🏠",
+        "desc": "+8% thu nhập thụ động"
+      }
+    ]
+  },
+  {
+    "id": "re_villa",
+    "name": "Villa nghỉ dưỡng",
+    "description": "500m², hồ bơi riêng, view biển",
+    "category": "🏠 Thị trường bất động sản",
+    "price": 25000000000,
+    "emoji": "🏖️",
+    "is_real_estate": true,
+    "fair_rent": 80000000,
+    "re_desc": "Cho thuê nghỉ dưỡng cao cấp, mùa hè thu nhập cao",
+    "stars": 5,
+    "effect_list": [
+      {
+        "type": "passive_income_bonus",
+        "value": 0.15,
+        "name": "Villa Resort 🏖️",
+        "desc": "+15% thu nhập thụ động"
+      },
+      {
+        "type": "health_boost",
+        "value": 10,
+        "name": "Villa Health ❤️",
+        "desc": "+10 sức khỏe — không khí trong lành!"
+      }
+    ]
+  },
+  {
+    "id": "re_toanha",
+    "name": "Tòa nhà văn phòng",
+    "description": "8 tầng, 2.000m², trung tâm quận 1",
+    "category": "🏠 Thị trường bất động sản",
+    "price": 120000000000,
+    "emoji": "🏗️",
+    "is_real_estate": true,
+    "fair_rent": 400000000,
+    "re_desc": "Toà nhà hạng A, cho thuê văn phòng nhiều tầng",
+    "stars": 5,
+    "effect_list": [
+      {
+        "type": "passive_income_bonus",
+        "value": 0.25,
+        "name": "Tòa Nhà 🏗️",
+        "desc": "+25% thu nhập thụ động"
+      },
+      {
+        "type": "interest_bonus",
+        "value": 0.05,
+        "name": "Building Finance 🏦",
+        "desc": "+5% lãi suất ngân hàng"
+      }
+    ]
+  },
+  {
+    "id": "re_shophouse",
+    "name": "Shophouse thương mại",
+    "description": "5 tầng, mặt tiền 6m, khu CBD",
+    "category": "🏠 Thị trường bất động sản",
+    "price": 15000000000,
+    "emoji": "🏬",
+    "is_real_estate": true,
+    "fair_rent": 60000000,
+    "re_desc": "Kinh doanh sầm uất, vị trí trung tâm",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "passive_income_bonus",
+        "value": 0.12,
+        "name": "Shophouse 🏬",
+        "desc": "+12% thu nhập thụ động"
+      }
+    ]
+  },
+  {
+    "id": "re_condotel",
+    "name": "Condotel biển",
+    "description": "Studio view biển, full nội thất",
+    "category": "🏠 Thị trường bất động sản",
+    "price": 2000000000,
+    "emoji": "🏨",
+    "is_real_estate": true,
+    "fair_rent": 10000000,
+    "re_desc": "Cho thuê du lịch, công suất cao mùa hè",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "passive_income_bonus",
+        "value": 0.03,
+        "name": "Condotel 🏨",
+        "desc": "+3% thu nhập thụ động"
+      },
+      {
+        "type": "health_boost",
+        "value": 5,
+        "name": "Condotel Health ❤️",
+        "desc": "+5 sức khỏe — view biển thư giãn!"
+      }
+    ]
+  },
+  {
+    "id": "re_datnen",
+    "name": "Đất nền ven đô",
+    "description": "200m², sổ đỏ, gần cao tốc",
+    "category": "🏠 Thị trường bất động sản",
+    "price": 5000000000,
+    "emoji": "🏞️",
+    "is_real_estate": true,
+    "fair_rent": 15000000,
+    "re_desc": "Giá trị tăng theo thời gian, cho thuê mặt bằng",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "passive_income_bonus",
+        "value": 0.05,
+        "name": "Đất Nền 🏞️",
+        "desc": "+5% thu nhập thụ động"
+      }
+    ]
+  },
+  {
+    "id": "study_focus_potion",
+    "name": "🧪 Thuốc Tập Trung Cao Độ",
+    "description": "×1.5 XP trong 30 phút — học sâu hơn, nhớ lâu hơn",
+    "category": "🎓 Vật phẩm học tập",
+    "price": 80000,
+    "emoji": "🧪",
+    "expire_h": 6,
+    "rarity": "uncommon",
+    "effect_list": [
+      {
+        "type": "reward_multiplier",
+        "value": 1.5,
+        "duration": 1800,
+        "cards": 0,
+        "expire_h": 6,
+        "name": "Thuốc Tập Trung 🧪",
+        "desc": "×1.5 tiền thưởng trong 30 phút"
+      },
+      {
+        "type": "effect_extend",
+        "value": 900,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 6,
+        "name": "Hào Quang Kéo Dài 🧪",
+        "desc": "Kéo dài +15 phút cho hiệu ứng đang chạy!"
+      }
+    ]
+  },
+  {
+    "id": "study_memory_elixir",
+    "name": "✨ Tinh Dầu Ghi Nhớ",
+    "description": "×2 tiền thưởng Good trong 45 phút — ôn đâu nhớ đó",
+    "category": "🎓 Vật phẩm học tập",
+    "price": 120000,
+    "emoji": "✨",
+    "expire_h": 6,
+    "rarity": "uncommon",
+    "effect": {
+      "type": "reward_multiplier",
+      "value": 2.0,
+      "duration": 2700,
+      "cards": 0,
+      "expire_h": 6,
+      "name": "Thuốc Ký Ức ✨",
+      "desc": "×2 Good/Hard reward trong 45 phút"
+    }
+  },
+  {
+    "id": "study_energy_vial",
+    "name": "⚡ Năng Lượng Học Tập",
+    "description": "+3.000đ/thẻ cho 30 thẻ — xả thân vì bài vở",
+    "category": "🎓 Vật phẩm học tập",
+    "price": 150000,
+    "emoji": "⚡",
+    "expire_h": 8,
+    "rarity": "rare",
+    "effect_list": [
+      {
+        "type": "xp_bonus",
+        "value": 3000,
+        "duration": 0,
+        "cards": 30,
+        "expire_h": 8,
+        "name": "Bình Năng Lượng ⚡",
+        "desc": "+3.000đ/thẻ trong 30 thẻ tiếp theo"
+      },
+      {
+        "type": "item_preserve",
+        "value": 4,
+        "duration": 0,
+        "cards": 0,
+        "expire_h": 8,
+        "name": "Trường Bảo Tồn ⚡",
+        "desc": "Kéo dài +4 giờ hạn sử dụng items trong kho!"
+      }
+    ]
+  },
+  {
+    "id": "study_smart_pill",
+    "name": "💊 Viên Thuốc Thông Minh",
+    "description": "×2 tiền thưởng Easy + ×1.5 Good trong 25 phút",
+    "category": "🎓 Vật phẩm học tập",
+    "price": 200000,
+    "emoji": "💊",
+    "expire_h": 8,
+    "rarity": "rare",
+    "effect": {
+      "type": "double_easy",
+      "value": 2.0,
+      "duration": 1500,
+      "cards": 0,
+      "expire_h": 8,
+      "name": "Thuốc Thông Minh 💊",
+      "desc": "×2 Easy + ×1.5 Good trong 25 phút"
+    }
+  },
+  {
+    "id": "study_concentration_aura",
+    "name": "🔮 Hào Quang Tập Trung",
+    "description": "×2 tất cả tiền thưởng trong 20 phút — tối ưu học tập",
+    "category": "🎓 Vật phẩm học tập",
+    "price": 350000,
+    "emoji": "🔮",
+    "expire_h": 10,
+    "rarity": "epic",
+    "effect": {
+      "type": "reward_multiplier",
+      "value": 2.0,
+      "duration": 1200,
+      "cards": 0,
+      "expire_h": 10,
+      "name": "Hào Quang Tập Trung 🔮",
+      "desc": "×2 tất cả tiền thưởng trong 20 phút"
+    }
+  },
+  {
+    "id": "study_shield_again",
+    "name": "🛡️ Bùa Chống Again",
+    "description": "Hủy phạt Again trong 15 phút — bảo kê học tập",
+    "category": "🎓 Vật phẩm học tập",
+    "price": 250000,
+    "emoji": "🛡️",
+    "expire_h": 8,
+    "rarity": "epic",
+    "effect": {
+      "type": "no_again_penalty",
+      "value": 1.0,
+      "duration": 900,
+      "cards": 0,
+      "expire_h": 8,
+      "name": "Khiên Again 🛡️",
+      "desc": "Miễn phạt Again trong 15 phút"
+    }
+  },
+  {
+    "id": "study_super_boost",
+    "name": "🚀 Boost Siêu Học Tập",
+    "description": "×3 XP + ×2 tất cả thưởng trong 15 phút",
+    "category": "🎓 Vật phẩm học tập",
+    "price": 500000,
+    "emoji": "🚀",
+    "expire_h": 12,
+    "rarity": "legendary",
+    "effect": {
+      "type": "reward_multiplier",
+      "value": 3.0,
+      "duration": 900,
+      "cards": 0,
+      "expire_h": 12,
+      "name": "Siêu Tăng Cường 🚀",
+      "desc": "×3 tiền thưởng trong 15 phút"
+    }
+  },
+  {
+    "id": "study_weekly_wisdom",
+    "name": "📚 Gói Tri Thức Tuần",
+    "description": "×1.5 tất cả thưởng trong 7 ngày — cho người chăm chỉ",
+    "category": "🎓 Vật phẩm học tập",
+    "price": 1500000,
+    "emoji": "📚",
+    "expire_h": 168,
+    "rarity": "legendary",
+    "effect": {
+      "type": "reward_multiplier",
+      "value": 1.5,
+      "duration": 604800,
+      "cards": 0,
+      "expire_h": 168,
+      "name": "Trí Tuệ Hàng Tuần 📚",
+      "desc": "×1.5 tất cả tiền thưởng trong 7 ngày"
+    }
+  },
+  {
+    "id": "study_flash_card",
+    "name": "🃏 Thẻ Bài Sắc Bén",
+    "description": "+5.000đ cho mỗi thẻ trả lời đúng, 20 thẻ",
+    "category": "🎓 Vật phẩm học tập",
+    "price": 100000,
+    "emoji": "🃏",
+    "expire_h": 6,
+    "rarity": "uncommon",
+    "effect": {
+      "type": "xp_bonus",
+      "value": 5000,
+      "duration": 0,
+      "cards": 20,
+      "expire_h": 6,
+      "name": "Thẻ Sắc Bén 🃏",
+      "desc": "+5.000đ/thẻ trong 20 thẻ tiếp"
+    }
+  },
+  {
+    "id": "study_night_owl",
+    "name": "🦉 Cú Đêm Học Bài",
+    "description": "Sau 10PM: ×2 tiền thưởng, 60 phút — học khuya hiệu quả",
+    "category": "🎓 Vật phẩm học tập",
+    "price": 180000,
+    "emoji": "🦉",
+    "expire_h": 6,
+    "rarity": "rare",
+    "effect": {
+      "type": "night_owl",
+      "value": 2.0,
+      "duration": 3600,
+      "cards": 0,
+      "expire_h": 6,
+      "name": "Cú Đêm 🦉",
+      "desc": "×2 tiền thưởng khi học vào ban đêm, 60 phút"
+    }
+  },
+  {
+    "id": "study_sticky_notes",
+    "name": "📝 Giấy Nhớ Học Tập",
+    "description": "Set 100 giấy nhớ màu — ×1.2 XP trong 15 phút",
+    "category": "🎓 Vật phẩm học tập",
+    "price": 50000,
+    "emoji": "📝",
+    "expire_h": 4,
+    "rarity": "common",
+    "effect": {
+      "type": "reward_multiplier",
+      "value": 1.2,
+      "duration": 900,
+      "cards": 0,
+      "expire_h": 4,
+      "name": "Sticky Notes 📝",
+      "desc": "×1.2 tiền thưởng trong 15 phút"
+    }
+  },
+  {
+    "id": "study_smart_pen",
+    "name": "✒️ Bút Thông Minh",
+    "description": "Bút ghi chép số hóa — +1.000đ/thẻ trong 20 thẻ",
+    "category": "🎓 Vật phẩm học tập",
+    "price": 120000,
+    "emoji": "✒️",
+    "expire_h": 6,
+    "rarity": "uncommon",
+    "effect": {
+      "type": "xp_bonus",
+      "value": 1000,
+      "duration": 0,
+      "cards": 20,
+      "expire_h": 6,
+      "name": "Smart Pen ✒️",
+      "desc": "+1.000đ/thẻ trong 20 thẻ tiếp theo"
+    }
+  },
+  {
+    "id": "study_reading_lamp",
+    "name": "💡 Đèn Học Thông Minh",
+    "description": "Đèn LED chống mỏi mắt — ×2 sau 8PM, 30 phút",
+    "category": "🎓 Vật phẩm học tập",
+    "price": 300000,
+    "emoji": "💡",
+    "expire_h": 8,
+    "rarity": "epic",
+    "effect": {
+      "type": "night_owl",
+      "value": 2.0,
+      "duration": 1800,
+      "cards": 0,
+      "expire_h": 8,
+      "name": "Smart Lamp 💡",
+      "desc": "×2 tiền thưởng sau 8PM trong 30 phút"
+    }
+  },
+  {
+    "id": "study_noise_cancelling",
+    "name": "🎧 Headset Chống Ồn",
+    "description": "Cách âm hoàn toàn — ×2 trong 25 phút",
+    "category": "🎓 Vật phẩm học tập",
+    "price": 500000,
+    "emoji": "🎧",
+    "expire_h": 10,
+    "rarity": "epic",
+    "effect": {
+      "type": "reward_multiplier",
+      "value": 2.0,
+      "duration": 1500,
+      "cards": 0,
+      "expire_h": 10,
+      "name": "Silent Focus 🎧",
+      "desc": "×2 tất cả tiền thưởng trong 25 phút"
+    }
+  },
+  {
+    "id": "study_flashcard_pro",
+    "name": "🔄 Thẻ Flashcard Điện Tử",
+    "description": "+2.000đ/thẻ trong 30 thẻ, nhắc lịch ôn",
+    "category": "🎓 Vật phẩm học tập",
+    "price": 250000,
+    "emoji": "🔄",
+    "expire_h": 8,
+    "rarity": "rare",
+    "effect": {
+      "type": "xp_bonus",
+      "value": 2000,
+      "duration": 0,
+      "cards": 30,
+      "expire_h": 8,
+      "name": "Thẻ Ghi Nhớ Điện Tử 🔄",
+      "desc": "+2.000đ/thẻ trong 30 thẻ tiếp theo"
+    }
+  },
+  {
+    "id": "study_memory_anchor",
+    "name": "⚓ Neo Trí Nhớ",
+    "description": "+18% khoảng cách ôn cho 12 thẻ đúng tiếp theo — đẩy thẻ đã nắm chắc ra xa hơn",
+    "category": "🎓 Vật phẩm học tập",
+    "price": 220000,
+    "emoji": "⚓",
+    "expire_h": 8,
+    "rarity": "rare",
+    "effect": {
+      "type": "interval_boost",
+      "value": 0.18,
+      "duration": 0,
+      "cards": 12,
+      "expire_h": 8,
+      "name": "Mỏ Neo Ký Ức ⚓",
+      "desc": "+18% khoảng cách ôn cho 12 thẻ tiếp theo"
+    }
+  },
+  {
+    "id": "study_scheduler_patch",
+    "name": "🧠 Bản Vá Scheduler",
+    "description": "+12% khoảng cách ôn và +6% ease factor cho 18 thẻ tiếp theo",
+    "category": "🎓 Vật phẩm học tập",
+    "price": 320000,
+    "emoji": "🧠",
+    "expire_h": 10,
+    "rarity": "epic",
+    "effect_list": [
+      {
+        "type": "interval_boost",
+        "value": 0.12,
+        "duration": 0,
+        "cards": 18,
+        "expire_h": 10,
+        "name": "Miếng Dán Lịch Trình 🧠",
+        "desc": "+12% khoảng cách ôn cho 18 thẻ tiếp theo"
+      },
+      {
+        "type": "factor_boost",
+        "value": 0.06,
+        "name": "Miếng Dán Ease 🧠",
+        "desc": "+6% ease factor cho cùng lượt kích hoạt"
+      }
+    ]
+  },
+  {
+    "id": "study_easy_combo",
+    "name": "🎯 Combo Easy Chuẩn",
+    "description": "Riêng thẻ Easy: +35% khoảng cách ôn trong 40 phút — dành cho lúc đang vào phom",
+    "category": "🎓 Vật phẩm học tập",
+    "price": 260000,
+    "emoji": "🎯",
+    "expire_h": 8,
+    "rarity": "epic",
+    "effect": {
+      "type": "easy_interval_bonus",
+      "value": 0.35,
+      "duration": 2400,
+      "cards": 0,
+      "expire_h": 8,
+      "name": "Liên Hoàn Easy 🎯",
+      "desc": "Easy +35% khoảng cách ôn trong 40 phút"
+    }
+  },
+  {
+    "id": "crypto_btc_starter",
+    "name": "Bitcoin Starter Pack",
+    "description": "Mua ~0.001 BTC — bắt đầu hành trình Bitcoin trên Binance",
+    "category": "🪙 Sàn Crypto",
+    "price": 1700000,
+    "emoji": "🟠",
+    "stars": 2,
+    "is_digital_asset": true,
+    "crypto_symbol": "BTC",
+    "crypto_amount_vnd": 1700000,
+    "exchange": "Binance",
+    "effect": {
+      "type": "passive_income_bonus",
+      "value": 0.02,
+      "name": "BTC Hodl 🟠",
+      "desc": "+2% thu nhập thụ động — nắm giữ Bitcoin như vàng số!"
+    }
+  },
+  {
+    "id": "crypto_eth_starter",
+    "name": "Ethereum Starter",
+    "description": "Mua ~0.01 ETH — DeFi, NFT và staking 4% APY",
+    "category": "🪙 Sàn Crypto",
+    "price": 900000,
+    "emoji": "🔷",
+    "stars": 2,
+    "is_digital_asset": true,
+    "crypto_symbol": "ETH",
+    "crypto_amount_vnd": 900000,
+    "exchange": "Binance",
+    "effect": {
+      "type": "crypto_cooldown_reduction",
+      "value": 0.03,
+      "name": "ETH DeFi 🔷",
+      "desc": "Giảm 3% cooldown Crypto — ETH là nền tảng DeFi!"
+    }
+  },
+  {
+    "id": "crypto_sol_pack",
+    "name": "Solana Fast Pack",
+    "description": "Mua ~0.25 SOL — blockchain tốc độ cao, staking 6.5% APY",
+    "category": "🪙 Sàn Crypto",
+    "price": 1000000,
+    "emoji": "🟣",
+    "stars": 2,
+    "is_digital_asset": true,
+    "crypto_symbol": "SOL",
+    "crypto_amount_vnd": 1000000,
+    "exchange": "OKX",
+    "effect_list": [
+      {
+        "type": "movement_speed",
+        "value": 0.05,
+        "name": "SOL Speed 🟣",
+        "desc": "⚡ Tốc độ +5% — Solana nhanh nhất blockchain!"
+      },
+      {
+        "type": "crypto_cooldown_reduction",
+        "value": 0.03,
+        "name": "SOL Network 🟣",
+        "desc": "Giảm 3% cooldown Crypto"
+      }
+    ]
+  },
+  {
+    "id": "crypto_bnb_pack",
+    "name": "BNB Pack",
+    "description": "Mua ~0.5 BNB — giảm phí giao dịch trên Binance, staking 2% APY",
+    "category": "🪙 Sàn Crypto",
+    "price": 7500000,
+    "emoji": "🟡",
+    "stars": 3,
+    "is_digital_asset": true,
+    "crypto_symbol": "BNB",
+    "crypto_amount_vnd": 7500000,
+    "exchange": "Binance",
+    "effect_list": [
+      {
+        "type": "stock_cooldown_reduction",
+        "value": 0.03,
+        "name": "BNB Exchange 🟡",
+        "desc": "Giảm 3% cooldown CK — giảm phí Binance"
+      },
+      {
+        "type": "crypto_cooldown_reduction",
+        "value": 0.03,
+        "name": "BNB Fuel 🟡",
+        "desc": "Giảm 3% cooldown Crypto"
+      }
+    ]
+  },
+  {
+    "id": "crypto_usdt_safe",
+    "name": "USDT Safe Harbor",
+    "description": "Mua 200 USDT — neo cảng an toàn trong bão thị trường, staking 5% APY",
+    "category": "🪙 Sàn Crypto",
+    "price": 5100000,
+    "emoji": "💵",
+    "stars": 1,
+    "is_digital_asset": true,
+    "crypto_symbol": "USDT",
+    "crypto_amount_vnd": 5100000,
+    "exchange": "Remitano",
+    "effect": {
+      "type": "interest_bonus",
+      "value": 0.03,
+      "name": "USDT Yield 💵",
+      "desc": "+3% lãi suất — stablecoin neo cảng an toàn 5% APY"
+    }
+  },
+  {
+    "id": "crypto_doge_meme",
+    "name": "Doge Army Pack",
+    "description": "Mua 5.000 DOGE — To the moon! 🐶 Rủi ro cao, phần thưởng lớn",
+    "category": "🪙 Sàn Crypto",
+    "price": 25000000,
+    "emoji": "🐶",
+    "stars": 1,
+    "rarity": "rare",
+    "is_digital_asset": true,
+    "crypto_symbol": "DOGE",
+    "crypto_amount_vnd": 25000000,
+    "exchange": "VNDC",
+    "effect": {
+      "type": "xp_bonus",
+      "value": 5000,
+      "duration": 0,
+      "cards": 50,
+      "expire_h": 72,
+      "name": "Doge Moon 🐶",
+      "desc": "+5.000đ/thẻ trong 50 thẻ — pump & dump: lên nhanh, xuống nhanh!"
+    }
+  },
+  {
+    "id": "crypto_ada_stake",
+    "name": "Cardano Staking Pack",
+    "description": "Mua 1.000 ADA — staking 3% APY, công nghệ bền vững",
+    "category": "🪙 Sàn Crypto",
+    "price": 20000000,
+    "emoji": "💙",
+    "stars": 3,
+    "is_digital_asset": true,
+    "crypto_symbol": "ADA",
+    "crypto_amount_vnd": 20000000,
+    "exchange": "Bybit",
+    "effect_list": [
+      {
+        "type": "passive_income_bonus",
+        "value": 0.03,
+        "name": "ADA Stake 💙",
+        "desc": "+3% thu nhập thụ động — staking 3% APY bền vững"
+      },
+      {
+        "type": "tax_reduction",
+        "value": 0.02,
+        "name": "ADA Green 💙",
+        "desc": "Giảm 2% thuế — blockchain thân thiện môi trường"
+      }
+    ]
+  },
+  {
+    "id": "crypto_link_oracle",
+    "name": "Chainlink Oracle Pack",
+    "description": "Mua 50 LINK — oracle DeFi quan trọng nhất thị trường",
+    "category": "🪙 Sàn Crypto",
+    "price": 17500000,
+    "emoji": "🔗",
+    "stars": 3,
+    "is_digital_asset": true,
+    "crypto_symbol": "LINK",
+    "crypto_amount_vnd": 17500000,
+    "exchange": "Coinbase",
+    "effect": {
+      "type": "stock_cooldown_reduction",
+      "value": 0.05,
+      "name": "LINK Oracle 🔗",
+      "desc": "Giảm 5% cooldown CK — oracle cung cấp dữ liệu thị trường thực!"
+    }
+  },
+  {
+    "id": "crypto_eth_whale",
+    "name": "Ethereum DeFi Whale",
+    "description": "Mua 1 ETH nguyên — stake full nhận 4% APY, trở thành DeFi whale",
+    "category": "🪙 Sàn Crypto",
+    "price": 90000000,
+    "emoji": "🔷",
+    "stars": 4,
+    "rarity": "epic",
+    "is_digital_asset": true,
+    "crypto_symbol": "ETH",
+    "crypto_amount_vnd": 90000000,
+    "exchange": "Binance",
+    "effect_list": [
+      {
+        "type": "crypto_cooldown_reduction",
+        "value": 0.1,
+        "name": "ETH Whale 🔷",
+        "desc": "Giảm 10% cooldown Crypto — DeFi whale thực sự!"
+      },
+      {
+        "type": "passive_income_bonus",
+        "value": 0.05,
+        "name": "ETH Stake 🔷",
+        "desc": "+5% thu nhập thụ động — staking 4% APY full ETH"
+      }
+    ]
+  },
+  {
+    "id": "crypto_btc_whale",
+    "name": "Bitcoin Half-a-coin",
+    "description": "Mua 0.05 BTC — danh mục quý tộc số, giữ Bitcoin dài hạn",
+    "category": "🪙 Sàn Crypto",
+    "price": 85000000,
+    "emoji": "🟠",
+    "stars": 5,
+    "rarity": "legendary",
+    "is_digital_asset": true,
+    "crypto_symbol": "BTC",
+    "crypto_amount_vnd": 85000000,
+    "exchange": "Binance",
+    "effect_list": [
+      {
+        "type": "passive_income_bonus",
+        "value": 0.08,
+        "name": "BTC Whale 🟠",
+        "desc": "+8% thu nhập thụ động — Bitcoin như vàng trong kho!"
+      },
+      {
+        "type": "interest_bonus",
+        "value": 0.05,
+        "name": "BTC Reserve 🟠",
+        "desc": "+5% lãi suất — BTC là tài sản dự trữ số"
+      }
+    ]
+  },
+  {
+    "id": "crypto_shib_gamble",
+    "name": "Shiba Inu 10M Pack",
+    "description": "Mua 10.000.000 SHIB — rủi ro rug pull cao, but wen moon? 🦊",
+    "category": "🪙 Sàn Crypto",
+    "price": 700000,
+    "emoji": "🦊",
+    "stars": 1,
+    "rarity": "epic",
+    "is_digital_asset": true,
+    "crypto_symbol": "SHIB",
+    "crypto_amount_vnd": 700000,
+    "exchange": "Binance",
+    "effect": {
+      "type": "xp_bonus",
+      "value": 10000,
+      "duration": 0,
+      "cards": 10,
+      "expire_h": 24,
+      "name": "SHIB Moon 🦊",
+      "desc": "+10.000đ/thẻ trong 10 thẻ — cực rủi ro, pump cực ngắn, rug pull bất cứ lúc nào!"
+    }
+  },
+  {
+    "id": "crypto_dot_parachain",
+    "name": "Polkadot Parachain Pack",
+    "description": "Mua 100 DOT — staking 12% APY cao nhất thị trường, dài hạn",
+    "category": "🪙 Sàn Crypto",
+    "price": 20000000,
+    "emoji": "⚫",
+    "stars": 3,
+    "is_digital_asset": true,
+    "crypto_symbol": "DOT",
+    "crypto_amount_vnd": 20000000,
+    "exchange": "OKX",
+    "effect_list": [
+      {
+        "type": "passive_income_bonus",
+        "value": 0.04,
+        "name": "DOT Stake ⚫",
+        "desc": "+4% thu nhập thụ động — staking 12% APY cao nhất!"
+      },
+      {
+        "type": "skill_cooldown_reduction",
+        "value": 0.03,
+        "name": "Parachain ⚫",
+        "desc": "Giảm 3% cooldown kỹ năng — cross-chain interoperability"
+      }
+    ]
+  },
+  {
+    "id": "ins_health",
+    "name": "Bảo hiểm sức khỏe tư nhân",
+    "description": "Giảm 60% chi phí khi gặp sự kiện y tế. Hiệu lực vĩnh viễn.",
+    "category": "🛡️ Bảo hiểm",
+    "price": 3500000,
+    "emoji": "🏥",
+    "is_insurance": true,
+    "insurance_type": "health",
+    "reduction": 0.6,
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "disease_resistance",
+        "value": 0.6,
+        "name": "Bảo Hiểm Sức Khỏe 🏥",
+        "desc": "Kháng bệnh 60%"
+      }
+    ]
+  },
+  {
+    "id": "ins_car",
+    "name": "Bảo hiểm xe ô tô toàn diện",
+    "description": "Giảm 35% chi phí sự cố xe. Hiệu lực vĩnh viễn.",
+    "category": "🛡️ Bảo hiểm",
+    "price": 12000000,
+    "emoji": "🚗",
+    "is_insurance": true,
+    "insurance_type": "car",
+    "reduction": 0.35,
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "repair_speed",
+        "value": 0.35,
+        "name": "Bảo Hiểm Xe 🚗",
+        "desc": "Tăng 35% tốc sửa chữa"
+      }
+    ]
+  },
+  {
+    "id": "ins_property",
+    "name": "Bảo hiểm bất động sản",
+    "description": "Giảm 60% chi phí sự cố BĐS. Hiệu lực vĩnh viễn.",
+    "category": "🛡️ Bảo hiểm",
+    "price": 50000000,
+    "emoji": "🏠",
+    "is_insurance": true,
+    "insurance_type": "property",
+    "reduction": 0.6,
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "repair_speed",
+        "value": 0.6,
+        "name": "Bảo Hiểm BĐS 🏠",
+        "desc": "Tăng 60% tốc sửa chữa"
+      },
+      {
+        "type": "tax_reduction",
+        "value": 0.1,
+        "name": "Bảo Hiểm Thuế 🏠",
+        "desc": "Giảm 10% thuế"
+      }
+    ]
+  },
+  {
+    "id": "ins_life",
+    "name": "Bảo hiểm nhân thọ toàn diện",
+    "description": "Giảm 45% chi phí MỌI loại sự kiện khẩn cấp. Hiệu lực vĩnh viễn.",
+    "category": "🛡️ Bảo hiểm",
+    "price": 20000000,
+    "emoji": "💙",
+    "is_insurance": true,
+    "insurance_type": "life",
+    "reduction": 0.45,
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "disease_resistance",
+        "value": 0.45,
+        "name": "Bảo Hiểm Nhân Thọ 💙",
+        "desc": "Kháng bệnh 45%"
+      },
+      {
+        "type": "tax_reduction",
+        "value": 0.05,
+        "name": "Bảo Hiểm Thuế 💙",
+        "desc": "Giảm 5% thuế"
+      },
+      {
+        "type": "health_boost",
+        "value": 5,
+        "name": "Bảo Hiểm Sức Khỏe 💙",
+        "desc": "+5 sức khỏe"
+      }
+    ]
+  },
+  {
+    "id": "ins_motorbike",
+    "name": "Bảo hiểm xe máy toàn diện",
+    "description": "Giảm 40% chi phí sự cố xe máy — va chạm, tai nạn, mất cắp. Hiệu lực vĩnh viễn.",
+    "category": "🛡️ Bảo hiểm",
+    "price": 2200000,
+    "emoji": "🏍️",
+    "is_insurance": true,
+    "insurance_type": "motorbike",
+    "reduction": 0.4,
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "repair_speed",
+        "value": 0.4,
+        "name": "Bảo Hiểm Xe Máy 🏍️",
+        "desc": "Giảm 40% chi phí sửa xe"
+      }
+    ]
+  },
+  {
+    "id": "ins_accident",
+    "name": "Bảo hiểm tai nạn lao động",
+    "description": "Giảm 50% chi phí khi gặp sự kiện tai nạn — bảo vệ thu nhập chính. Hiệu lực vĩnh viễn.",
+    "category": "🛡️ Bảo hiểm",
+    "price": 2500000,
+    "emoji": "⚠️",
+    "is_insurance": true,
+    "insurance_type": "accident",
+    "reduction": 0.5,
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "disease_resistance",
+        "value": 0.5,
+        "name": "Bảo Hiểm Tai Nạn ⚠️",
+        "desc": "Giảm 50% chi phí tai nạn"
+      }
+    ]
+  },
+  {
+    "id": "ins_travel",
+    "name": "Bảo hiểm du lịch toàn cầu",
+    "description": "Giảm 55% chi phí khi gặp sự cố du lịch — thất lạc hành lý, hủy chuyến, y tế nước ngoài. Hiệu lực vĩnh viễn.",
+    "category": "🛡️ Bảo hiểm",
+    "price": 1500000,
+    "emoji": "✈️",
+    "is_insurance": true,
+    "insurance_type": "travel",
+    "reduction": 0.55,
+    "stars": 2,
+    "effect_list": [
+      {
+        "type": "travel_protection",
+        "value": 0.55,
+        "name": "Bảo Hiểm Du Lịch ✈️",
+        "desc": "Giảm 55% chi phí du lịch"
+      }
+    ]
+  },
+  {
+    "id": "ins_unemployment",
+    "name": "Bảo hiểm thất nghiệp",
+    "description": "Giảm 40% mất thu nhập khi xảy ra sự kiện thất nghiệp — trợ cấp 40% thu nhập 7 ngày. Hiệu lực vĩnh viễn.",
+    "category": "🛡️ Bảo hiểm",
+    "price": 4000000,
+    "emoji": "💼",
+    "is_insurance": true,
+    "insurance_type": "unemployment",
+    "reduction": 0.4,
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "income_protection",
+        "value": 0.4,
+        "name": "Bảo Hiểm Thất Nghiệp 💼",
+        "desc": "Bảo vệ 40% thu nhập khi thất nghiệp"
+      }
+    ]
+  },
+  {
+    "id": "finance_so_tiet_kiem_thong_minh",
+    "name": "Sổ Tiết Kiệm Thông Minh",
+    "description": "Sổ tiết kiệm số cho phép thu lãi tức thì mỗi 24h — lõi build ngân hàng cơ bản",
+    "category": "🏦 Vật phẩm tài chính",
+    "price": 50000000,
+    "emoji": "📒",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "instant_interest_cooldown",
+        "value": 86400,
+        "name": "Tiết Kiệm Thông Minh 📒",
+        "desc": "⏳ Thu lãi tức thì (hồi 24h)"
+      },
+      {
+        "type": "interest_speed_boost",
+        "value": 0.1,
+        "name": "Lãi Suất Thông Minh 📒",
+        "desc": "⚡ Lãi NH +10% tốc độ"
+      }
+    ]
+  },
+  {
+    "id": "finance_the_tin_dung_vip",
+    "name": "Thẻ Tín Dụng VIP Black",
+    "description": "Thẻ tín dụng giới hạn cao — tăng thanh khoản, thu lãi tiết kiệm mỗi 12h, +8% lãi suất",
+    "category": "🏦 Vật phẩm tài chính",
+    "price": 240000000,
+    "emoji": "💳",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "instant_interest_cooldown",
+        "value": 43200,
+        "name": "VIP Card 💳",
+        "desc": "⏳ Thu lãi tức thì (hồi 12h)"
+      },
+      {
+        "type": "interest_bonus",
+        "value": 0.08,
+        "name": "VIP Interest 💳",
+        "desc": "🏦 +8% lãi suất"
+      }
+    ]
+  },
+  {
+    "id": "finance_chung_chi_cfa",
+    "name": "Chứng Chỉ CFA Level 3",
+    "description": "Chứng chỉ tài chính danh giá — mở khóa build ngân hàng cao cấp: tăng tốc độ lãi, rút lãi mỗi 6h, +10% lãi suất",
+    "category": "🏦 Vật phẩm tài chính",
+    "price": 200000000,
+    "emoji": "🎓",
+    "stars": 5,
+    "effect_list": [
+      {
+        "type": "interest_speed_boost",
+        "value": 0.15,
+        "name": "CFA Power 🎓",
+        "desc": "⚡ Lãi NH +15% tốc độ"
+      },
+      {
+        "type": "instant_interest_cooldown",
+        "value": 21600,
+        "name": "CFA Privilege 🎓",
+        "desc": "⏳ Thu lãi tức thì (hồi 6h)"
+      },
+      {
+        "type": "interest_bonus",
+        "value": 0.1,
+        "name": "CFA Banking 🎓",
+        "desc": "🏦 +10% lãi suất"
+      }
+    ]
+  },
+  {
+    "id": "finance_quy_du_tru_vang",
+    "name": "Quỹ Dự Trữ Vàng Quốc Gia",
+    "description": "Chứng chỉ vàng vật chất — bảo toàn tài sản, thu lãi tiết kiệm mỗi 2h • Kỹ năng: thu lãi tức thì (hồi 2h), +12% lãi suất",
+    "category": "🏦 Vật phẩm tài chính",
+    "price": 1200000000,
+    "emoji": "🥇",
+    "stars": 5,
+    "effect_list": [
+      {
+        "type": "instant_interest_cooldown",
+        "value": 7200,
+        "name": "Gold Reserve 🥇",
+        "desc": "⏳ Thu lãi tức thì (hồi 2h)"
+      },
+      {
+        "type": "interest_bonus",
+        "value": 0.12,
+        "name": "Gold Interest 🥇",
+        "desc": "🏦 +12% lãi suất"
+      },
+      {
+        "type": "interest_speed_boost",
+        "value": 0.2,
+        "name": "Gold Speed 🥇",
+        "desc": "⚡ Lãi NH +20% tốc độ"
+      }
+    ]
+  },
+  {
+    "id": "finance_giay_phep_ngan_hang",
+    "name": "Giấy Phép Ngân Hàng TMCP",
+    "description": "Giấy phép thành lập ngân hàng thương mại — quyền năng tài chính tối thượng! • Thu lãi mỗi 1h, +30% tốc độ lãi, +20% lãi suất",
+    "category": "🏦 Vật phẩm tài chính",
+    "price": 3500000000000,
+    "emoji": "🏛️",
+    "stars": 5,
+    "effect_list": [
+      {
+        "type": "instant_interest_cooldown",
+        "value": 3600,
+        "name": "Bank License 🏛️",
+        "desc": "⏳ Thu lãi tức thì (hồi 1h)"
+      },
+      {
+        "type": "interest_speed_boost",
+        "value": 0.3,
+        "name": "Bank Speed 🏛️",
+        "desc": "⚡ Lãi NH +30% tốc độ"
+      },
+      {
+        "type": "interest_bonus",
+        "value": 0.2,
+        "name": "Bank Interest 🏛️",
+        "desc": "🏦 +20% lãi suất"
+      }
+    ]
+  },
+  {
+    "id": "finance_etf_vn30",
+    "name": "Quỹ ETF VN30",
+    "description": "Quỹ chỉ số VN30 — đầu tư thụ động vào 30 blue-chip hàng đầu sàn HSX, giảm phí giao dịch CK + tăng thu nhập thụ động",
+    "category": "🏦 Vật phẩm tài chính",
+    "price": 480000000,
+    "emoji": "📊",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "stock_cooldown_reduction",
+        "value": 0.15,
+        "name": "ETF Stock 📊",
+        "desc": "📉 Giảm 15% cooldown CK"
+      },
+      {
+        "type": "passive_income_bonus",
+        "value": 0.1,
+        "name": "ETF Income 📊",
+        "desc": "🏠 +10% thu nhập thụ động"
+      }
+    ]
+  },
+  {
+    "id": "finance_trai_phieu_chinh_phu",
+    "name": "Trái Phiếu Chính Phủ Kỳ Hạn 5 Năm",
+    "description": "Trái phiếu kho bạc nhà nước — giảm thuế thu nhập + tăng lãi suất tiết kiệm, kênh đầu tư an toàn tuyệt đối",
+    "category": "🏦 Vật phẩm tài chính",
+    "price": 150000000,
+    "emoji": "📜",
+    "stars": 3,
+    "effect_list": [
+      {
+        "type": "tax_reduction",
+        "value": 0.12,
+        "name": "Bond Tax 📜",
+        "desc": "💰 Giảm 12% thuế"
+      },
+      {
+        "type": "interest_bonus",
+        "value": 0.05,
+        "name": "Bond Interest 📜",
+        "desc": "🏦 +5% lãi suất"
+      }
+    ]
+  },
+  {
+    "id": "finance_hop_dong_tuong_lai",
+    "name": "Hợp Đồng Tương Lai Vàng",
+    "description": "Phái sinh vàng — lướt sóng rủi ro cao, lời to nhưng cũng dễ khủng hoảng. • Giảm cooldown CK mạnh nhưng tăng rủi ro khủng hoảng",
+    "category": "🏦 Vật phẩm tài chính",
+    "price": 750000000,
+    "emoji": "⚡",
+    "stars": 5,
+    "effect_list": [
+      {
+        "type": "stock_cooldown_reduction",
+        "value": 0.25,
+        "name": "Futures Stock ⚡",
+        "desc": "📉 Giảm 25% cooldown CK"
+      },
+      {
+        "type": "crypto_cooldown_reduction",
+        "value": 0.15,
+        "name": "Futures Crypto ⚡",
+        "desc": "🪙 Giảm 15% phí giao dịch Crypto"
+      },
+      {
+        "type": "emergency_magnetism",
+        "value": 0.15,
+        "name": "Futures Risk ⚡",
+        "desc": "⚠️ Tăng 15% rủi ro khủng hoảng"
+      }
+    ]
+  },
+  {
+    "id": "finance_quy_huu_tri_tu_dong",
+    "name": "Quỹ Hưu Trí Tự Động",
+    "description": "Quỹ hưu trí cá nhân — đóng góp tự động mỗi ngày, nhận thưởng daily tăng vọt + tăng thu nhập thụ động bền vững",
+    "category": "🏦 Vật phẩm tài chính",
+    "price": 900000000,
+    "emoji": "🏖️",
+    "stars": 4,
+    "effect_list": [
+      {
+        "type": "daily_reward_bonus",
+        "value": 50000,
+        "name": "Pension Daily 🏖️",
+        "desc": "🎁 +50,000₫ thưởng ngày"
+      },
+      {
+        "type": "passive_income_bonus",
+        "value": 0.15,
+        "name": "Pension Income 🏖️",
+        "desc": "🏠 +15% thu nhập thụ động"
+      },
+      {
+        "type": "emergency_resistance",
+        "value": 0.1,
+        "name": "Pension Shield 🏖️",
+        "desc": "🛡️ Giảm 10% rủi ro khủng hoảng"
+      }
+    ]
+  }
+]

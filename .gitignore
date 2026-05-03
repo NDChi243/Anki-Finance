@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Backup / Log
+_user_backup/
+_auto_update_backup/
+*.log
+
+# Per-machine auto-update state (không commit)
+_update_state.json
+
+# Anki-specific (user data, không nên đẩy lên repo)
+# Các file config này được tự động tạo bởi Anki, không cần track
+anki_finance/
+
+# Admin Panel (chạy local test, không push lên repo chính)
+admin_panel/
+run_admin_panel.py

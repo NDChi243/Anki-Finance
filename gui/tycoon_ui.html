@@ -1,0 +1,4725 @@
+<!DOCTYPE html>
+
+<html lang="vi">
+
+<head>
+
+<meta charset="UTF-8"/>
+
+<title>Anki Finance</title>
+
+<link rel="stylesheet" href="tycoon.css">
+
+<script src="qrc:///qtwebchannel/qwebchannel.js"></script>
+
+</head>
+
+<body>
+
+
+
+<!-- NAV -->
+
+<nav>
+
+  <span class="brand">🎓 Anki Finance</span>
+
+  <div class="nav-links">
+
+    <button class="nb active" onclick="go('dashboard')" id="nb-dashboard">📊 Dashboard</button>
+
+    <button class="nb" onclick="go('shop')"      id="nb-shop">🛍️ Cửa hàng</button>
+
+    <button class="nb" onclick="go('inventory')" id="nb-inventory">🎒 Kho đồ</button>
+
+    <button class="nb" onclick="go('bank')"      id="nb-bank">🏦 Ngân hàng</button>
+
+    <button class="nb" onclick="go('finance')"   id="nb-finance">📈 Tài chính</button>
+
+    <button class="nb" onclick="go('realestate')" id="nb-realestate">🏠 BĐS</button>
+
+    <button class="nb" onclick="go('garage')"    id="nb-garage">🚗 Garage</button>
+
+    <button class="nb" onclick="go('techlab')"   id="nb-techlab">💻 Tech Lab</button>
+
+    <button class="nb" onclick="go('knowledge')" id="nb-knowledge">💡 Kiến thức</button>
+
+    <button class="nb" onclick="go('stocks')"    id="nb-stocks">📈 CK</button>
+
+    <button class="nb" onclick="go('digital')"   id="nb-digital">🪙 Tài sản số</button>
+
+    <button class="nb" onclick="go('quests')"   id="nb-quests">📋 Quests</button>
+
+    <button class="nb" onclick="go('achievement')" id="nb-achievement">🏆 Thành tựu</button>
+
+    <button class="nb" onclick="go('learning')"  id="nb-learning">🧠 Học tập</button>
+
+    <button class="nb" onclick="go('settings')"  id="nb-settings">⚙️ Cài đặt</button>
+
+  </div>
+
+  <div class="nav-bal">
+    <span class="live-dot" title="Đồng bộ trực tiếp"></span>
+    <span style="font-size:13px">💰 <span id="nav-bal" class="num-mono">…</span></span>
+    <span id="nav-xp" class="nav-chip chip-xp" title="Experience Points">⭐ 0 XP</span>
+    <span id="nav-kn" class="nav-chip chip-kn" title="Knowledge Points">🧠 0 KN</span>
+    <span id="nav-rank" class="nav-chip chip-rank" title="Rank hiện tại">📚 SV1</span>
+  </div>
+
+</nav>
+
+
+
+<div id="toasts"></div>
+
+
+
+<!-- Active Boosts Strip -->
+
+<div id="boost-strip" style="display:none;background:rgba(16,185,129,.08);border-bottom:1px solid rgba(16,185,129,.2);padding:6px 16px;font-size:12px">
+
+  <span style="color:var(--green);font-weight:700">⚡ Boost đang chạy:</span>
+
+  <span id="boost-strip-list" style="color:var(--muted2)"></span>
+
+</div>
+
+
+
+<!-- MODAL: Đặt mục tiêu (Req 3) -->
+
+<div class="modal-overlay" id="modal-goal">
+
+  <div class="modal">
+
+    <h3>🎯 Đặt mục tiêu mua sắm</h3>
+
+    <p style="font-size:13px;color:var(--muted2);margin-bottom:14px">Chọn 1 mặt hàng làm mục tiêu — progress bar sẽ theo dõi tiến độ tiết kiệm của bạn.</p>
+
+    <label>Tìm kiếm sản phẩm</label>
+
+    <input class="inp" id="goal-search-inp" style="margin-top:6px;margin-bottom:10px" placeholder="🔍 Tên sản phẩm…" oninput="filterGoalItems()"/>
+
+    <div id="goal-items-list" style="max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:6px">
+
+      <!-- filled by JS -->
+
+    </div>
+
+    <div class="modal-footer">
+
+      <button class="btn btn-ghost" onclick="closeGoalModal()">Huỷ</button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- MODAL: đặt ngân sách (enhanced) -->
+
+<div class="modal-overlay" id="modal-budget">
+
+  <div class="modal" style="max-width:420px">
+
+    <h3 style="display:flex;align-items:center;gap:8px">🎯 <span>Ngân sách tháng</span></h3>
+
+    <p style="font-size:12px;color:var(--muted2);margin-bottom:14px;line-height:1.6">
+
+      Đặt giới hạn chi tiêu trong tháng. Bạn sẽ nhận thông báo khi gần đạt hoặc vượt ngân sách.
+
+    </p>
+
+    <label>Hạn mức chi tiêu (VND)</label>
+
+    <input id="budget-inp" class="inp" type="number" min="0" step="100000" placeholder="Ví dụ: 5000000" style="margin-top:6px;margin-bottom:10px"/>
+
+    <!-- Quick presets -->
+
+    <div style="font-size:11px;color:var(--muted2);margin-bottom:6px">Chọn nhanh:</div>
+
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
+
+      <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="setBudgetPreset(1000000)">1M</button>
+
+      <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="setBudgetPreset(2000000)">2M</button>
+
+      <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="setBudgetPreset(5000000)">5M</button>
+
+      <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="setBudgetPreset(10000000)">10M</button>
+
+      <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="setBudgetPreset(20000000)">20M</button>
+
+    </div>
+
+    <div style="background:var(--surface2);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--muted2);line-height:1.6">
+
+      💡 Ngân sách tự động reset vào đầu tháng mới. Bạn có thể thay đổi bất cứ lúc nào.
+
+    </div>
+
+    <div class="modal-footer">
+
+      <button class="btn btn-ghost" onclick="closeBudgetModal()">Huỷ</button>
+
+      <button class="btn btn-red" style="font-size:12px;padding:6px 12px" onclick="setBudgetPreset(0);saveBudget()">🗑️ Xoá</button>
+
+      <button class="btn btn-primary" onclick="saveBudget()">✅ Lưu ngân sách</button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- MODAL: Chart detail -->
+
+<div class="modal-overlay" id="modal-chart">
+
+  <div class="modal" style="max-width:560px;width:95%">
+
+    <div class="row-sb" style="margin-bottom:16px">
+
+      <h3 id="modal-chart-title">Biểu đồ chi tiết</h3>
+
+      <button class="btn btn-ghost" style="font-size:12px;padding:4px 10px" onclick="closeChartModal()">✕ Đóng</button>
+
+    </div>
+
+    <canvas id="modal-chart-canvas" style="width:100%;display:block;max-height:300px"></canvas>
+
+    <div id="modal-chart-legend" style="margin-top:14px;font-size:12px"></div>
+
+    <div id="modal-chart-stats" style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"></div>
+
+  </div>
+
+</div>
+
+
+
+<!-- MODAL: Transaction detail -->
+
+<div class="modal-overlay" id="modal-txn-detail">
+
+  <div class="modal" style="max-width:400px">
+
+    <div class="row-sb" style="margin-bottom:16px">
+
+      <h3 id="txn-detail-title">Chi tiết giao dịch</h3>
+
+      <button class="btn btn-ghost" style="font-size:12px;padding:4px 10px" onclick="closeTxnDetail()">✕</button>
+
+    </div>
+
+    <div id="txn-detail-body" style="display:flex;flex-direction:column;gap:10px"></div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ════════ CREDIT BANKING MODALS ════════ -->
+
+
+
+<!-- MODAL: Apply Credit Card -->
+
+<div class="modal-overlay" id="modal-apply-card">
+
+  <div class="modal" style="max-width:560px;width:95%">
+
+    <div class="row-sb" style="margin-bottom:16px">
+
+      <h3>💳 Đăng ký mở thẻ tín dụng</h3>
+
+      <button class="btn btn-ghost" style="font-size:12px;padding:4px 10px" onclick="closeApplyCardModal()">✕</button>
+
+    </div>
+
+    <div id="cb-card-products" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:14px"></div>
+
+    <div id="cb-card-preview" style="display:none;background:var(--surface2);border-radius:10px;padding:14px;margin-bottom:14px"></div>
+
+    <div class="modal-footer">
+
+      <button class="btn btn-ghost" onclick="closeApplyCardModal()">Huỷ</button>
+
+      <button class="btn btn-primary" id="btn-confirm-apply-card" onclick="confirmApplyCard()" disabled>📋 Đăng ký</button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- MODAL: Pay Credit Card -->
+
+<div class="modal-overlay" id="modal-pay-card">
+
+  <div class="modal" style="max-width:420px">
+
+    <div class="row-sb" style="margin-bottom:16px">
+
+      <h3>💳 Thanh toán thẻ tín dụng</h3>
+
+      <button class="btn btn-ghost" style="font-size:12px;padding:4px 10px" onclick="closePayCardModal()">✕</button>
+
+    </div>
+
+    <div id="cb-pay-card-info" style="font-size:13px;margin-bottom:12px"></div>
+
+    <label>Số tiền thanh toán</label>
+
+    <input class="inp" id="cb-pay-amount" type="number" min="0" step="10000" placeholder="Nhập số tiền…" style="margin-top:6px"/>
+
+    <div class="modal-footer">
+
+      <button class="btn btn-ghost" onclick="closePayCardModal()">Huỷ</button>
+
+      <button class="btn btn-green" id="btn-confirm-pay-card" onclick="confirmPayCard()">💳 Thanh toán</button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- MODAL: Use Credit Card -->
+
+<div class="modal-overlay" id="modal-use-card">
+
+  <div class="modal" style="max-width:420px">
+
+    <div class="row-sb" style="margin-bottom:16px">
+
+      <h3>💳 Thanh toán bằng thẻ tín dụng</h3>
+
+      <button class="btn btn-ghost" style="font-size:12px;padding:4px 10px" onclick="closeUseCardModal()">✕</button>
+
+    </div>
+
+    <div id="cb-use-card-info" style="font-size:13px;margin-bottom:12px"></div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+
+      <div>
+
+        <label>Số tiền</label>
+
+        <input class="inp" id="cb-use-amount" type="number" min="1000" step="10000" placeholder="Số tiền" style="margin-top:4px"/>
+
+      </div>
+
+      <div>
+
+        <label>Danh mục</label>
+
+        <select class="inp" id="cb-use-category" style="margin-top:4px">
+
+          <option value="shopping">Mua sắm</option>
+
+          <option value="food">Ăn uống</option>
+
+          <option value="transport">Di chuyển</option>
+
+          <option value="entertainment">Giải trí</option>
+
+          <option value="education">Giáo dục</option>
+
+          <option value="health">Sức khoẻ</option>
+
+          <option value="other">Khác</option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+    <div>
+
+      <label>Merchant (tên cửa hàng)</label>
+
+      <input class="inp" id="cb-use-merchant" placeholder="Ví dụ: Vincom Center" style="margin-top:4px"/>
+
+    </div>
+
+    <div class="modal-footer">
+
+      <button class="btn btn-ghost" onclick="closeUseCardModal()">Huỷ</button>
+
+      <button class="btn btn-primary" id="btn-confirm-use-card" onclick="confirmUseCard()">💳 Thanh toán</button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- MODAL: Apply Loan -->
+
+<div class="modal-overlay" id="modal-apply-loan">
+
+  <div class="modal" style="max-width:620px;width:95%">
+
+    <div class="row-sb" style="margin-bottom:16px">
+
+      <h3>🏦 Đăng ký vay ngân hàng</h3>
+
+      <button class="btn btn-ghost" style="font-size:12px;padding:4px 10px" onclick="closeApplyLoanModal()">✕</button>
+
+    </div>
+
+
+
+    <div style="font-size:12px;color:var(--muted2);margin-bottom:10px">Chọn sản phẩm vay:</div>
+
+    <div id="cb-loan-products" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:14px"></div>
+
+
+
+    <div id="cb-loan-form" style="display:none">
+
+      <div class="row" style="gap:12px;margin-bottom:12px">
+
+        <div style="flex:1">
+
+          <label>Số tiền vay</label>
+
+          <input class="inp" id="cb-loan-amount" type="number" min="100000" step="100000" placeholder="Nhập số tiền" style="margin-top:4px" oninput="updateLoanPreview()"/>
+
+        </div>
+
+        <div style="flex:1">
+
+          <label>Kỳ hạn (tháng)</label>
+
+          <select class="inp" id="cb-loan-tenure" style="margin-top:4px" onchange="updateLoanPreview()">
+
+            <option value="6">6 tháng</option>
+
+            <option value="12" selected>12 tháng</option>
+
+            <option value="24">24 tháng</option>
+
+            <option value="36">36 tháng</option>
+
+            <option value="48">48 tháng</option>
+
+            <option value="60">60 tháng</option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+
+
+      <div style="margin-bottom:10px">
+
+        <label>Phương thức trả nợ</label>
+
+        <div id="cb-repay-methods" style="display:flex;gap:8px;margin-top:4px"></div>
+
+      </div>
+
+
+
+      <div style="margin-bottom:10px">
+
+        <label>Bảo hiểm khoản vay</label>
+
+        <div id="cb-insurance-plans" style="display:flex;gap:8px;margin-top:4px"></div>
+
+      </div>
+
+
+
+      <div id="cb-loan-preview" style="display:none;background:var(--surface2);border-radius:10px;padding:14px;font-size:13px;margin-bottom:10px"></div>
+
+
+
+      <div class="modal-footer">
+
+        <button class="btn btn-ghost" onclick="closeApplyLoanModal()">Huỷ</button>
+
+        <button class="btn btn-primary" id="btn-confirm-apply-loan" onclick="confirmApplyLoan()">🏦 Vay ngay</button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- MODAL: Register Collateral -->
+
+<div class="modal-overlay" id="modal-register-collateral">
+
+  <div class="modal" style="max-width:500px">
+
+    <div class="row-sb" style="margin-bottom:16px">
+
+      <h3>🔒 Đăng ký tài sản thế chấp</h3>
+
+      <button class="btn btn-ghost" style="font-size:12px;padding:4px 10px" onclick="closeRegisterCollateralModal()">✕</button>
+
+    </div>
+
+    <div style="margin-bottom:10px">
+
+      <label>Loại tài sản</label>
+
+      <select class="inp" id="cb-col-type" style="margin-top:4px" onchange="updateCollateralPreview()">
+
+        <option value="real_estate">🏠 Bất động sản</option>
+
+        <option value="vehicle">🚗 Xe cộ</option>
+
+        <option value="savings">🏦 Sổ tiết kiệm</option>
+
+        <option value="stock">📈 Cổ phiếu</option>
+
+        <option value="digital_asset">₿ Tài sản số</option>
+
+      </select>
+
+    </div>
+
+    <div style="margin-bottom:10px">
+
+      <label>Mô tả / ID tài sản</label>
+
+      <input class="inp" id="cb-col-asset-id" placeholder="Ví dụ: villa_01, VNM, BTC..." style="margin-top:4px"/>
+
+    </div>
+
+    <div style="margin-bottom:10px">
+
+      <label>Giá trị ước tính (VND)</label>
+
+      <input class="inp" id="cb-col-value" type="number" min="0" step="100000" placeholder="Nhập giá trị ước tính" style="margin-top:4px" oninput="updateCollateralPreview()"/>
+
+    </div>
+
+    <div id="cb-col-preview" style="background:var(--surface2);border-radius:8px;padding:10px;font-size:12px;margin-bottom:10px;display:none"></div>
+
+    <div class="modal-footer">
+
+      <button class="btn btn-ghost" onclick="closeRegisterCollateralModal()">Huỷ</button>
+
+      <button class="btn btn-primary" onclick="confirmRegisterCollateral()">🔒 Đăng ký</button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ════════ PAGE: DASHBOARD ════════ -->
+
+<div class="page active" id="page-dashboard">
+
+
+
+  <div class="hero">
+
+    <div style="font-size:12px;color:var(--muted2)">Số dư hiện tại</div>
+
+    <div class="bal" id="bal-big">0 VND</div>
+
+    <div class="bal-sub" id="bal-sub">Ôn bài để kiếm tiền!</div>
+
+  </div>
+
+
+
+  <!-- Streak + Rank row -->
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+
+    <!-- Streak -->
+
+    <div class="card" id="streak-mini" style="padding:12px">
+
+      <div class="streak-bar" style="padding:0;background:none;margin-bottom:4px">
+
+        <span class="streak-fire" id="streak-fire">🔥</span>
+
+        <div>
+
+          <span class="streak-num" id="streak-num">0</span>
+
+          <span style="font-size:13px;color:var(--muted2)"> ngày</span>
+
+        </div>
+
+        <span class="streak-mult" id="streak-mult">×1.0</span>
+
+      </div>
+
+      <div style="font-size:11px;color:var(--muted2)" id="streak-hint">Ôn đủ 5 thẻ để tính streak</div>
+
+      <div style="font-size:10px;color:var(--muted);margin-top:2px" id="streak-best"></div>
+
+    </div>
+
+    <!-- Rank mini -->
+
+    <div class="card rank-card" id="rank-mini" style="padding:12px">
+
+      <div style="display:flex;align-items:center;gap:10px">
+
+        <span id="rank-emoji-sm" style="font-size:28px">📚</span>
+
+        <div style="flex:1;min-width:0">
+
+          <div class="rank-title" id="rank-label-sm" style="font-size:13px">Tân Học giả</div>
+
+          <div style="display:flex;gap:6px;align-items:center;margin-top:3px;flex-wrap:wrap">
+            <div class="xp-badge" style="font-size:10px">⭐ <span id="rank-xp-sm">0</span> XP</div>
+            <div class="xp-badge" style="font-size:10px;color:var(--green)" id="rank-kn-sm">🧠 0 KN</div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="rank-prog-wrap" style="margin-top:8px">
+
+        <div class="rank-prog-bar" id="rank-prog-sm" style="width:0%;background:linear-gradient(90deg,#7c3aed,#a855f7)"></div>
+
+      </div>
+
+      <div class="rank-prog-label" id="rank-next-sm">Đang tính…</div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- Daily Quests mini preview -->
+
+  <div class="card" id="quest-mini" style="margin-bottom:14px;padding:12px">
+
+    <div class="row-sb" style="margin-bottom:8px">
+
+      <span style="font-size:13px;font-weight:700">📋 Nhiệm vụ hôm nay</span>
+
+      <button class="btn btn-ghost" style="font-size:11px;padding:3px 8px" onclick="go('quests')">Xem tất cả →</button>
+
+    </div>
+
+    <div id="quest-mini-list"><!-- filled by JS --></div>
+
+  </div>
+
+
+
+  <div class="grid-auto" style="--min:155px;margin-bottom:18px">
+
+    <div class="stat"><div class="s-icon">🃏</div><div class="s-val" id="s-cards">0</div><div class="s-lbl">Thẻ đã ôn</div></div>
+
+    <div class="stat"><div class="s-icon">💵</div><div class="s-val" id="s-earned">0</div><div class="s-lbl">Tổng kiếm được</div></div>
+
+    <div class="stat"><div class="s-icon">🛒</div><div class="s-val" id="s-spent">0</div><div class="s-lbl">Đã chi tiêu</div></div>
+
+    <div class="stat"><div class="s-icon">🏦</div><div class="s-val" id="s-savings">0</div><div class="s-lbl">Tiết kiệm</div></div>
+
+    <div class="stat"><div class="s-icon">🎒</div><div class="s-val" id="s-items">0</div><div class="s-lbl">Vật phẩm</div></div>
+
+  </div>
+
+
+
+  <!-- Passive Effects Summary -->
+
+  <div class="passive-panel" id="passive-panel" style="display:none">
+
+    <div class="passive-panel-title">✨ Hiệu ứng thụ động đang hoạt động</div>
+
+    <div class="passive-grid" id="passive-effects-list"></div>
+
+  </div>
+
+
+
+  <!-- Goal Progress (Req 3) -->
+
+  <div class="goal-card" id="goal-card" style="display:none">
+
+    <div class="row-sb" style="margin-bottom:8px">
+
+      <span style="font-size:13px;font-weight:700">🎯 Mục tiêu của bạn</span>
+
+      <div style="display:flex;gap:6px">
+
+        <span id="goal-reached-badge" class="badge badge-green" style="display:none">✅ Đủ tiền rồi!</span>
+
+        <button class="btn btn-ghost" style="font-size:11px;padding:3px 8px" onclick="openGoalModal()">✏️ Đổi</button>
+
+        <button class="btn btn-red" style="font-size:11px;padding:3px 8px" onclick="doDeleteGoal()">✕</button>
+
+      </div>
+
+    </div>
+
+    <div style="display:flex;align-items:center;gap:14px">
+
+      <div style="font-size:36px" id="goal-emoji">🎯</div>
+
+      <div style="flex:1">
+
+        <div class="goal-item-name" id="goal-name">—</div>
+
+        <div style="display:flex;align-items:baseline;gap:8px;margin-top:2px">
+
+          <span class="goal-percent" id="goal-pct">0%</span>
+
+          <span class="goal-remaining" id="goal-remaining">còn thiếu 0 VND</span>
+
+        </div>
+
+        <div class="goal-progress-wrap" id="goal-progress-wrap">
+
+          <div class="goal-progress-bar" id="goal-bar" style="width:0%"></div>
+
+        </div>
+
+        <div style="font-size:11px;color:var(--muted2)" id="goal-price-info">Giá: 0 VND</div>
+
+      </div>
+
+    </div>
+
+    <div style="font-size:11px;color:var(--muted);margin-top:8px" id="goal-set-at"></div>
+
+  </div>
+
+
+
+  <!-- No-goal prompt -->
+
+  <div id="goal-empty-prompt" style="margin-bottom:14px">
+
+    <button class="btn btn-ghost btn-full" style="border-style:dashed;color:var(--accent2)" onclick="openGoalModal()">
+
+      🎯 + Đặt mục tiêu mua sắm
+
+    </button>
+
+  </div>
+
+
+
+  <!-- Again Penalty Monitor -->
+
+  <div class="card" id="again-monitor" style="margin-bottom:14px;border-color:var(--border)">
+
+    <div class="row-sb" style="margin-bottom:8px">
+
+      <span style="font-size:13px;font-weight:700">🚨 Giám sát Again hôm nay</span>
+
+      <span id="again-status-badge" class="badge badge-green">Bình thường</span>
+
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:12px;margin-bottom:10px">
+
+      <div style="text-align:center;background:var(--surface2);border-radius:8px;padding:8px">
+
+        <div style="font-size:20px;font-weight:900" id="again-count-big">0</div>
+
+        <div style="color:var(--muted2)">Again hôm nay</div>
+
+      </div>
+
+      <div style="text-align:center;background:var(--surface2);border-radius:8px;padding:8px">
+
+        <div style="font-size:14px;font-weight:700;color:var(--yellow)">50 → ⚠️</div>
+
+        <div style="color:var(--muted2)">Ngưỡng cảnh báo</div>
+
+      </div>
+
+      <div style="text-align:center;background:var(--surface2);border-radius:8px;padding:8px">
+
+        <div style="font-size:14px;font-weight:700;color:var(--red)">55 → 💸</div>
+
+        <div style="color:var(--muted2)">Ngưỡng phạt</div>
+
+      </div>
+
+    </div>
+
+    <div style="background:var(--surface2);border-radius:8px;height:8px;overflow:hidden;margin-bottom:6px">
+
+      <div id="again-progress" style="height:100%;border-radius:8px;width:0%;transition:width .4s;background:linear-gradient(90deg,var(--green),var(--yellow),var(--red))"></div>
+
+    </div>
+
+    <div class="row-sb" style="font-size:12px">
+
+      <span style="color:var(--muted2)" id="again-hint">Đang học tốt 👍</span>
+
+      <span style="color:var(--red);font-weight:700" id="again-penalty-today">Phạt hôm nay: 0đ</span>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="card">
+
+    <div style="font-size:12px;color:var(--muted2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:0 2px 10px">🎯 Bảng thưởng / phạt</div>
+
+    <div class="reward-row"><span class="badge ease-1 ease-badge">Again</span><span class="cnt" id="c1">0 lần</span><span class="val">+500 VND (≤49 lần)</span></div>
+
+    <div class="reward-row"><span class="badge" style="background:rgba(245,158,11,.18);color:#f59e0b;border:1px solid rgba(245,158,11,.3);width:64px;text-align:center;padding:3px 0;border-radius:6px;font-size:11px">Again⚠️</span><span class="cnt">50–54 lần/ngày</span><span class="val" style="color:var(--yellow)">+500đ + cảnh báo</span></div>
+
+    <div class="reward-row"><span class="badge" style="background:rgba(239,68,68,.18);color:#ef4444;border:1px solid rgba(239,68,68,.3);width:64px;text-align:center;padding:3px 0;border-radius:6px;font-size:11px">Again🚨</span><span class="cnt">≥55 lần/ngày</span><span class="val" style="color:var(--red)">Phạt 3.000đ+(bal×2%)</span></div>
+
+    <div class="reward-row"><span class="badge ease-2 ease-badge">Hard</span> <span class="cnt" id="c2">0 lần</span><span class="val">+15.000 VND/thẻ</span></div>
+
+    <div class="reward-row"><span class="badge ease-3 ease-badge">Good</span> <span class="cnt" id="c3">0 lần</span><span class="val">+10.000 VND/thẻ</span></div>
+
+    <div class="reward-row"><span class="badge ease-4 ease-badge">Easy</span> <span class="cnt" id="c4">0 lần</span><span class="val">+5.000 VND/thẻ</span></div>
+
+  </div>
+
+
+
+  <!-- Achievement mini -->
+
+  <div id="ach-mini" class="card" style="margin-top:14px;display:none;border-color:rgba(250,204,21,.3);background:rgba(250,204,21,.04);padding:12px"></div>
+
+
+
+  <!-- Quiz mini-card — đã xoá dòng thông báo "cứ 20 thẻ" và chuyển hẳn sang tab Learning -->
+
+  <div class="card" style="margin-top:14px;border-color:rgba(124,58,237,.3);background:rgba(124,58,237,.04)">
+
+    <div class="row-sb">
+
+      <div>
+
+        <div style="font-size:13px;font-weight:700">❓ Finance Quiz</div>
+
+        <div style="font-size:11px;color:var(--muted2);margin-top:2px">
+
+          Kiểm tra kiến thức tài chính! Mỗi câu đúng nhận <strong style="color:var(--green)">+50.000 VND</strong> + <strong style="color:var(--yellow)">15-20 KN</strong>
+
+        </div>
+
+      </div>
+
+      <button class="btn btn-ghost" style="font-size:11px;padding:3px 8px;flex-shrink:0" onclick="go('learning')">Xem thống kê →</button>
+
+    </div>
+
+    <div style="display:flex;gap:14px;margin-top:10px;font-size:12px">
+
+      <div style="text-align:center">
+
+        <div style="font-size:18px;font-weight:900;color:var(--accent2)" id="dash-quiz-acc">—</div>
+
+        <div style="color:var(--muted2)">Độ chính xác</div>
+
+      </div>
+
+      <div style="text-align:center">
+
+        <div style="font-size:18px;font-weight:900;color:var(--green)" id="dash-quiz-streak">—</div>
+
+        <div style="color:var(--muted2)">Streak đúng</div>
+
+      </div>
+
+      <div style="text-align:center">
+
+        <div style="font-size:18px;font-weight:900;color:var(--yellow)" id="dash-quiz-total">—</div>
+
+        <div style="color:var(--muted2)">Đã trả lời</div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ════════ PAGE: SHOP ════════ -->
+
+<div class="page" id="page-shop">
+
+  <div class="section-title">🛍️ Cửa hàng</div>
+
+  <div class="section-sub">Dùng tiền kiếm được để mua những thứ bạn mơ ước!</div>
+
+
+
+  <div class="card" style="margin-bottom:14px;padding:14px;border-color:rgba(59,130,246,.22)">
+
+    <div style="font-size:13px;font-weight:800;margin-bottom:8px">Bản Đồ Build</div>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+
+      <span class="badge badge-purple">🎓 Học tập: buff phiên học, reward, thẻ cụ thể</span>
+
+      <span class="badge badge-blue">💻 Công nghệ: productivity, scheduler, build dài hạn</span>
+
+      <span class="badge badge-yellow">🏦 Tài chính: dòng tiền, rủi ro, ngân hàng, tài sản</span>
+
+    </div>
+
+    <div style="font-size:12px;color:var(--muted2);line-height:1.7">
+
+      Shop giờ ưu tiên nói rõ món nào phục vụ build nào, thay vì để mọi món trông như buff chung chung.
+
+    </div>
+
+  </div>
+
+
+
+  <!-- Category cards grid -->
+
+  <div class="shop-categories" id="shop-categories"></div>
+
+</div>
+
+
+
+<!-- ════════ SHOP CATEGORY MODAL (dùng chung cho tất cả danh mục) ════════ -->
+
+<div class="modal-overlay" id="modal-shop-cat">
+
+  <div class="modal shop-modal" style="max-width:90vw;width:1100px;max-height:90vh;overflow-y:auto;padding:20px 24px">
+
+    <div class="row-sb" style="margin-bottom:14px">
+
+      <h3 id="shop-modal-title" style="font-size:20px">🛍️ Danh mục</h3>
+
+      <button class="btn btn-ghost" style="font-size:13px;padding:4px 12px" onclick="closeShopModal()">✕ Đóng</button>
+
+    </div>
+
+    <div id="shop-modal-subtitle" style="font-size:12px;color:var(--muted2);margin-top:-8px;margin-bottom:12px"></div>
+
+
+
+    <!-- Food/Drink sub-tabs (chỉ hiện khi chọn danh mục Ẩm thực) -->
+
+    <div id="shm-food-tabs" class="food-tabs" style="display:none">
+
+      <button class="food-tab active" data-sub="food" onclick="switchFoodTab('food',this)">🍔 Đồ ăn</button>
+
+      <button class="food-tab" data-sub="drink" onclick="switchFoodTab('drink',this)">🥤 Đồ uống</button>
+
+    </div>
+
+
+
+    <!-- Toolbar -->
+
+    <div class="shop-toolbar" style="margin-bottom:14px">
+
+      <input class="inp" id="shm-search" style="flex:1;min-width:160px" placeholder="🔍 Tìm kiếm…" oninput="filterShopModal()"/>
+
+      <div id="shm-extra-filters" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"></div>
+
+      <select id="shm-sort" onchange="filterShopModal()" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-size:13px;outline:none;cursor:pointer">
+
+        <option value="">🔀 Mặc định</option>
+
+        <option value="asc">💰 Giá thấp → cao</option>
+
+        <option value="desc">💎 Giá cao → thấp</option>
+
+      </select>
+
+    </div>
+
+
+
+    <!-- Stats -->
+
+    <div id="shm-stats" style="font-size:13px;color:var(--muted2);margin-bottom:12px"></div>
+
+
+
+    <!-- Item grid -->
+
+    <div class="grid-auto" style="--min:200px" id="shop-modal-grid"></div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ════════ MODAL: SHOP ITEM DETAIL ════════ -->
+
+<div class="modal-overlay" id="modal-shop-detail">
+
+  <div class="modal shop-detail-modal" style="max-width:640px;width:95%;max-height:90vh;overflow-y:auto;padding:0">
+
+    <div class="shop-detail-header">
+
+      <button class="btn btn-ghost btn-sm" onclick="closeItemDetail()" style="position:absolute;top:12px;right:12px;z-index:2;font-size:20px;line-height:1;background:rgba(0,0,0,.5);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer">✕</button>
+
+      <div class="shop-detail-img-wrap" id="sd-img-wrap">
+
+        <div class="shop-detail-emoji" id="sd-emoji">📦</div>
+
+        <img class="shop-detail-img" id="sd-img" src="" alt="" style="display:none">
+
+      </div>
+
+      <div class="shop-detail-badges" id="sd-badges"></div>
+
+    </div>
+
+    <div class="shop-detail-body">
+
+      <div class="sd-name" id="sd-name"></div>
+
+      <div class="sd-desc" id="sd-desc"></div>
+
+      <div id="sd-theme-note" style="font-size:12px;color:var(--muted2);line-height:1.7;margin-bottom:8px"></div>
+
+      <div id="sd-set-note" style="font-size:12px;color:var(--accent2);line-height:1.6;margin-bottom:12px;display:none"></div>
+
+
+
+      <div class="sd-specs" id="sd-specs"></div>
+
+
+
+      <div class="sd-effects-title">📊 Hiệu ứng</div>
+
+      <div class="sd-effects" id="sd-effects"></div>
+
+
+
+      <div class="sd-price-row">
+
+        <div class="sd-price" id="sd-price"></div>
+
+        <button class="btn btn-primary" id="sd-buy-btn" onclick="buyItemFromDetail()">🛒 Mua ngay</button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ════════ MODAL: GARAGE VEHICLE DETAIL ════════ -->
+
+<div class="modal-overlay" id="modal-garage-detail">
+
+  <div class="modal shop-detail-modal" style="max-width:640px;width:95%;max-height:90vh;overflow-y:auto;padding:0">
+
+    <div class="shop-detail-header">
+
+      <button class="btn btn-ghost btn-sm" onclick="closeGarageDetailModal()" style="position:absolute;top:12px;right:12px;z-index:2;font-size:20px;line-height:1;background:rgba(0,0,0,.5);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer">✕</button>
+
+      <div class="shop-detail-img-wrap" id="gd-img-wrap">
+
+        <div class="shop-detail-emoji" id="gd-emoji">🚗</div>
+
+        <img class="shop-detail-img" id="gd-img" src="" alt="" style="display:none">
+
+      </div>
+
+      <div class="shop-detail-badges" id="gd-badges"></div>
+
+    </div>
+
+    <div class="shop-detail-body">
+
+      <div class="sd-name" id="gd-name"></div>
+
+      <div class="sd-desc" id="gd-desc"></div>
+
+      <!-- Durability -->
+      <div style="margin-top:10px;margin-bottom:6px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted2)">
+          <span>🔧 Độ bền</span>
+          <span id="gd-dup" style="font-weight:600"></span>
+        </div>
+        <div class="fresh-wrap" style="width:100%;margin-top:3px">
+          <div id="gd-dup-bar" style="height:100%;width:100%;background:var(--green);border-radius:2px;transition:width .4s ease"></div>
+        </div>
+      </div>
+
+      <!-- Fuel -->
+      <div id="gd-fuel-section" style="margin-top:4px;margin-bottom:6px;display:none">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted2)">
+          <span id="gd-fuel-label">⛽ Xăng</span>
+          <span id="gd-fuel" style="font-weight:600"></span>
+        </div>
+        <div class="fresh-wrap" style="width:100%;margin-top:3px">
+          <div id="gd-fuel-bar" style="height:100%;width:100%;background:var(--green);border-radius:2px;transition:width .4s ease"></div>
+        </div>
+      </div>
+      <div id="gd-manual-label" style="margin-top:4px;font-size:12px;color:var(--muted2);display:none">🚲 Không tốn nhiên liệu</div>
+
+      <!-- Specs -->
+      <div class="sd-specs" id="gd-specs" style="margin-top:10px"></div>
+
+      <!-- Effects -->
+      <div class="sd-effects-title">📊 Hiệu ứng</div>
+      <div class="sd-effects" id="gd-effects"></div>
+
+      <!-- Sell Estimate -->
+      <div id="gd-sell-line" style="font-size:12px;color:var(--muted2);margin-top:6px;display:none"></div>
+
+      <!-- Actions -->
+      <div id="gd-actions" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"></div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ════════ PAGE: INVENTORY ════════ -->
+
+<div class="page" id="page-inventory">
+
+  <div class="row-sb" style="margin-bottom:6px">
+
+    <div class="section-title">🎒 Tài sản/Kho đồ</div>
+
+    <span id="inv-badge" class="badge badge-purple"></span>
+
+  </div>
+
+  <div class="section-sub">Các vật phẩm bạn đã mua</div>
+
+  <div class="grid-auto" style="--min:175px" id="inv-grid"></div>
+
+</div>
+
+
+
+<!-- ════════ PAGE: BANK ════════ -->
+
+<div class="page" id="page-bank">
+
+  <div class="section-title">🏦 Ngân hàng Anki Finance</div>
+
+  <div class="section-sub">Mở sổ tiết kiệm theo nhóm sản phẩm tham khảo từ các ngân hàng đang phổ biến tại Việt Nam.</div>
+
+
+
+  <!-- View Toggle -->
+
+  <div class="bank-view-toggle">
+
+    <button class="bvt-btn active" onclick="showBankDepositView()">📋 Gửi tiền</button>
+
+    <button class="bvt-btn bvt-credit" onclick="showBankCreditView()">💳 Tín dụng & Vay vốn</button>
+
+  </div>
+
+
+
+  <!-- ──────── DEPOSIT VIEW ──────── -->
+
+  <div class="bank-view active" id="bank-deposit-view">
+
+
+
+  <!-- Overview 4 số -->
+
+  <div class="bank-overview">
+
+    <div class="bank-ov-card">
+
+      <div class="bov-lbl">💰 Số dư ví</div>
+
+      <div class="bov-val" id="bov-wallet" style="color:var(--green)">0 VND</div>
+
+    </div>
+
+    <div class="bank-ov-card">
+
+      <div class="bov-lbl">🏦 Không kỳ hạn</div>
+
+      <div class="bov-val realtime-ticker" id="bov-demand" style="color:var(--blue)">0 VND</div>
+
+    </div>
+
+    <div class="bank-ov-card">
+
+      <div class="bov-lbl">📋 Sổ có kỳ hạn</div>
+
+      <div class="bov-val realtime-ticker" id="bov-term" style="color:var(--accent2)">0 VND</div>
+
+    </div>
+
+    <div class="bank-ov-card">
+
+      <div class="bov-lbl">💎 Tổng tài sản NH</div>
+
+      <div class="bov-val realtime-ticker" id="bov-total" style="color:var(--yellow)">0 VND</div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- Tabs -->
+
+  <div class="bank-tabs">
+
+    <button class="bank-tab active" onclick="switchBankTab('open')">📋 Mở sổ</button>
+
+    <button class="bank-tab" onclick="switchBankTab('deposits')">📂 Sổ của tôi</button>
+
+  </div>
+
+
+
+  <div class="bank-panel active" id="bp-open">
+
+    <div style="font-size:13px;font-weight:700;margin-bottom:10px">Chọn loại mở sổ</div>
+
+    <div class="bank-product-grid" id="bank-product-grid"></div>
+
+    <div class="term-hint" id="product-help">Chọn một nhóm tiền gửi để xem cách mở sổ.</div>
+
+
+
+    <div id="demand-product-panel">
+
+      <div style="background:var(--surface2);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:13px">
+
+        <div class="row-sb"><span style="color:var(--muted2)">Lãi suất</span><span id="demand-rate-label" style="font-weight:700;color:var(--yellow)">0.3% / năm</span></div>
+
+        <div class="row-sb" style="margin-top:6px"><span style="color:var(--muted2)">Rút tiền</span><span style="font-weight:600">Bất cứ lúc nào</span></div>
+
+        <div class="row-sb" style="margin-top:6px"><span style="color:var(--muted2)">Lãi tích lũy</span>
+
+          <span class="realtime-ticker" id="demand-int-live" style="color:var(--yellow);font-weight:800">0 VND</span></div>
+
+      </div>
+
+      <div class="bank-form-grid">
+
+        <div class="card" style="padding:14px">
+
+          <div style="font-size:12px;color:var(--muted2);font-weight:600;margin-bottom:8px">📥 GỬI TIỀN</div>
+
+          <input class="inp" id="dep-amt" type="number" min="1000" step="10000" placeholder="Số tiền…"/>
+
+          <div class="bank-preset">
+
+            <button class="btn btn-ghost" style="font-size:11px;padding:3px 8px" onclick="setAmt('dep-amt',100000)">100K</button>
+
+            <button class="btn btn-ghost" style="font-size:11px;padding:3px 8px" onclick="setAmt('dep-amt',500000)">500K</button>
+
+            <button class="btn btn-ghost" style="font-size:11px;padding:3px 8px" onclick="setAmt('dep-amt',1000000)">1M</button>
+
+            <button class="btn btn-ghost" style="font-size:11px;padding:3px 8px" onclick="setAmt('dep-amt',5000000)">5M</button>
+
+          </div>
+
+          <button class="btn btn-green btn-full" style="margin-top:10px" onclick="doDeposit()">📥 Gửi</button>
+
+        </div>
+
+        <div class="card" style="padding:14px">
+
+          <div style="font-size:12px;color:var(--muted2);font-weight:600;margin-bottom:8px">📤 RÚT TIỀN</div>
+
+          <input class="inp" id="wd-amt" type="number" min="1000" step="10000" placeholder="Số tiền…"/>
+
+          <div class="bank-preset">
+
+            <button class="btn btn-ghost" style="font-size:11px;padding:3px 8px" onclick="setAmt('wd-amt',100000)">100K</button>
+
+            <button class="btn btn-ghost" style="font-size:11px;padding:3px 8px" onclick="setAmt('wd-amt',500000)">500K</button>
+
+            <button class="btn btn-ghost" style="font-size:11px;padding:3px 8px" onclick="setAmt('wd-amt',1000000)">1M</button>
+
+            <button class="btn btn-ghost" style="font-size:11px;padding:3px 8px" onclick="setAmtAll()">Tất cả</button>
+
+          </div>
+
+          <button class="btn btn-blue btn-full" style="margin-top:10px" onclick="doWithdraw()">📤 Rút</button>
+
+        </div>
+
+      </div>
+
+      <button class="btn btn-yellow btn-full" style="margin-top:10px" onclick="claimDemandInterest()">
+
+        💰 Nhận lãi không kỳ hạn về ví
+
+      </button>
+
+    </div>
+
+
+
+    <div id="term-product-panel" style="display:none">
+
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px">Chọn thao tác</div>
+
+      <div class="term-mode-row">
+
+        <button class="btn btn-ghost term-mode-btn active" id="term-mode-open" onclick="setTermMode('open')">📋 Mở sổ mới</button>
+
+        <button class="btn btn-ghost term-mode-btn" id="term-mode-add" onclick="setTermMode('add')">➕ Gửi thêm</button>
+
+      </div>
+
+      <div class="term-hint" id="term-mode-help">Mở sổ mới theo nhóm tiền gửi bạn đã chọn.</div>
+
+      <div id="term-open-fields">
+
+        <div style="font-size:13px;font-weight:700;margin-bottom:10px">Chọn kỳ hạn</div>
+
+        <div class="plan-grid" id="plan-grid"></div>
+
+      </div>
+
+      <div class="card" style="padding:14px;margin-top:4px">
+
+        <div id="send-more-fields" style="display:none;margin-bottom:10px">
+
+          <div style="font-size:12px;color:var(--muted2);font-weight:600;margin-bottom:8px">📂 CHỌN SỔ TIẾT KIỆM</div>
+
+          <select class="inp" id="send-more-passbook" onchange="updateTermPreview()"></select>
+
+          <div class="term-status" id="send-more-status">Bạn còn 3 lượt gửi thêm trong tuần này.</div>
+
+        </div>
+
+        <div id="term-amount-label" style="font-size:12px;color:var(--muted2);font-weight:600;margin-bottom:8px">💵 SỐ TIỀN GỬI</div>
+
+        <input class="inp" id="term-amt" type="number" min="100000" step="100000" placeholder="Số tiền…"/>
+
+        <div class="bank-preset" style="margin-top:6px">
+
+          <button class="btn btn-ghost" style="font-size:11px;padding:3px 8px" onclick="setAmt('term-amt',500000)">500K</button>
+
+          <button class="btn btn-ghost" style="font-size:11px;padding:3px 8px" onclick="setAmt('term-amt',1000000)">1M</button>
+
+          <button class="btn btn-ghost" style="font-size:11px;padding:3px 8px" onclick="setAmt('term-amt',5000000)">5M</button>
+
+          <button class="btn btn-ghost" style="font-size:11px;padding:3px 8px" onclick="setAmt('term-amt',10000000)">10M</button>
+
+        </div>
+
+        <div id="term-preview" style="margin-top:10px;display:none;background:var(--surface2);border-radius:8px;padding:10px;font-size:13px">
+
+          <div class="row-sb"><span style="color:var(--muted2)">Gốc</span><span id="prev-principal" style="font-weight:700">0</span></div>
+
+          <div class="row-sb" style="margin-top:4px"><span id="prev-interest-label" style="color:var(--muted2)">Lãi dự kiến</span><span id="prev-interest" style="font-weight:700;color:var(--yellow)">0</span></div>
+
+          <div class="row-sb" style="margin-top:4px"><span id="prev-total-label" style="color:var(--muted2)">Tổng nhận</span><span id="prev-total" style="font-weight:800;color:var(--green);font-size:15px">0</span></div>
+
+        </div>
+
+        <button class="btn btn-primary btn-full" id="term-submit-btn" style="margin-top:12px" onclick="submitTermAction()">
+
+          📋 Mở sổ tiết kiệm
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- Tab: Sổ của tôi -->
+
+  <div class="bank-panel" id="bp-deposits">
+
+    <div id="deposits-list">
+
+      <div class="empty"><div class="ei">📂</div><p>Chưa có sổ nào. Mở tab "Mở sổ" để tạo mới!</p></div>
+
+    </div>
+
+  </div>
+
+
+
+</div><!-- /bank-deposit-view -->
+
+
+
+<!-- ──────── CREDIT VIEW ──────── -->
+
+<div class="bank-view" id="bank-credit-view">
+
+
+
+  <!-- ════════ CREDIT BANKING ════════ -->
+
+  <div class="credit-section-header">
+
+    <div class="csh-title">💼 Tín dụng &amp; Vay vốn</div>
+
+    <div class="csh-sub">Thẻ tín dụng · Vay ngân hàng · Tài sản thế chấp · Điểm tín dụng · Bảo hiểm · Khách hàng thân thiết</div>
+
+  </div>
+
+
+
+  <div style="margin-top:0">
+
+
+
+    <!-- Credit Score Hero -->
+
+    <div class="card" style="margin-bottom:14px;padding:18px;text-align:center">
+
+      <div style="font-size:12px;color:var(--muted2);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Điểm tín dụng</div>
+
+      <div class="cb-score-big" id="cb-score-display" style="color:var(--muted)">—</div>
+
+      <div class="cb-score-label" id="cb-score-label">Đang tính…</div>
+
+      <div class="cb-score-range" style="max-width:300px;margin:10px auto">
+
+        <div class="cb-score-fill" id="cb-score-bar" style="width:0%"></div>
+
+      </div>
+
+      <div style="display:flex;gap:14px;justify-content:center;font-size:11px;color:var(--muted2);flex-wrap:wrap">
+
+        <span>🔴 300-579 Kém</span>
+
+        <span>🟡 580-669 TB</span>
+
+        <span>🔵 670-739 Khá</span>
+
+        <span>🟢 740-850 Tốt</span>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- Banking Tabs -->
+
+    <div class="cb-tabs">
+
+      <button class="cb-tab active" onclick="switchCbTab('cards')">💳 Thẻ TD</button>
+
+      <button class="cb-tab" onclick="switchCbTab('loans')">🏦 Vay vốn</button>
+
+      <button class="cb-tab" onclick="switchCbTab('collateral')">🔒 Thế chấp</button>
+
+      <button class="cb-tab" onclick="switchCbTab('income')">📄 Thu nhập</button>
+
+      <button class="cb-tab" onclick="switchCbTab('loyalty')">⭐ Ưu đãi</button>
+
+    </div>
+
+
+
+    <!-- ── PANEL: CREDIT CARDS ── -->
+
+    <div class="cb-panel active" id="cbp-cards">
+
+      <div class="row-sb" style="margin-bottom:10px">
+
+        <span style="font-size:13px;font-weight:700">💳 Thẻ tín dụng của tôi</span>
+
+        <button class="btn btn-ghost" style="font-size:11px" onclick="showApplyCardModal()">➕ Mở thẻ mới</button>
+
+      </div>
+
+      <div id="cb-my-cards"><div class="empty"><div class="ei">💳</div><p>Chưa có thẻ tín dụng nào. Nhấn "Mở thẻ mới" để đăng ký!</p></div></div>
+
+    </div>
+
+
+
+    <!-- ── PANEL: LOANS ── -->
+
+    <div class="cb-panel" id="cbp-loans">
+
+      <div class="row-sb" style="margin-bottom:10px">
+
+        <span style="font-size:13px;font-weight:700">🏦 Khoản vay của tôi</span>
+
+        <button class="btn btn-ghost" style="font-size:11px" onclick="showApplyLoanModal()">➕ Vay mới</button>
+
+      </div>
+
+      <div id="cb-my-loans"><div class="empty"><div class="ei">🏦</div><p>Chưa có khoản vay nào. Nhấn "Vay mới" để đăng ký!</p></div></div>
+
+    </div>
+
+
+
+    <!-- ── PANEL: COLLATERAL ── -->
+
+    <div class="cb-panel" id="cbp-collateral">
+
+      <div class="row-sb" style="margin-bottom:10px">
+
+        <span style="font-size:13px;font-weight:700">🔒 Tài sản thế chấp</span>
+
+        <button class="btn btn-ghost" style="font-size:11px" onclick="showRegisterCollateralModal()">➕ Đăng ký</button>
+
+      </div>
+
+      <div id="cb-collateral-summary" style="background:var(--surface2);border-radius:10px;padding:12px;margin-bottom:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center">
+
+        <div><div style="font-size:16px;font-weight:800" id="cb-col-total">0</div><div style="font-size:10px;color:var(--muted2)">Tổng giá trị</div></div>
+
+        <div><div style="font-size:16px;font-weight:800;color:var(--yellow)" id="cb-col-ltv-total">0</div><div style="font-size:10px;color:var(--muted2)">Giá trị vay tối đa</div></div>
+
+        <div><div style="font-size:16px;font-weight:800" id="cb-col-count">0</div><div style="font-size:10px;color:var(--muted2)">Số tài sản</div></div>
+
+      </div>
+
+      <div id="cb-my-collaterals"><div class="empty"><div class="ei">🔒</div><p>Chưa có tài sản thế chấp nào.</p></div></div>
+
+    </div>
+
+
+
+    <!-- ── PANEL: INCOME ── -->
+
+    <div class="cb-panel" id="cbp-income">
+
+      <div class="card" style="margin-bottom:14px;padding:16px;text-align:center">
+
+        <div style="font-size:12px;color:var(--muted2);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Thu nhập đã xác thực</div>
+
+        <div class="income-level" id="cb-income-amount" style="color:var(--green)">0 VND/tháng</div>
+
+        <div style="font-size:12px;color:var(--muted2)" id="cb-income-status">Chưa xác thực</div>
+
+        <button class="btn btn-primary" style="margin-top:10px" onclick="doVerifyIncome()">📄 Xác thực thu nhập</button>
+
+      </div>
+
+      <div id="cb-income-detail" style="font-size:12px;color:var(--muted2)">
+
+        <p style="margin-bottom:10px">💡 Thu nhập được xác thực dựa trên:</p>
+
+        <div id="cb-income-breakdown"></div>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- ── PANEL: LOYALTY ── -->
+
+    <div class="cb-panel" id="cbp-loyalty">
+
+      <div id="cb-loyalty-status" style="margin-bottom:14px"></div>
+
+      <div id="cb-ankibacked" style="margin-bottom:14px"></div>
+
+      <div id="cb-loyalty-detail"></div>
+
+    </div>
+
+  </div>
+
+</div><!-- /bank-credit-view -->
+
+
+
+</div>
+
+
+
+<!-- ════════ PAGE: FINANCE ════════ -->
+
+<div class="page" id="page-finance">
+
+  <!-- Header -->
+
+  <div class="row-sb" style="margin-bottom:6px">
+
+    <div>
+
+      <div class="section-title">📊 Tài chính cá nhân</div>
+
+      <div class="section-sub" id="fin-month" style="margin-bottom:0">Tháng hiện tại</div>
+
+    </div>
+
+    <div style="display:flex;gap:6px;align-items:center">
+
+      <div id="fin-alert-dot" style="display:none;width:8px;height:8px;background:var(--red);border-radius:50%;animation:pulseAlert 1.5s infinite"></div>
+
+      <button class="btn btn-ghost" id="fin-credit-toggle-btn" style="font-size:12px" onclick="goToBankCreditView()">💳 Tín dụng & Vay vốn</button>
+
+      <button class="btn btn-ghost" style="font-size:12px" onclick="openBudgetModal()">⚙️ Ngân sách</button>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- Debt warning banner -->
+
+  <div id="loan-banner" style="display:none;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.4);border-radius:10px;padding:10px 14px;margin-bottom:10px;align-items:center;justify-content:space-between;gap:8px">
+
+    <div>
+
+      <span style="font-size:13px;font-weight:700;color:var(--red)">⚠️ Đang nợ vay nóng: </span>
+
+      <span id="loan-amount-banner" style="font-weight:900;color:var(--red)">0đ</span>
+
+      <div style="font-size:11px;color:var(--muted2);margin-top:2px">Lãi 25%/tháng · Thu nhập sẽ ưu tiên trả nợ</div>
+
+    </div>
+
+    <button class="btn btn-ghost" style="font-size:11px;flex-shrink:0" onclick="switchFinTab('tax')">Chi tiết</button>
+
+  </div>
+
+
+
+  <!-- Tabs -->
+
+  <div class="fin-tabs">
+
+    <button class="fin-tab active" onclick="switchFinTab('overview',this)">📊 Tổng quan</button>
+
+    <button class="fin-tab" onclick="switchFinTab('residence',this)">🏠 Sinh hoạt</button>
+
+    <button class="fin-tab" onclick="switchFinTab('charts',this)">📈 Biểu đồ</button>
+
+    <button class="fin-tab" onclick="switchFinTab('txns',this)">📜 Giao dịch</button>
+
+    <button class="fin-tab" onclick="switchFinTab('tax',this)">🏛️ Thuế</button>
+
+  </div>
+
+
+
+  <!-- ── Panel: Tổng quan ── -->
+
+  <div class="fin-panel active" id="fin-panel-overview">
+
+
+
+    <!-- 3 big stat cards -->
+
+    <div class="fin-hero-grid">
+
+      <div class="fin-stat-card wallet">
+
+        <div class="fsc-icon">💳</div>
+
+        <div class="fsc-val" id="fin-wallet" style="color:var(--green)">0</div>
+
+        <div class="fsc-lbl">Ví thanh toán</div>
+
+        <div class="fsc-sub">Sẵn sàng chi tiêu</div>
+
+      </div>
+
+      <div class="fin-stat-card savings">
+
+        <div class="fsc-icon">🏦</div>
+
+        <div class="fsc-val" id="fin-savings" style="color:var(--blue)">0</div>
+
+        <div class="fsc-lbl">Tiết kiệm</div>
+
+        <div class="fsc-sub" id="fin-interest-sub">Lãi: 0đ</div>
+
+      </div>
+
+      <div class="fin-stat-card networth">
+
+        <div class="fsc-icon">🏆</div>
+
+        <div class="fsc-val" id="fin-total" style="color:var(--accent2)">0</div>
+
+        <div class="fsc-lbl">Tổng tài sản</div>
+
+        <div class="fsc-sub">Ví + NH + CK + Crypto + BĐS + Xe</div>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- Cash flow tháng -->
+
+    <div style="font-size:12px;color:var(--muted2);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Dòng tiền tháng này</div>
+
+    <div class="fin-cashflow" style="margin-bottom:18px">
+
+      <div class="fin-cf-card" style="border-color:rgba(16,185,129,.3)">
+
+        <div class="cfc-icon">📥</div>
+
+        <div class="cfc-val" id="fin-inc" style="color:var(--green)">0</div>
+
+        <div class="cfc-lbl">Thu nhập</div>
+
+      </div>
+
+      <div class="fin-cf-card" style="border-color:rgba(239,68,68,.3)">
+
+        <div class="cfc-icon">📤</div>
+
+        <div class="cfc-val" id="fin-exp" style="color:var(--red)">0</div>
+
+        <div class="cfc-lbl">Chi tiêu</div>
+
+      </div>
+
+      <div class="fin-cf-card">
+
+        <div class="cfc-icon">💎</div>
+
+        <div class="cfc-val" id="fin-net">0</div>
+
+        <div class="cfc-lbl">Còn lại</div>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- Budget donut -->
+
+    <div class="card" style="margin-bottom:16px" id="fin-budget-card">
+
+      <div class="row-sb" style="margin-bottom:12px">
+
+        <span style="font-size:13px;font-weight:700">🎯 Ngân sách tháng</span>
+
+        <span id="fin-budget-badge"></span>
+
+      </div>
+
+      <div class="budget-donut-wrap" id="fin-budget-content">
+
+        <canvas id="budget-donut-canvas" width="110" height="110" style="flex-shrink:0"></canvas>
+
+        <div class="budget-donut-info">
+
+          <div class="bdi-pct" id="fin-budget-pct" style="color:var(--green)">0%</div>
+
+          <div class="bdi-sub" id="fin-budget-info">Chưa đặt ngân sách tháng này</div>
+
+          <div id="fin-budget-alert"></div>
+
+        </div>
+
+      </div>
+
+      <div style="margin-top:12px">
+
+        <div class="progress-wrap"><div class="progress-bar" id="fin-prog" style="width:0%"></div></div>
+
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted2);margin-top:5px">
+
+          <span id="fin-prog-spent">Đã chi: 0đ</span>
+
+          <span id="fin-prog-remain">Còn lại: –</span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- Spending insight -->
+
+    <div class="card" style="margin-bottom:16px;padding:14px">
+
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px">💡 Phân tích nhanh</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="fin-insights">
+
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Chi trung bình/ngày</div>
+
+          <div style="font-weight:800;font-size:14px" id="fin-daily-avg">0đ</div>
+
+        </div>
+
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Tỷ lệ tiết kiệm</div>
+
+          <div style="font-weight:800;font-size:14px" id="fin-save-rate">0%</div>
+
+        </div>
+
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Giao dịch tháng này</div>
+
+          <div style="font-weight:800;font-size:14px" id="fin-txn-count">0</div>
+
+        </div>
+
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Lãi tiết kiệm</div>
+          <div style="font-weight:800;font-size:14px;color:var(--blue)" id="fin-interest">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Economy Controls: Kiểm soát kinh tế -->
+    <div class="card" style="margin-bottom:16px;padding:14px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px">⚖️ Kiểm soát Kinh tế</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="fin-economy-grid">
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:3px">📊 Daily Cap</div>
+          <div style="font-weight:800;font-size:14px" id="econ-daily-cap">—</div>
+          <div style="font-size:10px;color:var(--muted2);margin-top:2px" id="econ-daily-cap-detail">0 thẻ</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:3px">📈 CPI (Lạm phát)</div>
+          <div style="font-weight:800;font-size:14px" id="econ-cpi">0%</div>
+          <div style="font-size:10px;color:var(--muted2);margin-top:2px" id="econ-cpi-detail">0 thẻ</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:3px">💰 Thuế tài sản</div>
+          <div style="font-weight:800;font-size:14px" id="econ-wealth-tax">0%</div>
+          <div style="font-size:10px;color:var(--muted2);margin-top:2px" id="econ-wealth-tax-detail">Miễn thuế</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:3px">🔄 Phí Again</div>
+          <div style="font-weight:800;font-size:14px;color:var(--red)" id="econ-again-fee">0đ</div>
+          <div style="font-size:10px;color:var(--muted2);margin-top:2px">Phí phục hồi kiến thức</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Panel: Biểu đồ ── -->
+  <div class="fin-panel" id="fin-panel-charts">
+
+
+
+    <!-- Bar chart: Thu vs Chi -->
+
+    <div class="chart-card" onclick="openChartModal('incexp')" style="margin-bottom:14px">
+
+      <div class="chart-title">
+
+        <span>📊 Thu nhập vs Chi tiêu</span>
+
+        <span class="chart-expand-btn">🔍 Phóng to</span>
+
+      </div>
+
+      <canvas id="chart-incexp" height="140" style="width:100%;display:block"></canvas>
+
+      <div style="font-size:11px;color:var(--muted2);margin-top:8px;text-align:center">Nhấn để xem chi tiết • Dựa trên lịch sử giao dịch</div>
+
+    </div>
+
+
+
+    <!-- Donut chart: Phân loại chi tiêu -->
+
+    <div class="chart-card" onclick="openChartModal('category')" style="margin-bottom:14px">
+
+      <div class="chart-title">
+
+        <span>🍩 Phân loại giao dịch</span>
+
+        <span class="chart-expand-btn">🔍 Phóng to</span>
+
+      </div>
+
+      <div style="display:flex;align-items:center;gap:20px;padding:0 10px">
+
+        <canvas id="chart-category" width="130" height="130" style="flex-shrink:0"></canvas>
+
+        <div id="chart-category-legend" style="flex:1;font-size:12px;display:flex;flex-direction:column;gap:6px"></div>
+
+      </div>
+
+      <div style="font-size:11px;color:var(--muted2);margin-top:8px;text-align:center">Nhấn để xem chi tiết</div>
+
+    </div>
+
+
+
+    <!-- Trend mini chart -->
+
+    <div class="chart-card" onclick="openChartModal('trend')" style="margin-bottom:14px">
+
+      <div class="chart-title">
+
+        <span>📈 Xu hướng số dư (20 giao dịch gần nhất)</span>
+
+        <span class="chart-expand-btn">🔍 Phóng to</span>
+
+      </div>
+
+      <canvas id="chart-trend" height="100" style="width:100%;display:block"></canvas>
+
+      <div style="font-size:11px;color:var(--muted2);margin-top:8px;text-align:center">Nhấn để xem chi tiết</div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- ── Panel: Giao dịch ── -->
+
+  <div class="fin-panel" id="fin-panel-txns">
+
+    <div class="txn-toolbar">
+
+      <input class="txn-search" id="txn-search" placeholder="🔍  Tìm giao dịch…" oninput="filterTxns()"/>
+
+      <select class="txn-filter-select" id="txn-filter" onchange="filterTxns()">
+
+        <option value="all">Tất cả</option>
+
+        <option value="reward">📥 Thu nhập</option>
+
+        <option value="purchase">📤 Chi tiêu</option>
+
+        <option value="interest">💰 Lãi</option>
+
+        <option value="tax">🏛️ Thuế</option>
+
+        <option value="living_cost">🏠 Sinh hoạt</option>
+
+        <option value="loan">💳 Nợ / vay</option>
+
+        <option value="deposit">🏦 Tiết kiệm</option>
+
+        <option value="stock">📈 Cổ phiếu</option>
+
+        <option value="crypto">₿ Crypto</option>
+
+        <option value="rent">🏠 BĐS</option>
+
+      </select>
+
+      <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px;white-space:nowrap" onclick="exportTxnsCSV()" title="Xuất danh sách giao dịch ra file CSV">📥 CSV</button>
+
+      <button class="btn btn-red" style="font-size:11px;padding:6px 10px;flex-shrink:0" onclick="confirmClearTxns()">🗑️ Xoá</button>
+
+    </div>
+
+    <div style="font-size:11px;color:var(--muted2);margin-bottom:8px" id="txn-count-label"></div>
+
+    <div class="txn-list" id="txn-list">
+
+      <div class="empty"><div class="ei">📭</div><p>Chưa có giao dịch nào</p></div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- ── Panel: Thuế ── -->
+
+  <!-- ── Panel: Sinh hoạt ── -->
+
+  <div class="fin-panel" id="fin-panel-residence">
+
+
+
+    <!-- Nơi ở hiện tại -->
+
+    <div class="card" style="margin-bottom:14px;border-color:rgba(16,185,129,.3)">
+
+      <div class="row-sb" style="margin-bottom:10px">
+
+        <span style="font-size:14px;font-weight:700">🏠 Nơi ở hiện tại</span>
+
+        <button class="btn btn-ghost" style="font-size:11px" onclick="openResidenceModal()">✏️ Thay đổi</button>
+
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+
+        <span id="res-emoji" style="font-size:36px">🏠</span>
+
+        <div>
+
+          <div id="res-name" style="font-weight:800;font-size:15px">Nhà trọ cơ bản</div>
+
+          <div id="res-desc" style="font-size:12px;color:var(--muted2)">Phòng trọ nhỏ, đủ để ở qua ngày</div>
+
+        </div>
+
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Tiền thuê/tháng</div>
+
+          <div style="font-weight:800;font-size:13px;color:var(--red)" id="res-rent">0đ</div>
+
+        </div>
+
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Ăn uống CB/tháng</div>
+
+          <div style="font-weight:800;font-size:13px;color:var(--red)" id="res-food">0đ</div>
+
+        </div>
+
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Internet/tháng</div>
+
+          <div style="font-weight:800;font-size:13px;color:var(--red)" id="res-internet">0đ</div>
+
+        </div>
+
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Điện+nước (ước tính)</div>
+
+          <div style="font-weight:800;font-size:13px;color:var(--yellow)" id="res-utils">0đ</div>
+
+        </div>
+
+      </div>
+
+      <div style="background:rgba(239,68,68,.1);border-radius:8px;padding:10px;text-align:center">
+
+        <div style="font-size:11px;color:var(--muted2)">Tổng chi phí ước tính/tháng</div>
+
+        <div style="font-weight:900;font-size:18px;color:var(--red)" id="res-total-est">0đ</div>
+
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Thuế đất/tháng</div>
+
+          <div style="font-weight:800;font-size:13px;color:var(--yellow)" id="res-land-tax">0đ</div>
+
+        </div>
+
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Thu hôm nay</div>
+
+          <div style="font-weight:800;font-size:13px" id="res-collection-status">Chưa thu</div>
+
+          <div style="font-size:10px;color:var(--muted2);margin-top:3px" id="res-last-collected">--</div>
+
+        </div>
+
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;margin-top:10px">
+
+        <button class="btn btn-red" id="res-sell-btn" style="font-size:11px;display:none" onclick="sellCurrentResidence()">💸 Bán nhà đang ở</button>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- Điện nước giải thích -->
+
+    <div class="card" style="margin-bottom:14px;padding:14px;border-color:rgba(59,130,246,.25)">
+
+      <div style="font-size:13px;font-weight:700;margin-bottom:8px;color:var(--blue)">⚡ Cơ chế điện + nước</div>
+
+      <div style="font-size:12px;color:var(--muted2);line-height:1.8">
+
+        Chi phí điện/nước tính <strong style="color:var(--text)">phí cơ bản + biến đổi</strong> theo số thẻ ôn ngày hôm trước:<br/>
+
+        <div style="display:grid;grid-template-columns:auto auto;gap:4px 16px;margin-top:8px">
+
+          <span>📚 0 thẻ</span><span style="color:var(--red);font-weight:700">×2.0 (ở nhà cả ngày)</span>
+
+          <span>📚 1–20 thẻ</span><span style="color:var(--yellow);font-weight:700">×1.5</span>
+
+          <span>📚 21–50 thẻ</span><span style="color:var(--yellow);font-weight:700">×1.2</span>
+
+          <span>📚 51–100 thẻ</span><span style="color:var(--green);font-weight:700">×1.0 (bình thường)</span>
+
+          <span>📚 100+ thẻ</span><span style="color:var(--green);font-weight:700">×0.7 (tiết kiệm điện!)</span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+    <div class="card" style="margin-bottom:14px;border-color:rgba(239,68,68,.3)">
+
+      <div class="row-sb" style="margin-bottom:12px">
+
+        <span style="font-size:14px;font-weight:700">💳 Khoản vay nóng</span>
+
+        <span id="loan-status-badge" class="badge badge-green">Không có nợ</span>
+
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Tổng nợ</div>
+
+          <div style="font-weight:900;font-size:16px;color:var(--red)" id="loan-total">0đ</div>
+
+        </div>
+
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Lãi đã cộng</div>
+
+          <div style="font-weight:800;font-size:14px;color:var(--yellow)" id="loan-interest">0đ</div>
+
+        </div>
+
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Gốc vay</div>
+
+          <div style="font-weight:800;font-size:14px" id="loan-principal">0đ</div>
+
+        </div>
+
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Lãi suất</div>
+
+          <div style="font-weight:800;font-size:14px;color:var(--red)" id="loan-rate">25%/tháng</div>
+
+        </div>
+
+      </div>
+
+      <div style="font-size:12px;color:var(--muted2);margin-bottom:10px" id="loan-meta">Thu nhập từ ôn thẻ sẽ ưu tiên trả nợ trước.</div>
+
+      <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">Biến động gần đây</div>
+
+      <div id="loan-log-list" class="mini-log-list">
+
+        <div style="font-size:12px;color:var(--muted2)">Chưa có biến động nợ.</div>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- Log 7 ngày -->
+
+    <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Lịch sử 7 ngày gần nhất</div>
+
+    <div id="res-log-list">
+
+      <div class="empty"><div class="ei">📋</div><p>Chưa có dữ liệu</p></div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- ── Panel: Thuế ── -->
+
+  <div class="fin-panel" id="fin-panel-tax">
+
+    <div class="card" style="margin-bottom:14px;border-color:rgba(245,158,11,.3)">
+
+      <div class="row-sb" style="margin-bottom:12px">
+
+        <span style="font-size:14px;font-weight:700">🏛️ Thuế tài sản hàng ngày</span>
+
+        <span id="tax-status-badge" class="badge badge-yellow">Chưa áp dụng</span>
+
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Tổng tài sản</div>
+
+          <div style="font-weight:800;font-size:14px" id="tax-total-assets">0 VND</div>
+
+        </div>
+
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Thuế hôm nay</div>
+
+          <div style="font-weight:800;font-size:14px;color:var(--yellow)" id="tax-today-amount">0 VND</div>
+
+        </div>
+
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Mức thuế hiện tại</div>
+
+          <div style="font-weight:800;font-size:14px;color:var(--yellow)" id="tax-rate">—</div>
+
+        </div>
+
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Thuế ngày mai</div>
+
+          <div style="font-weight:800;font-size:14px;color:var(--red)" id="tax-next">0 VND</div>
+
+        </div>
+
+      </div>
+
+      <div style="font-size:12px;color:var(--muted2);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Bảng thuế lũy tiến</div>
+
+      <div id="tax-brackets-table">
+
+        <div class="tax-tier"><span>TTS ≤ 10M</span><span style="color:var(--green);font-weight:700">Miễn thuế</span></div>
+
+        <div class="tax-tier" id="tb-0"><span>Thu nhập &lt; 1M/tháng</span><span style="font-weight:700">0.1%/ngày</span></div>
+
+        <div class="tax-tier" id="tb-1"><span>Thu nhập 1M–5M/tháng</span><span style="font-weight:700">0.2%/ngày</span></div>
+
+        <div class="tax-tier" id="tb-2"><span>Thu nhập 5M–20M/tháng</span><span style="font-weight:700">0.3%/ngày</span></div>
+
+        <div class="tax-tier" id="tb-3"><span>Thu nhập 20M–100M/tháng</span><span style="font-weight:700">0.4%/ngày</span></div>
+
+        <div class="tax-tier" id="tb-4"><span>Thu nhập &gt; 100M/tháng</span><span style="font-weight:700">0.5%/ngày</span></div>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- Hướng dẫn thuế TNCN 2026 -->
+
+    <div class="card" style="margin-bottom:14px;border-color:rgba(124,58,237,.3)">
+
+      <div class="row-sb" style="margin-bottom:10px">
+
+        <span style="font-size:14px;font-weight:700;color:var(--accent2)">📖 Hướng dẫn Thuế TNCN Anki Finance 2026  </span>
+
+        <span class="badge badge-purple" style="font-size:10px">Biểu thuế mới</span>
+
+      </div>
+
+      <div style="font-size:12px;color:var(--muted2);line-height:1.8;margin-bottom:10px">
+
+        <strong style="color:var(--text)">Công thức:</strong><br>
+
+        Thu nhập tính thuế = Thu nhập − Giảm trừ bản thân − Giảm trừ học tập
+
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px">
+
+        <div style="background:var(--surface2);border-radius:6px;padding:8px;text-align:center">
+
+          <div style="font-size:10px;color:var(--muted2)">Giảm trừ bản thân</div>
+
+          <div style="font-weight:800;font-size:13px;color:var(--green)">15,5 triệu/tháng</div>
+
+        </div>
+
+        <div style="background:var(--surface2);border-radius:6px;padding:8px;text-align:center">
+
+          <div style="font-size:10px;color:var(--muted2)">Giảm trừ học tập</div>
+
+          <div style="font-weight:800;font-size:13px;color:var(--accent2)">1.000đ/thẻ ôn (max 5M)</div>
+
+        </div>
+
+      </div>
+
+      <div style="font-size:11px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">Biểu thuế lũy tiến 5 bậc</div>
+
+      <div id="pit-slabs-guide">
+
+        <div class="tax-tier"><span>Thu nhập tính thuế ≤ 10 triệu</span><span style="color:var(--green);font-weight:700">5%</span></div>
+
+        <div class="tax-tier"><span>Trên 10 triệu – 30 triệu</span><span style="font-weight:700">10%</span></div>
+
+        <div class="tax-tier"><span>Trên 30 triệu – 60 triệu</span><span style="font-weight:700">20%</span></div>
+
+        <div class="tax-tier"><span>Trên 60 triệu – 100 triệu</span><span style="font-weight:700">30%</span></div>
+
+        <div class="tax-tier"><span>Trên 100 triệu</span><span style="color:var(--red);font-weight:700">35%</span></div>
+
+      </div>
+
+      <div style="margin-top:10px;font-size:11px;color:var(--muted2);line-height:1.7;padding:8px;background:var(--surface2);border-radius:6px">
+
+        <strong style="color:var(--text)">⚡ Khấu trừ tức thì:</strong> Thuế TNCN được khấu trừ ngay khi nhận thưởng học tập. Cuối tháng hệ thống quyết toán nếu có chênh lệch.
+
+      </div>
+
+      <div style="margin-top:6px;font-size:10px;color:var(--muted2);font-style:italic" id="pit-source-ref">Nguồn: Thư viện pháp luật — Công thức tính thuế TNCN 2026 theo biểu thuế và mức giảm trừ gia cảnh 2026 chính thức.</div>
+
+    </div>
+
+
+
+    <!-- Tax tips -->
+
+    <div class="card" style="padding:14px;border-color:rgba(59,130,246,.25)">
+
+      <div style="font-size:13px;font-weight:700;margin-bottom:8px;color:var(--blue)">💡 Lưu ý thuế</div>
+
+      <ul style="font-size:12px;color:var(--muted2);line-height:2;padding-left:16px">
+
+        <li>Thuế TNCN áp dụng <strong style="color:var(--text)">ngay khi có thu nhập</strong> — khấu trừ tạm thời mỗi thẻ ôn.</li>
+
+        <li>Ngưỡng chịu thuế: thu nhập tháng vượt <strong style="color:var(--text)">15,5 triệu</strong> (giảm trừ bản thân).</li>
+
+        <li>Ôn nhiều thẻ → <strong style="color:var(--text)">giảm trừ học tập</strong> lên đến 5 triệu/tháng.</li>
+
+        <li>Thuế tài sản (thuế giàu) thu <strong style="color:var(--text)">tự động mỗi ngày</strong> khi tổng tài sản trên 10 triệu.</li>
+
+      </ul>
+
+    </div>
+
+
+
+    <!-- Tax details -->
+
+    <div class="card" style="margin-top:14px;border-color:rgba(59,130,246,.25)">
+
+      <div class="row-sb" style="margin-bottom:12px">
+
+        <span style="font-size:14px;font-weight:700">🧾 Thuế TNCN tháng này</span>
+
+        <span id="tax-pit-badge" class="badge badge-blue">Preview</span>
+
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Thu nhập tháng</div>
+
+          <div style="font-weight:800;font-size:14px" id="tax-pit-income">0 VND</div>
+
+        </div>
+
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Tổng giảm trừ</div>
+
+          <div style="font-weight:800;font-size:14px;color:var(--green)" id="tax-pit-deduction">0 VND</div>
+
+        </div>
+
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Thu nhập tính thuế</div>
+
+          <div style="font-weight:800;font-size:14px;color:var(--yellow)" id="tax-pit-taxable">0 VND</div>
+
+        </div>
+
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:3px">Thuế tháng này</div>
+
+          <div style="font-weight:900;font-size:16px;color:var(--red)" id="tax-pit-amount">0 VND</div>
+
+        </div>
+
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+
+        <div style="background:var(--surface2);border-radius:8px;padding:8px;text-align:center">
+
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:2px">Đã khấu trừ tạm</div>
+
+          <div style="font-weight:700;font-size:13px;color:var(--blue)" id="tax-pit-withheld">0 VND</div>
+
+        </div>
+
+        <div style="background:var(--surface2);border-radius:8px;padding:8px;text-align:center">
+
+          <div style="font-size:11px;color:var(--muted2);margin-bottom:2px">Còn lại cuối tháng</div>
+
+          <div style="font-weight:700;font-size:13px;color:var(--orange)" id="tax-pit-remaining">0 VND</div>
+
+        </div>
+
+      </div>
+
+      <div style="font-size:12px;color:var(--muted2)" id="tax-pit-effective">Hiệu suất thuế: 0%</div>
+
+    </div>
+
+
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px">
+
+      <div class="card" style="border-color:rgba(245,158,11,.25)">
+
+        <div style="font-size:13px;font-weight:700;margin-bottom:10px">🏡 Thuế đất nhà ở</div>
+
+        <div style="font-size:24px;font-weight:900;color:var(--yellow);margin-bottom:4px" id="tax-land-current">0 VND</div>
+
+        <div style="font-size:12px;color:var(--muted2);line-height:1.7" id="tax-land-note">Không có nhà mua đứt.</div>
+
+      </div>
+
+      <div class="card" style="border-color:rgba(239,68,68,.25)">
+
+        <div style="font-size:13px;font-weight:700;margin-bottom:10px">💳 Tác động nợ hiện tại</div>
+
+        <div style="font-size:24px;font-weight:900;color:var(--red);margin-bottom:4px" id="tax-loan-total">0 VND</div>
+
+        <div style="font-size:12px;color:var(--muted2);line-height:1.7" id="tax-loan-note">Không có khoản vay nóng.</div>
+
+      </div>
+
+    </div>
+
+
+
+    <div class="card" style="margin-top:14px">
+
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px">🧾 Lịch sử PIT</div>
+
+      <div id="tax-pit-log-list" class="mini-log-list">
+
+        <div style="font-size:12px;color:var(--muted2)">Chưa có lịch sử PIT.</div>
+
+      </div>
+
+    </div>
+
+
+
+    <div class="card" style="margin-top:14px">
+
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px">🏡 Lịch sử thuế đất</div>
+
+      <div id="tax-land-log-list" class="mini-log-list">
+
+        <div style="font-size:12px;color:var(--muted2)">Chưa có lịch sử thuế đất.</div>
+
+      </div>
+
+    </div>
+  
+  </div>
+
+</div>
+
+<div class="modal-overlay" id="modal-residence">
+
+  <div class="modal" style="max-width:760px;width:96%">
+
+    <div class="row-sb" style="margin-bottom:14px">
+
+      <div>
+
+        <h3 style="margin:0">🏠 Chọn nơi ở</h3>
+
+        <div style="font-size:12px;color:var(--muted2);margin-top:4px">Đổi chỗ ở sẽ ảnh hưởng chi phí sinh hoạt và thuế đất.</div>
+
+      </div>
+
+      <button class="btn btn-ghost" onclick="closeResidenceModal()">✕</button>
+
+    </div>
+
+    <div style="display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:14px">
+
+      <div>
+
+        <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Danh sách nơi ở</div>
+
+        <div id="residence-options-list" style="display:flex;flex-direction:column;gap:8px;max-height:420px;overflow-y:auto">
+
+          <div style="font-size:12px;color:var(--muted2)">Đang tải…</div>
+
+        </div>
+
+      </div>
+
+      <div>
+
+        <div style="font-size:12px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Xem trước</div>
+
+        <div class="card" style="padding:14px;border-color:rgba(124,58,237,.25)">
+
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+
+            <span id="res-modal-emoji" style="font-size:34px">🏠</span>
+
+            <div>
+
+              <div id="res-modal-name" style="font-size:15px;font-weight:800">Chưa chọn</div>
+
+              <div id="res-modal-type" style="font-size:12px;color:var(--muted2)">--</div>
+
+            </div>
+
+          </div>
+
+          <div id="res-modal-desc" style="font-size:12px;color:var(--muted2);line-height:1.7;margin-bottom:10px">Chọn một nơi ở bất kỳ ở bên trái.</div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+
+            <div style="background:var(--surface2);border-radius:8px;padding:10px">
+
+              <div style="font-size:11px;color:var(--muted2)">Chi phí 1 lần</div>
+
+              <div style="font-weight:800;font-size:14px" id="res-modal-upfront">0 VND</div>
+
+            </div>
+
+            <div style="background:var(--surface2);border-radius:8px;padding:10px">
+
+              <div style="font-size:11px;color:var(--muted2)">Tổng/tháng</div>
+
+              <div style="font-weight:900;font-size:15px;color:var(--red)" id="res-modal-monthly">0 VND</div>
+
+            </div>
+
+            <div style="background:var(--surface2);border-radius:8px;padding:10px">
+
+              <div style="font-size:11px;color:var(--muted2)">Utility base</div>
+
+              <div style="font-weight:700;font-size:13px" id="res-modal-utils">0 VND</div>
+
+            </div>
+
+            <div style="background:var(--surface2);border-radius:8px;padding:10px">
+
+              <div style="font-size:11px;color:var(--muted2)">Thuế đất</div>
+
+              <div style="font-weight:700;font-size:13px;color:var(--yellow)" id="res-modal-land-tax">0 VND</div>
+
+            </div>
+
+          </div>
+
+          <div id="res-modal-status" style="font-size:12px;color:var(--muted2);line-height:1.7;margin-bottom:12px">--</div>
+
+          <div class="modal-footer" style="margin-top:0">
+
+            <button class="btn btn-ghost" onclick="closeResidenceModal()">Huỷ</button>
+
+            <button class="btn" id="res-modal-confirm-btn" onclick="confirmResidenceChange()" disabled>Xác nhận đổi</button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<div class="modal-overlay" id="modal-reset">
+
+  <div class="modal" style="border-color:var(--red)">
+
+    <h3 style="color:var(--red)">⚠️ Reset toàn bộ tài sản</h3>
+
+    <p style="font-size:13px;color:var(--muted2);margin-bottom:14px;line-height:1.6">
+
+      Hành động này sẽ <strong style="color:var(--red)">xoá toàn bộ</strong> tiền tiết kiệm, kho đồ, lịch sử giao dịch, thống kê, BĐS, chứng khoán, crypto, nhiệm vụ, streak… <strong>Không thể hoàn tác!</strong>
+
+    </p>
+
+    <p style="font-size:13px;color:var(--muted2);margin-bottom:14px;line-height:1.6">
+
+      ✅ Sau reset bạn vẫn được giữ lại <strong style="color:var(--green)">10.000.000 VND vốn khởi đầu</strong> + nhà trọ cơ bản.
+
+    </p>
+
+    <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:10px 12px;margin-bottom:14px;font-size:13px">
+
+      Nhập chính xác cụm sau để xác nhận:<br/>
+
+      <code id="reset-phrase-display" style="font-size:15px;font-weight:900;color:var(--red);letter-spacing:1px"></code>
+
+    </div>
+
+    <input id="reset-confirm-inp" class="inp" placeholder="Nhập cụm xác nhận…" style="border-color:var(--red)"/>
+
+    <div id="reset-error" style="color:var(--red);font-size:12px;margin-top:6px;min-height:18px"></div>
+
+    <div class="modal-footer" style="gap:8px">
+
+      <button class="btn btn-ghost" onclick="closeResetModal()">Huỷ</button>
+
+      <button class="btn btn-red" onclick="doReset()">🗑️ Reset thường</button>
+
+      <button class="btn btn-red" id="hard-reset-btn" onclick="doHardReset()" style="background:var(--red);border-color:#7f1d1d;color:#fff">🔥 Reset cục bộ</button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ════════ PAGE: QUESTS ════════ -->
+
+<div class="page" id="page-quests">
+
+  <div class="row-sb" style="margin-bottom:4px">
+
+    <div class="section-title">📋 Nhiệm vụ hàng ngày</div>
+
+    <span id="quest-done-badge" class="badge badge-purple">0/3 hoàn thành</span>
+
+  </div>
+
+  <div class="section-sub" id="quest-date-label">Hôm nay</div>
+
+
+
+  <!-- Rank card -->
+
+  <div class="rank-card card" id="rank-full-card" style="margin-bottom:16px">
+
+    <div style="display:flex;align-items:center;gap:14px">
+
+      <span id="rank-emoji-big" style="font-size:44px">📚</span>
+
+      <div style="flex:1">
+
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+
+          <span class="rank-title" id="rank-label-full">Tân Học giả</span>
+
+          <span class="xp-badge">⭐ <span id="rank-xp-full">0</span> XP</span>
+
+          <span class="xp-badge" style="color:var(--green)" id="rank-kn-full">🧠 0 KN</span>
+
+        </div>
+
+        <div class="rank-group" id="rank-group-full" style="color:var(--muted2)">Nhóm: Học giả</div>
+
+        <div class="rank-prog-wrap">
+
+          <div class="rank-prog-bar" id="rank-prog-full" style="width:0%"></div>
+
+        </div>
+
+        <div class="rank-prog-label" id="rank-prog-text">Đang tính…</div>
+
+      </div>
+
+    </div>
+
+    <div id="rank-requirements" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px;margin-top:10px;font-size:12px">
+
+      <!-- filled by JS -->
+
+    </div>
+
+  </div>
+
+
+
+  <!-- Streak full card -->
+
+  <div class="card" style="margin-bottom:16px;padding:14px">
+
+    <div style="font-size:13px;font-weight:700;margin-bottom:10px">🔥 Streak học tập</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;text-align:center">
+
+      <div style="background:var(--surface2);border-radius:8px;padding:10px">
+
+        <div style="font-size:28px;font-weight:900;color:#f97316" id="streak-count-full">0</div>
+
+        <div style="font-size:11px;color:var(--muted2)">Streak hiện tại</div>
+
+      </div>
+
+      <div style="background:var(--surface2);border-radius:8px;padding:10px">
+
+        <div style="font-size:20px;font-weight:800;color:var(--yellow)" id="streak-mult-full">×1.0</div>
+
+        <div style="font-size:11px;color:var(--muted2)">Hệ số thưởng</div>
+
+      </div>
+
+      <div style="background:var(--surface2);border-radius:8px;padding:10px">
+
+        <div style="font-size:20px;font-weight:800;color:var(--blue)" id="streak-best-full">0</div>
+
+        <div style="font-size:11px;color:var(--muted2)">Streak tốt nhất</div>
+
+      </div>
+
+    </div>
+
+    <div style="font-size:12px;color:var(--muted2)" id="streak-today-info">Hôm nay ôn 0 thẻ (cần 5 để tính streak)</div>
+
+  </div>
+
+
+
+  <!-- Quest list -->
+
+  <div style="font-size:13px;font-weight:700;margin-bottom:10px">🎯 3 nhiệm vụ hôm nay</div>
+
+  <div id="quest-full-list"><!-- filled by JS --></div>
+
+
+
+  <!-- All ranks reference -->
+
+  <div style="font-size:13px;font-weight:700;margin:16px 0 10px">🏆 Bảng cấp bậc <span style="font-size:11px;color:var(--muted2);font-weight:400">(cuộn để xem thêm)</span></div>
+
+  <div id="ranks-table" style="display:flex;flex-direction:column;gap:4px;max-height:320px;overflow-y:auto;padding-right:4px"><!-- filled by JS --></div>
+
+</div>
+
+
+
+
+
+
+
+<!-- ════════ PAGE: REAL ESTATE ════════ -->
+
+<div class="page" id="page-realestate">
+
+  <div class="row-sb" style="margin-bottom:4px">
+
+    <div class="section-title">🏠 Bất động sản</div>
+
+    <button class="btn btn-green" onclick="collectRent()">💰 Thu tiền thuê</button>
+
+  </div>
+
+  <div class="section-sub">Mua BĐS trong cửa hàng → cấu hình giá thuê → nhận thu nhập thụ động</div>
+
+
+
+  <!-- Overview -->
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:10px;margin-bottom:16px" id="re-overview">
+
+    <div class="card" style="text-align:center;padding:12px">
+
+      <div style="font-size:11px;color:var(--muted2)">Số BĐS</div>
+
+      <div style="font-size:22px;font-weight:900;color:var(--accent2)" id="re-count">0</div>
+
+    </div>
+
+    <div class="card" style="text-align:center;padding:12px">
+
+      <div style="font-size:11px;color:var(--muted2)">Thu nhập/tháng (net)</div>
+
+      <div style="font-size:18px;font-weight:800;color:var(--green)" id="re-monthly">0 VND</div>
+
+    </div>
+
+    <div class="card" style="text-align:center;padding:12px">
+
+      <div style="font-size:11px;color:var(--muted2)">Giá trị thị trường</div>
+
+      <div style="font-size:18px;font-weight:800;color:var(--blue)" id="re-mktval">0 VND</div>
+
+    </div>
+
+    <div class="card" style="text-align:center;padding:12px">
+
+      <div style="font-size:11px;color:var(--muted2)">ROI trung bình</div>
+
+      <div style="font-size:18px;font-weight:800;color:var(--yellow)" id="re-roi">0%</div>
+
+    </div>
+
+    <div class="card" style="text-align:center;padding:12px">
+
+      <div style="font-size:11px;color:var(--muted2)">Chờ thu</div>
+
+      <div style="font-size:18px;font-weight:800;color:var(--yellow)" id="re-pending">0 VND</div>
+
+    </div>
+
+    <div class="card" style="text-align:center;padding:12px">
+
+      <div style="font-size:11px;color:var(--muted2)">Chưa thực hiện LN</div>
+
+      <div style="font-size:14px;font-weight:700;color:var(--green)" id="re-unrealized">0 VND</div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- Property list -->
+
+  <div id="re-list">
+
+    <div class="empty"><div class="ei">🏠</div>
+
+      <p>Chưa có bất động sản nào.<br>
+
+      Mua BĐS trong <a href="#" onclick="go('shop');return false" style="color:var(--accent2)">Cửa hàng</a> để bắt đầu!</p>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ════════ MODAL: UPGRADE PROPERTY ════════ -->
+
+<div class="modal-overlay" id="modal-upgrade-re">
+
+  <div class="modal" style="max-width:440px">
+
+    <div class="row-sb" style="margin-bottom:16px">
+
+      <h3>🔨 Nâng cấp BĐS</h3>
+
+      <button class="btn btn-ghost" onclick="closeUpgradeModal()">✕</button>
+
+    </div>
+
+    <div id="upgrade-re-info" style="background:var(--surface2);border-radius:8px;padding:12px;margin-bottom:14px;font-size:13px"></div>
+
+    <div id="upgrade-re-detail" style="font-size:13px;line-height:1.8"></div>
+
+    <div class="modal-footer" style="margin-top:14px">
+
+      <button class="btn btn-ghost" onclick="closeUpgradeModal()">Huỷ</button>
+
+      <button class="btn btn-primary" id="upgrade-re-confirm-btn" onclick="confirmUpgrade()">🔨 Nâng cấp</button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ════════ PAGE: KNOWLEDGE BASE ════════ -->
+
+<div class="page" id="page-knowledge">
+
+
+
+  <!-- LIST VIEW -->
+
+  <div id="kb-list-view">
+
+    <div class="row-sb" style="margin-bottom:10px">
+
+      <div>
+
+        <div class="section-title">💡 Kiến thức Tài chính</div>
+
+        <div class="section-sub" style="margin-bottom:0">Ghi chú • Lưu trữ • Tham khảo</div>
+
+      </div>
+
+      <button class="btn btn-primary" onclick="openKbEditor()">✏️ Thêm mới</button>
+
+    </div>
+
+
+
+    <!-- Search + Filter -->
+
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+
+      <input class="inp" id="kb-search" style="flex:1;min-width:160px"
+
+        placeholder="🔍 Tìm kiếm…" oninput="kbSearch()"/>
+
+      <select id="kb-cat-filter" class="inp" style="width:auto;min-width:130px" onchange="kbFilter()">
+
+        <option value="">📂 Tất cả</option>
+
+      </select>
+
+    </div>
+
+
+
+    <!-- Stats mini -->
+
+    <div id="kb-stats" style="font-size:12px;color:var(--muted2);margin-bottom:12px"></div>
+
+
+
+    <!-- Note list -->
+
+    <div class="kb-list" id="kb-list-el"></div>
+
+  </div>
+
+
+
+  <!-- DETAIL VIEW -->
+
+  <div id="kb-detail-view" style="display:none">
+
+    <div class="row-sb" style="margin-bottom:12px">
+
+      <button class="btn btn-ghost" onclick="closeKbDetail()">← Quay lại</button>
+
+      <div style="display:flex;gap:6px">
+
+        <button class="btn btn-yellow" id="kb-pin-btn" onclick="kbTogglePin()">📌 Ghim</button>
+
+        <button class="btn btn-ghost" onclick="openKbEditorForCurrent()">✏️ Sửa</button>
+
+        <button class="btn btn-red" onclick="kbDeleteCurrent()">🗑️ Xoá</button>
+
+      </div>
+
+    </div>
+
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+
+      <span id="kb-detail-emoji" style="font-size:36px">📝</span>
+
+      <div>
+
+        <div id="kb-detail-title" style="font-size:18px;font-weight:900"></div>
+
+        <div id="kb-detail-meta" style="font-size:11px;color:var(--muted2);margin-top:2px"></div>
+
+      </div>
+
+    </div>
+
+    <div id="kb-detail-tags" style="margin-bottom:4px"></div>
+
+    <div class="kb-detail-body" id="kb-detail-body"></div>
+
+  </div>
+
+
+
+  <!-- EDITOR VIEW -->
+
+  <div id="kb-editor-view" style="display:none">
+
+    <div class="row-sb" style="margin-bottom:14px">
+
+      <div style="font-size:16px;font-weight:800" id="kb-editor-title-label">✏️ Thêm ghi chú mới</div>
+
+      <button class="btn btn-ghost" onclick="closeKbEditor()">✕ Huỷ</button>
+
+    </div>
+
+
+
+    <!-- Emoji picker -->
+
+    <label style="margin-bottom:6px">Icon</label>
+
+    <div class="emoji-picker" id="kb-emoji-picker">
+
+      <!-- filled by JS -->
+
+    </div>
+
+    <input class="inp" id="kb-emoji-custom" placeholder="Hoặc nhập emoji bất kỳ…"
+
+      style="margin-top:6px" oninput="setKbEmoji(this.value)"/>
+
+
+
+    <!-- Title -->
+
+    <label style="margin-top:12px;margin-bottom:4px">Tiêu đề *</label>
+
+    <input class="inp" id="kb-title-inp" placeholder="Ví dụ: Quy tắc 50/30/20"/>
+
+
+
+    <!-- Category -->
+
+    <label style="margin-top:10px;margin-bottom:4px">Danh mục</label>
+
+    <div id="kb-cat-chips" style="margin-bottom:6px"><!-- filled --></div>
+
+    <input class="inp" id="kb-cat-inp" placeholder="Hoặc nhập danh mục mới…"/>
+
+
+
+    <!-- Tags -->
+
+    <label style="margin-top:10px;margin-bottom:4px">Tags (cách nhau bằng dấu phẩy)</label>
+
+    <input class="inp" id="kb-tags-inp" placeholder="lãi kép, tiết kiệm, đầu tư"/>
+
+
+
+    <!-- Body -->
+
+    <label style="margin-top:10px;margin-bottom:4px">Nội dung *</label>
+
+    <textarea class="inp" id="kb-body-inp"
+
+      placeholder="Viết ghi chú của bạn…&#10;Hỗ trợ xuống dòng bình thường." rows="10"></textarea>
+
+
+
+    <div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end">
+
+      <button class="btn btn-ghost" onclick="closeKbEditor()">Huỷ</button>
+
+      <button class="btn btn-primary" onclick="kbSave()">💾 Lưu</button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ═══════════ PAGE: STOCK MARKET ═══════════ -->
+
+<div class="page" id="page-stocks">
+
+  <div class="section-title">📈 Thị trường chứng khoán</div>
+
+  <div class="section-sub">Đầu tư cổ phiếu VN30 — mua thấp bán cao</div>
+
+
+
+  <!-- Hero: VN-Index -->
+
+  <div class="stock-hero">
+
+    <div class="vnindex" id="stock-vnindex">—</div>
+
+    <div class="vnindex-change" id="stock-vnchange"></div>
+
+    <div class="vnindex-sub" id="stock-vntime">Đang tải…</div>
+
+    <div class="session-timer" id="session-timer">
+
+      <span class="st-icon">🕐</span>
+
+      <span class="st-label" id="st-label">Phiên giao dịch</span>
+
+      <span class="st-countdown" id="st-countdown">--:--:--</span>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- Overview stat cards -->
+
+  <div class="stock-overview-grid" id="stock-ov-grid">
+
+    <div class="stock-ov-card"><div class="sov-icon">🏢</div><div class="sov-val" id="sov-count">0</div><div class="sov-lbl">Mã CK</div></div>
+
+    <div class="stock-ov-card"><div class="sov-icon">📊</div><div class="sov-val" id="sov-advancers">0</div><div class="sov-lbl">Tăng</div></div>
+
+    <div class="stock-ov-card"><div class="sov-icon">📉</div><div class="sov-val" id="sov-decliners">0</div><div class="sov-lbl">Giảm</div></div>
+
+    <div class="stock-ov-card"><div class="sov-icon">🤝</div><div class="sov-val" id="sov-unchanged">0</div><div class="sov-lbl">Đứng</div></div>
+
+    <div class="stock-ov-card"><div class="sov-icon">💵</div><div class="sov-val" id="sov-volume">—</div><div class="sov-lbl">KLGD</div></div>
+
+  </div>
+
+
+
+  <!-- Tabs -->
+
+  <div class="stock-tabs">
+
+    <button class="stock-tab active" onclick="switchStockTab('list')" id="stab-list">📋 Danh sách</button>
+
+    <button class="stock-tab" onclick="switchStockTab('portfolio')" id="stab-portfolio">💼 Danh mục</button>
+
+    <button class="stock-tab" onclick="switchStockTab('events')" id="stab-events">💰 Cổ tức & Sự kiện</button>
+
+    <button class="stock-tab" onclick="switchStockTab('txns')" id="stab-txns">📜 Lịch sử</button>
+
+    <button class="stock-tab" onclick="switchStockTab('bonds')" id="stab-bonds">📜 Trái phiếu</button>
+
+  </div>
+
+
+
+  <!-- Panel: Stock List -->
+
+  <div class="stock-panel active" id="spanel-list">
+
+    <!-- Filter row -->
+
+    <div class="stock-filter-row">
+
+      <select id="stock-sector-filter" onchange="filterStocks()">
+
+        <option value="all">🏭 Tất cả</option>
+
+      </select>
+
+      <input class="search-inp" id="stock-search" placeholder="🔍 Tìm mã CK…" oninput="filterStocks()" />
+
+      <div style="display:flex;gap:4px">
+
+        <button class="stock-sort-btn active" data-sort="symbol" onclick="sortStocks('symbol')">🔤 Mã</button>
+
+        <button class="stock-sort-btn" data-sort="change" onclick="sortStocks('change')">📈 %</button>
+
+        <button class="stock-sort-btn" data-sort="price" onclick="sortStocks('price')">💰 Giá</button>
+
+      </div>
+
+    </div>
+
+    <div class="stock-grid" id="stock-grid"></div>
+
+  </div>
+
+
+
+  <!-- Panel: Portfolio -->
+
+  <div class="stock-panel" id="spanel-portfolio">
+
+    <div class="portfolio-summary" id="ps-summary">
+
+      <div><div class="ps-val" id="ps-invested">0</div><div class="ps-lbl">Đã đầu tư</div></div>
+
+      <div><div class="ps-val" id="ps-marketval">0</div><div class="ps-lbl">Giá trị TT</div></div>
+
+      <div><div class="ps-val" id="ps-pnl">0</div><div class="ps-lbl">Lãi/Lỗ</div></div>
+
+    </div>
+
+    <div id="portfolio-holdings"></div>
+
+  </div>
+
+
+
+  <!-- Panel: Events (Dividends & Corporate Actions) -->
+
+  <div class="stock-panel" id="spanel-events">
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+
+      <div class="card" style="flex:1;text-align:center;padding:12px;min-width:140px">
+
+        <div style="font-size:11px;color:var(--muted2)">Cổ tức đã nhận</div>
+
+        <div style="font-size:20px;font-weight:900;color:var(--green)" id="div-total-received">0 VND</div>
+
+      </div>
+
+      <div class="card" style="flex:1;text-align:center;padding:12px;min-width:140px">
+
+        <div style="font-size:11px;color:var(--muted2)">Lợi suất TB</div>
+
+        <div style="font-size:18px;font-weight:800;color:var(--yellow)" id="div-avg-yield">0%</div>
+
+      </div>
+
+      <div class="card" style="flex:1;text-align:center;padding:12px;min-width:140px">
+
+        <div style="font-size:11px;color:var(--muted2)">Mã đã nhận</div>
+
+        <div style="font-size:18px;font-weight:800;color:var(--blue)" id="div-symbol-count">0</div>
+
+      </div>
+
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+
+      <button class="btn btn-ghost active" id="div-tab-history" onclick="switchDivTab('history')" style="font-size:12px">📜 Lịch sử cổ tức</button>
+
+      <button class="btn btn-ghost" id="div-tab-corp" onclick="switchDivTab('corp')" style="font-size:12px">🏢 Sự kiện DN</button>
+
+    </div>
+
+    <div id="div-history-list"><!-- filled by JS --></div>
+
+    <div id="div-corp-list" style="display:none"><!-- filled by JS --></div>
+
+  </div>
+
+
+
+  <!-- Panel: Transactions -->
+
+  <div class="stock-panel" id="spanel-txns">
+
+    <div id="stock-txn-list"></div>
+
+  </div>
+
+  <!-- Panel: Trái phiếu -->
+  <div class="stock-panel" id="spanel-bonds">
+
+    <div class="card" style="margin-bottom:14px;padding:14px;border-color:rgba(59,130,246,.25)">
+      <div class="row-sb" style="margin-bottom:10px">
+        <div style="font-size:13px;font-weight:700">📊 Thị trường trái phiếu</div>
+        <div style="font-size:11px;color:var(--muted2)" id="bond-summary-info">Đang tải...</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+          <div style="font-size:11px;color:var(--muted2)">Tổng số TP</div>
+          <div style="font-size:18px;font-weight:800;margin-top:2px" id="bond-total-count">—</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:10px;text-align:center">
+          <div style="font-size:11px;color:var(--muted2)">Giá trị danh mục</div>
+          <div style="font-size:18px;font-weight:800;margin-top:2px" id="bond-portfolio-value">0₫</div>
+        </div>
+      </div>
+      <div id="bond-coupon-progress" style="background:var(--surface2);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--muted2);text-align:center">
+        📝 Ôn thêm <span id="bond-reviews-needed">50</span> thẻ để nhận coupon
+      </div>
+    </div>
+
+    <div style="font-size:13px;font-weight:700;margin-bottom:8px">📜 Danh sách trái phiếu</div>
+    <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-sm bond-filter active" data-filter="all" onclick="filterBonds('all',this)" style="font-size:11px">Tất cả</button>
+      <button class="btn btn-ghost btn-sm bond-filter" data-filter="Chính phủ" onclick="filterBonds('Chính phủ',this)" style="font-size:11px">🏛️ Chính phủ</button>
+      <button class="btn btn-ghost btn-sm bond-filter" data-filter="Doanh nghiệp" onclick="filterBonds('Doanh nghiệp',this)" style="font-size:11px">🏢 Doanh nghiệp</button>
+      <button class="btn btn-ghost btn-sm bond-filter" data-filter="Đô thị" onclick="filterBonds('Đô thị',this)" style="font-size:11px">🏙️ Đô thị</button>
+      <button class="btn btn-ghost btn-sm bond-filter" data-filter="Có TSĐB" onclick="filterBonds('Có TSĐB',this)" style="font-size:11px">🔒 Có TSĐB</button>
+      <button class="btn btn-ghost btn-sm bond-filter" data-filter="Chuyển đổi" onclick="filterBonds('Chuyển đổi',this)" style="font-size:11px">🔄 Chuyển đổi</button>
+      <button class="btn btn-ghost btn-sm bond-filter" data-filter="portfolio" onclick="filterBonds('portfolio',this)" style="font-size:11px">📂 Đang nắm giữ</button>
+    </div>
+    <div id="bond-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+      <div class="empty" style="margin-top:20px">Đang tải dữ liệu trái phiếu...</div>
+    </div>
+
+    <div class="card" style="margin-top:14px;padding:14px;border-color:rgba(16,185,129,.2)">
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px">💳 Lịch sử coupon</div>
+      <div id="bond-coupon-log-list" class="mini-log-list">
+        <div style="font-size:12px;color:var(--muted2)">Chưa có coupon nào.</div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ═══════════ PAGE: DIGITAL ASSETS ═══════════ -->
+
+<div class="page" id="page-digital">
+
+  <div class="section-title">🪙 Tài sản số</div>
+
+  <div class="section-sub">Crypto trên Binance, Remitano, OKX, VNDC, BitcoinVN và nhiều sàn khác</div>
+
+
+
+  <!-- Market Cycle Banner -->
+
+  <div class="market-cycle-banner neutral" id="crypto-cycle-banner">
+
+    ⚖️ Đang tải thị trường…
+
+  </div>
+
+
+
+  <!-- Hero summary cards -->
+
+  <div class="crypto-hero">
+
+    <div class="crypto-ov-card">
+
+      <div class="cov-lbl">Đã đầu tư</div>
+
+      <div class="cov-val" id="cov-invested">0đ</div>
+
+    </div>
+
+    <div class="crypto-ov-card">
+
+      <div class="cov-lbl">Giá trị TT</div>
+
+      <div class="cov-val" id="cov-mktval">0đ</div>
+
+    </div>
+
+    <div class="crypto-ov-card">
+
+      <div class="cov-lbl">Lãi / Lỗ</div>
+
+      <div class="cov-val" id="cov-pnl">0đ</div>
+
+    </div>
+
+    <div class="crypto-ov-card">
+
+      <div class="cov-lbl">Đang stake</div>
+
+      <div class="cov-val" id="cov-staking">0đ</div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- Tabs -->
+
+  <div class="crypto-tabs">
+
+    <button class="crypto-tab active" id="ctab-market"    onclick="switchCryptoTab('market')">📋 Thị trường</button>
+
+    <button class="crypto-tab"        id="ctab-portfolio" onclick="switchCryptoTab('portfolio')">💼 Danh mục</button>
+
+    <button class="crypto-tab"        id="ctab-history"   onclick="switchCryptoTab('history')">📜 Lịch sử</button>
+
+  </div>
+
+
+
+  <!-- Panel: Thị trường -->
+
+  <div class="crypto-panel active" id="cpanel-market">
+
+    <div class="crypto-filter-row">
+
+      <select class="inp" id="crypto-cat-filter" onchange="renderCryptoGrid()" style="max-width:160px">
+
+        <option value="all">Tất cả loại</option>
+
+        <option value="Layer 1">Layer 1</option>
+
+        <option value="Exchange Token">Exchange Token</option>
+
+        <option value="DeFi">DeFi</option>
+
+        <option value="Layer 2">Layer 2</option>
+
+        <option value="Oracle">Oracle</option>
+
+        <option value="Payment">Payment</option>
+
+        <option value="Meme">Meme 🎰</option>
+
+        <option value="Stablecoin">Stablecoin 🛡️</option>
+
+        <option value="Parachain">Parachain</option>
+
+      </select>
+
+      <input class="inp" id="crypto-search" type="text" placeholder="🔍 Tìm coin…" oninput="renderCryptoGrid()" style="max-width:200px"/>
+
+      <button class="btn btn-ghost" onclick="sortCryptoBy('change_pct')" style="font-size:12px">📈 % Thay đổi</button>
+
+      <button class="btn btn-ghost" onclick="sortCryptoBy('price')" style="font-size:12px">💰 Giá</button>
+
+    </div>
+
+    <div class="crypto-grid" id="crypto-market-grid">
+
+      <div class="empty" style="grid-column:1/-1;margin-top:40px">
+
+        <div class="ei">🪙</div><div>Đang tải thị trường…</div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- Panel: Danh mục -->
+
+  <div class="crypto-panel" id="cpanel-portfolio">
+
+    <div id="crypto-holdings-list">
+
+      <div class="empty" style="margin-top:30px">
+
+        <div class="ei">💼</div>
+
+        <div>Chưa có tài sản nào</div>
+
+        <div style="font-size:12px;color:var(--muted2);margin-top:6px">Mua crypto trên tab Thị trường hoặc Cửa hàng</div>
+
+      </div>
+
+    </div>
+
+    <div style="margin-top:18px">
+
+      <div style="font-size:13px;font-weight:700;color:var(--muted2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">🏦 Vị thế Staking</div>
+
+      <div id="crypto-staking-list">
+
+        <div style="font-size:13px;color:var(--muted2);padding:8px 0">Chưa có vị thế staking nào.</div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- Panel: Lịch sử -->
+
+  <div class="crypto-panel" id="cpanel-history">
+
+    <div id="crypto-txn-list">
+
+      <div class="empty" style="margin-top:30px">
+
+        <div class="ei">📜</div><div>Chưa có giao dịch nào</div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- MODAL: Buy Stock -->
+
+<div class="modal-overlay" id="modal-buy-stock">
+
+  <div class="modal" style="max-width:400px">
+
+    <div class="row-sb" style="margin-bottom:16px">
+
+      <h3 style="margin:0">🟢 Mua cổ phiếu</h3>
+
+      <button class="btn btn-ghost" onclick="closeBuyModal()">✕</button>
+
+    </div>
+
+    <div id="bs-info" style="background:var(--surface2);border-radius:8px;padding:12px;margin-bottom:14px">
+
+      <div style="font-size:18px;font-weight:900" id="bs-symbol">—</div>
+
+      <div style="font-size:12px;color:var(--muted2)" id="bs-company"></div>
+
+      <div style="font-size:24px;font-weight:900;margin-top:6px" id="bs-price">0</div>
+
+    </div>
+
+    <label>Số lượng (tối thiểu 1)</label>
+
+    <input class="inp" id="bs-shares" type="number" min="1" value="1" style="margin-top:4px;margin-bottom:8px" oninput="previewBuy()" />
+
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+
+      <span>Tổng chi phí</span><span style="font-weight:700" id="bs-total">0</span>
+
+    </div>
+
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted2)">
+
+      <span>Số dư khả dụng</span><span id="bs-balance">0</span>
+
+    </div>
+
+    <div class="modal-footer" style="margin-top:14px">
+
+      <button class="btn btn-ghost" onclick="closeBuyModal()">Huỷ</button>
+
+      <button class="btn" id="bs-confirm-btn" onclick="confirmBuy()">✅ Mua</button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- MODAL: Sell Stock -->
+
+<div class="modal-overlay" id="modal-sell-stock">
+
+  <div class="modal" style="max-width:400px">
+
+    <div class="row-sb" style="margin-bottom:16px">
+
+      <h3 style="margin:0">🔴 Bán cổ phiếu</h3>
+
+      <button class="btn btn-ghost" onclick="closeSellModal()">✕</button>
+
+    </div>
+
+    <div id="ss-info" style="background:var(--surface2);border-radius:8px;padding:12px;margin-bottom:14px">
+
+      <div style="font-size:18px;font-weight:900" id="ss-symbol">—</div>
+
+      <div style="font-size:12px;color:var(--muted2)" id="ss-company"></div>
+
+      <div style="font-size:24px;font-weight:900;margin-top:6px" id="ss-price">0</div>
+
+    </div>
+
+    <label>Số lượng (tối đa: <span id="ss-max-shares">0</span>)</label>
+
+    <input class="inp" id="ss-shares" type="number" min="1" value="1" style="margin-top:4px;margin-bottom:8px" oninput="previewSell()" />
+
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+
+      <span>Tổng thu</span><span style="font-weight:700" id="ss-total">0</span>
+
+    </div>
+
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted2)">
+
+      <span>Giá vốn TB</span><span id="ss-avgcost">0</span>
+
+    </div>
+
+    <div class="modal-footer" style="margin-top:14px">
+
+      <button class="btn btn-ghost" onclick="closeSellModal()">Huỷ</button>
+
+      <button class="btn btn-red" id="ss-confirm-btn" onclick="confirmSell()">🔴 Bán</button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- MODAL: Stock Detail / Price History -->
+
+<div class="modal-overlay" id="modal-stock-detail">
+
+  <div class="modal" style="max-width:560px;width:95%">
+
+    <div class="row-sb" style="margin-bottom:16px">
+
+      <h3 style="margin:0"><span id="sd-symbol">—</span> <span style="font-size:13px;color:var(--muted2);font-weight:400" id="sd-company"></span></h3>
+
+      <button class="btn btn-ghost" onclick="closeStockDetail()">✕</button>
+
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;text-align:center">
+
+      <div style="background:var(--surface2);border-radius:8px;padding:10px">
+
+        <div style="font-size:18px;font-weight:900" id="sd-price">—</div>
+
+        <div style="font-size:10px;color:var(--muted2)">Giá hiện tại</div>
+
+      </div>
+
+      <div style="background:var(--surface2);border-radius:8px;padding:10px">
+
+        <div style="font-size:14px;font-weight:800" id="sd-change">—</div>
+
+        <div style="font-size:10px;color:var(--muted2)">Thay đổi</div>
+
+      </div>
+
+      <div style="background:var(--surface2);border-radius:8px;padding:10px">
+
+        <div style="font-size:14px;font-weight:800" id="sd-sector">—</div>
+
+        <div style="font-size:10px;color:var(--muted2)">Ngành</div>
+
+      </div>
+
+    </div>
+
+    <div style="font-size:12px;color:var(--muted2);margin-bottom:6px">📊 Biến động giá (50 phiên gần nhất)</div>
+
+    <div id="sd-chart" style="height:200px;background:var(--surface2);border-radius:8px;display:flex;align-items:flex-end;gap:2px;padding:10px;overflow-x:auto;overflow-y:hidden">
+
+      <!-- mini sparkline bars rendered by JS -->
+
+    </div>
+
+    <div class="modal-footer" style="margin-top:12px">
+
+      <button class="btn" onclick="closeStockDetail()">Đóng</button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- MODAL: Buy Crypto -->
+
+<div class="modal-overlay" id="modal-buy-crypto">
+
+  <div class="modal" style="max-width:420px">
+
+    <div class="row-sb" style="margin-bottom:16px">
+
+      <h3 style="margin:0">🟢 Mua Crypto</h3>
+
+      <button class="btn btn-ghost" onclick="document.getElementById('modal-buy-crypto').classList.remove('open')">✕</button>
+
+    </div>
+
+    <div id="bc-info" style="background:var(--surface2);border-radius:8px;padding:12px;margin-bottom:14px">
+
+      <div style="display:flex;align-items:center;gap:8px">
+
+        <span style="font-size:24px" id="bc-emoji">🪙</span>
+
+        <div>
+
+          <div style="font-size:18px;font-weight:900" id="bc-symbol">—</div>
+
+          <div style="font-size:11px;color:var(--muted2)" id="bc-name-vi"></div>
+
+        </div>
+
+        <div style="margin-left:auto;text-align:right">
+
+          <div style="font-size:16px;font-weight:900" id="bc-price">—</div>
+
+          <div style="font-size:11px;color:var(--muted2)" id="bc-exchange"></div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <label>Số tiền VND muốn đầu tư</label>
+
+    <input class="inp" id="bc-amount" type="number" min="10000" placeholder="Nhập số VND…" style="margin-top:4px;margin-bottom:8px" oninput="previewBuyCrypto()"/>
+
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+
+      <button class="btn btn-ghost" style="font-size:12px" onclick="setCryptoAmt(100000)">100K</button>
+
+      <button class="btn btn-ghost" style="font-size:12px" onclick="setCryptoAmt(500000)">500K</button>
+
+      <button class="btn btn-ghost" style="font-size:12px" onclick="setCryptoAmt(1000000)">1M</button>
+
+      <button class="btn btn-ghost" style="font-size:12px" onclick="setCryptoAmt(5000000)">5M</button>
+
+      <button class="btn btn-ghost" style="font-size:12px" onclick="setCryptoAmt(10000000)">10M</button>
+
+    </div>
+
+    <div id="bc-preview" style="font-size:13px;color:var(--muted2);margin-bottom:6px;min-height:36px"></div>
+
+    <div style="font-size:11px;color:var(--muted2);margin-bottom:14px">💸 Phí giao dịch: 0.1% (theo chuẩn Binance)</div>
+
+    <div class="modal-footer">
+
+      <button class="btn btn-ghost" onclick="document.getElementById('modal-buy-crypto').classList.remove('open')">Hủy</button>
+
+      <button class="btn" id="bc-confirm-btn" onclick="confirmBuyCrypto()">✅ Xác nhận mua</button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- MODAL: Sell Crypto -->
+
+<div class="modal-overlay" id="modal-sell-crypto">
+
+  <div class="modal" style="max-width:420px">
+
+    <div class="row-sb" style="margin-bottom:16px">
+
+      <h3 style="margin:0">🔴 Bán Crypto</h3>
+
+      <button class="btn btn-ghost" onclick="document.getElementById('modal-sell-crypto').classList.remove('open')">✕</button>
+
+    </div>
+
+    <div id="sc-info" style="background:var(--surface2);border-radius:8px;padding:12px;margin-bottom:14px">
+
+      <div style="display:flex;align-items:center;gap:8px">
+
+        <span style="font-size:24px" id="sc-emoji">🪙</span>
+
+        <div>
+
+          <div style="font-size:18px;font-weight:900" id="sc-symbol">—</div>
+
+          <div style="font-size:11px;color:var(--muted2)" id="sc-holding">Số lượng: —</div>
+
+        </div>
+
+        <div style="margin-left:auto;text-align:right">
+
+          <div style="font-size:16px;font-weight:900" id="sc-price">—</div>
+
+          <div style="font-size:11px" id="sc-pnl-now">—</div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <label>Bán bao nhiêu % danh mục?</label>
+
+    <input type="range" id="sc-pct-slider" min="1" max="100" value="50" style="width:100%;margin:8px 0" oninput="previewSellCrypto()"/>
+
+    <div style="text-align:center;font-size:22px;font-weight:900;margin-bottom:6px" id="sc-pct-label">50%</div>
+
+    <div id="sc-preview" style="font-size:13px;color:var(--muted2);margin-bottom:6px;min-height:36px"></div>
+
+    <div style="font-size:11px;color:var(--muted2);margin-bottom:14px">💸 Phí giao dịch: 0.1%</div>
+
+    <div class="modal-footer">
+
+      <button class="btn btn-ghost" onclick="document.getElementById('modal-sell-crypto').classList.remove('open')">Hủy</button>
+
+      <button class="btn" style="background:var(--red)" onclick="confirmSellCrypto()">🔴 Xác nhận bán</button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- MODAL: Stake Crypto -->
+
+<div class="modal-overlay" id="modal-stake-crypto">
+
+  <div class="modal" style="max-width:400px">
+
+    <div class="row-sb" style="margin-bottom:16px">
+
+      <h3 style="margin:0">🏦 Stake Crypto</h3>
+
+      <button class="btn btn-ghost" onclick="document.getElementById('modal-stake-crypto').classList.remove('open')">✕</button>
+
+    </div>
+
+    <div id="stk-info" style="background:var(--surface2);border-radius:8px;padding:12px;margin-bottom:14px">
+
+      <div style="display:flex;align-items:center;gap:8px">
+
+        <span style="font-size:24px" id="stk-emoji">🪙</span>
+
+        <div>
+
+          <div style="font-size:17px;font-weight:900" id="stk-symbol">—</div>
+
+          <div style="font-size:12px;color:var(--green);font-weight:700" id="stk-apy">APY: —%</div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <label>Stake bao nhiêu % số dư khả dụng?</label>
+
+    <input type="range" id="stk-pct-slider" min="1" max="100" value="50" style="width:100%;margin:8px 0" oninput="previewStake()"/>
+
+    <div style="text-align:center;font-size:22px;font-weight:900;margin-bottom:8px" id="stk-pct-label">50%</div>
+
+    <div id="stk-preview" style="font-size:13px;color:var(--muted2);margin-bottom:6px;min-height:30px"></div>
+
+    <div style="font-size:11px;color:var(--muted2);margin-bottom:14px">🔒 Khóa <strong>7 ngày</strong>. Thu yield định kỳ mà không cần unlock vốn.</div>
+
+    <div class="modal-footer">
+
+      <button class="btn btn-ghost" onclick="document.getElementById('modal-stake-crypto').classList.remove('open')">Hủy</button>
+
+      <button class="btn" style="background:var(--accent2)" onclick="confirmStakeCrypto()">🏦 Xác nhận stake</button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- MODAL: Crypto Detail / Price Chart -->
+
+<div class="modal-overlay" id="modal-crypto-detail">
+
+  <div class="modal" style="max-width:560px;width:95%">
+
+    <div class="row-sb" style="margin-bottom:16px">
+
+      <h3 style="margin:0"><span id="cd-emoji">🪙</span> <span id="cd-symbol">—</span>
+
+        <span style="font-size:12px;color:var(--muted2);font-weight:400" id="cd-name"></span>
+
+      </h3>
+
+      <button class="btn btn-ghost" onclick="document.getElementById('modal-crypto-detail').classList.remove('open')">✕</button>
+
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;text-align:center">
+
+      <div style="background:var(--surface2);border-radius:8px;padding:10px">
+
+        <div style="font-size:16px;font-weight:900" id="cd-price">—</div>
+
+        <div style="font-size:10px;color:var(--muted2)">Giá hiện tại</div>
+
+      </div>
+
+      <div style="background:var(--surface2);border-radius:8px;padding:10px">
+
+        <div style="font-size:14px;font-weight:800" id="cd-change">—</div>
+
+        <div style="font-size:10px;color:var(--muted2)">24h thay đổi</div>
+
+      </div>
+
+      <div style="background:var(--surface2);border-radius:8px;padding:10px">
+
+        <div style="font-size:14px;font-weight:800" id="cd-category">—</div>
+
+        <div style="font-size:10px;color:var(--muted2)">Danh mục</div>
+
+      </div>
+
+    </div>
+
+    <div style="font-size:12px;color:var(--muted2);margin-bottom:6px">📊 Biến động giá (50 phiên gần nhất)</div>
+
+    <div id="cd-chart" style="height:180px;background:var(--surface2);border-radius:8px;display:flex;align-items:flex-end;gap:2px;padding:10px;overflow-x:auto;overflow-y:hidden"></div>
+
+    <div style="font-size:11px;color:var(--muted2);margin-top:8px" id="cd-exchange-label"></div>
+
+    <div class="modal-footer" style="margin-top:12px">
+
+      <button class="btn btn-ghost" onclick="document.getElementById('modal-crypto-detail').classList.remove('open')">Đóng</button>
+
+      <button class="btn" id="cd-buy-btn" onclick="openBuyCryptoFromDetail()">🟢 Mua</button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ════════ PAGE: LEARNING (Quiz + Emergency) ════════ -->
+
+<div class="page" id="page-learning">
+
+  <div class="section-title">🧠 Trung tâm Học tập</div>
+
+  <div class="section-sub">Chủ động học kiến thức tài chính qua các bộ câu hỏi trắc nghiệm</div>
+
+
+
+  <!-- ── QUIZ STATS ROW ── -->
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-bottom:16px">
+
+    <div class="stat">
+
+      <div class="s-icon">🎯</div>
+
+      <div class="s-val" id="quiz-accuracy">0%</div>
+
+      <div class="s-lbl">Độ chính xác</div>
+
+    </div>
+
+    <div class="stat">
+
+      <div class="s-icon">✅</div>
+
+      <div class="s-val" id="quiz-correct">0</div>
+
+      <div class="s-lbl">Đúng</div>
+
+    </div>
+
+    <div class="stat">
+
+      <div class="s-icon">📋</div>
+
+      <div class="s-val" id="quiz-total">0</div>
+
+      <div class="s-lbl">Tổng</div>
+
+    </div>
+
+    <div class="stat">
+
+      <div class="s-icon">🔥</div>
+
+      <div class="s-val" id="quiz-streak">0</div>
+
+      <div class="s-lbl">Streak</div>
+
+    </div>
+
+    <div class="stat">
+
+      <div class="s-icon">🏆</div>
+
+      <div class="s-val" id="quiz-best">0</div>
+
+      <div class="s-lbl">Best Streak</div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- ── QUIZ INTERFACE ── -->
+
+  <div class="card" style="margin-bottom:16px">
+
+    <!-- Quiz header -->
+
+    <div class="row-sb" style="margin-bottom:8px">
+
+      <div>
+
+        <div style="font-size:15px;font-weight:800">❓ Quiz Tài chính</div>
+
+        <div style="font-size:12px;color:var(--muted2);margin-top:2px">Mỗi câu đúng +50.000đ + 15-20 KN (tối đa 5 câu/ngày)</div>
+
+      </div>
+
+      <div style="display:flex;align-items:center;gap:8px">
+
+        <span id="quiz-daily-limit-badge" class="badge badge-green" style="font-size:11px">📅 Hôm nay: 0/5</span>
+
+        <button id="quiz-new-btn" class="btn btn-secondary" onclick="startNewQuiz()" style="font-size:12px;padding:6px 14px">🔄 Bộ câu mới</button>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- Topic filter -->
+
+    <div id="quiz-topic-row" style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+
+      <label style="font-size:12px;font-weight:600;color:var(--muted2);white-space:nowrap">📂 Chủ đề:</label>
+
+      <select id="quiz-topic-select" onchange="onTopicChange()" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 10px;color:var(--text);font-size:13px;outline:none;cursor:pointer;max-width:260px">
+
+        <option value="">📚 Tất cả chủ đề</option>
+
+      </select>
+
+    </div>
+
+
+
+    <!-- Progress dots -->
+
+    <div id="quiz-progress" style="display:flex;gap:5px;margin-bottom:14px;flex-wrap:wrap"></div>
+
+
+
+    <!-- Quiz area (hidden until quiz_set loaded) -->
+
+    <div id="quiz-area" style="display:none">
+
+      <!-- Current question index -->
+
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+
+        <span class="badge badge-purple" id="quiz-q-counter">Câu 1/12</span>
+
+        <span style="font-size:12px;color:var(--muted2)">Chọn đáp án đúng nhất:</span>
+
+      </div>
+
+
+
+      <!-- Question text -->
+
+      <div id="quiz-q-text" style="font-size:15px;font-weight:600;margin-bottom:14px;line-height:1.5;padding:0 4px"></div>
+
+
+
+      <!-- Options -->
+
+      <div id="quiz-options" style="margin-bottom:14px"></div>
+
+
+
+      <!-- Result / Explanation -->
+
+      <div id="quiz-result" style="display:none;padding:12px 14px;border-radius:10px;margin-bottom:12px;font-size:13px;line-height:1.6"></div>
+
+
+
+      <!-- Navigation -->
+
+      <div class="row-sb" style="gap:8px">
+
+        <div style="display:flex;gap:6px">
+
+          <button id="quiz-prev-btn" class="btn btn-secondary" onclick="prevQuizQuestion()" style="font-size:12px;padding:6px 14px;display:none">◀ Trước</button>
+
+          <button id="quiz-next-btn" class="btn btn-secondary" onclick="nextQuizQuestion()" style="font-size:12px;padding:6px 14px">Sau ▶</button>
+
+        </div>
+
+        <div>
+
+          <button id="quiz-finish-btn" class="btn" onclick="finishQuiz()" style="font-size:12px;padding:6px 16px;display:none">✅ Hoàn thành</button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- Empty state (no quiz) -->
+
+    <div id="quiz-empty" style="text-align:center;padding:30px 20px">
+
+      <div style="font-size:40px;margin-bottom:8px">📚</div>
+
+      <div style="font-size:14px;color:var(--muted2)">Chưa có bộ câu hỏi nào.</div>
+
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">Nhấn "Bộ câu mới" để bắt đầu!</div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- ── EMERGENCY LOG ── -->
+
+  <div class="card">
+
+    <div class="row-sb" style="margin-bottom:14px">
+
+      <div>
+
+        <div style="font-size:15px;font-weight:800">🚨 Lịch sử Sự kiện Khẩn cấp</div>
+
+        <div style="font-size:12px;color:var(--muted2);margin-top:2px">Xác suất 15%/ngày — Mua bảo hiểm để giảm thiệt hại</div>
+
+      </div>
+
+      <span id="emg-count-badge" class="badge badge-red">0 sự kiện</span>
+
+    </div>
+
+
+
+    <!-- Insurance status -->
+
+    <div id="emg-insurance-row" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px"></div>
+
+
+
+    <!-- Log list -->
+
+    <div id="emg-log-list" style="display:flex;flex-direction:column;gap:6px"></div>
+
+    <div id="emg-empty" class="empty" style="display:none">
+
+      <div class="ei">🍀</div>
+
+      <div>Chưa có sự kiện khẩn cấp nào.<br><span style="font-size:12px">May mắn tiếp tục!</span></div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ════════════════════════════════════════════ -->
+
+<!--  ACHIEVEMENT PAGE                          -->
+
+<!-- ════════════════════════════════════════════ -->
+
+<div class="page" id="page-achievement">
+
+  <div class="section-title">🏆 Thành tựu</div>
+
+  <div class="section-sub">Mở khoá thành tựu để nhận thưởng và hiệu ứng vĩnh viễn</div>
+
+
+
+  <!-- Stats bar -->
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+
+    <div class="card" style="padding:14px;text-align:center">
+
+      <div style="font-size:24px;font-weight:800;color:var(--gold)" id="ach-unlocked">0</div>
+
+      <div style="font-size:12px;color:var(--muted2);margin-top:4px">Đã mở khoá</div>
+
+    </div>
+
+    <div class="card" style="padding:14px;text-align:center">
+
+      <div style="font-size:24px;font-weight:800" id="ach-progress-pct">0%</div>
+
+      <div style="font-size:12px;color:var(--muted2);margin-top:4px">Tiến độ tổng</div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- Progress bar -->
+
+  <div class="card" style="padding:12px;margin-bottom:16px">
+
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted2);margin-bottom:6px">
+
+      <span>🏅 Tiến độ thành tựu</span>
+
+      <span id="ach-progress-label">0 / 0</span>
+
+    </div>
+
+    <div style="height:10px;background:var(--surface2);border-radius:6px;overflow:hidden">
+
+      <div id="ach-progress-bar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--gold),#f59e0b);border-radius:6px;transition:width .5s ease"></div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- Filter tabs -->
+
+  <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap" id="ach-filter-tabs">
+
+    <button class="btn btn-sm" data-cat="all" onclick="filterAchievements('all')" style="background:var(--gold);color:#000">📋 Tất cả</button>
+
+  </div>
+
+
+
+  <!-- Achievement grid -->
+
+  <div id="ach-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px"></div>
+
+
+
+  <!-- Notification area -->
+
+  <div id="ach-toast-area" style="position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none"></div>
+
+</div>
+
+
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  GARAGE                                                        -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+
+<div class="page" id="page-garage">
+
+  <div class="section-title">🚗 Garage</div>
+
+  <div class="section-sub">Quản lý xe cộ, nhiên liệu và độ bền</div>
+
+  <!-- Garage Tabs -->
+  <div class="garage-tabs" style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap">
+    <button class="btn garage-tab active" id="gtab-garage" style="font-size:12px;padding:6px 14px" onclick="switchGarageTab('garage')">🚗 Xe của tôi</button>
+    <button class="btn garage-tab" id="gtab-maintenance" style="font-size:12px;padding:6px 14px" onclick="switchGarageTab('maintenance')">🔧 Bảo dưỡng/Sửa ngay</button>
+  </div>
+
+  <!-- ──── TAB: GARAGE (Xe của tôi) ──── -->
+  <div id="garage-tab-garage">
+
+    <!-- Garage Slots Info -->
+    <div class="card" style="margin-bottom:14px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <span style="font-size:13px;font-weight:700">Chỗ đậu xe</span>
+        <span style="font-size:12px;color:var(--muted2);margin-left:8px" id="garage-slot-text">…</span>
+      </div>
+      <button class="btn btn-ghost" style="font-size:11px" onclick="buyGarageSlot()">➕ Mua thêm slot</button>
+    </div>
+
+    <!-- Active Vehicle Banner -->
+    <div id="garage-active-banner" style="display:none;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.3);border-radius:10px;padding:10px 14px;margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:20px" id="gab-emoji">🚗</span>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:700" id="gab-name">…</div>
+          <!-- Durability bar in banner -->
+          <div style="margin-top:6px">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted2)">
+              <span>🔧 Độ bền</span>
+              <span id="gab-dup">…</span>
+            </div>
+            <div class="fresh-wrap" style="width:100%;margin-top:2px">
+              <div id="gab-dup-bar" style="height:100%;width:100%;background:var(--green);border-radius:2px;transition:width .4s ease"></div>
+            </div>
+          </div>
+          <!-- Fuel bar in banner -->
+          <div id="gab-fuel-section" style="margin-top:4px;display:none">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted2)">
+              <span id="gab-fuel-label">⛽ Xăng</span>
+              <span id="gab-fuel">…</span>
+            </div>
+            <div class="fresh-wrap" style="width:100%;margin-top:2px">
+              <div id="gab-fuel-bar" style="height:100%;width:100%;background:var(--green);border-radius:2px;transition:width .4s ease"></div>
+            </div>
+            <!-- Fuel warning text -->
+            <div id="gab-fuel-warning" style="display:none;margin-top:2px;font-size:10px;color:var(--red);font-weight:600">⚠️ Nhiên liệu sắp hết!</div>
+            <!-- Fuel buttons row -->
+            <div id="gab-fuel-actions" style="display:none;margin-top:4px;gap:6px"></div>
+          </div>
+          <!-- Bicycle no-fuel label -->
+          <div id="gab-manual-label" style="margin-top:4px;font-size:10px;color:var(--muted2);display:none">🚲 Không tốn nhiên liệu</div>
+        </div>
+        <button class="btn btn-ghost" style="font-size:11px;padding:4px 8px" onclick="stopCurrentVehicle()">🛑 Dừng</button>
+      </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="card" style="margin-bottom:14px;padding:10px 14px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <span style="font-size:11px;color:var(--muted2);font-weight:600">🔍 Bộ lọc:</span>
+        <select id="garage-filter-group" class="inp" style="width:auto;min-width:100px;font-size:11px;padding:4px 8px" onchange="applyGarageFilter()">
+          <option value="">🚗 Tất cả nhóm</option>
+          <option value="ô tô">🚗 Ô tô</option>
+          <option value="xe máy">🏍️ Xe máy</option>
+          <option value="xe máy điện">🛵 Xe máy điện</option>
+          <option value="xe điện">⚡ Xe điện</option>
+          <option value="xe đạp">🚲 Xe đạp</option>
+        </select>
+        <select id="garage-filter-status" class="inp" style="width:auto;min-width:100px;font-size:11px;padding:4px 8px" onchange="applyGarageFilter()">
+          <option value="">📊 Tất cả trạng thái</option>
+          <option value="active">✅ Đang lái</option>
+          <option value="idle">🟢 Sẵn sàng</option>
+          <option value="repair">🔧 Đang sửa</option>
+          <option value="breakdown">💥 Sự cố</option>
+          <option value="maint_due">⚠️ Cần bảo dưỡng</option>
+          <option value="no_fuel">🪫 Hết nhiên liệu</option>
+          <option value="broken">💔 Hết độ bền</option>
+        </select>
+        <select id="garage-filter-durability" class="inp" style="width:auto;min-width:100px;font-size:11px;padding:4px 8px" onchange="applyGarageFilter()">
+          <option value="">🔩 Mọi độ bền</option>
+          <option value="critical">🔴 Nguy kịch (≤20%)</option>
+          <option value="low">🟡 Thấp (21-50%)</option>
+          <option value="medium">🟢 Trung bình (51-80%)</option>
+          <option value="high">💪 Cao (>80%)</option>
+        </select>
+        <select id="garage-filter-fuel" class="inp" style="width:auto;min-width:100px;font-size:11px;padding:4px 8px" onchange="applyGarageFilter()">
+          <option value="">⛽ Mọi nhiên liệu</option>
+          <option value="gasoline">⛽ Xăng</option>
+          <option value="electric">🔋 Điện</option>
+          <option value="manual">🚲 Tay (xe đạp)</option>
+        </select>
+        <button class="btn btn-ghost" style="font-size:10px;padding:3px 8px" onclick="toggleGarageAdvFilter()" id="garage-adv-toggle">⚙️ Nâng cao</button>
+        <div id="garage-adv-filters" style="display:none;width:100%;margin-top:6px;padding-top:6px;border-top:1px solid var(--border);gap:8px;flex-wrap:wrap;align-items:center">
+          <span style="font-size:11px;color:var(--muted2)">💰 Giá:</span>
+          <input class="inp" id="garage-filter-price-min" type="number" placeholder="Từ" style="width:90px;font-size:11px;padding:3px 6px" onchange="applyGarageFilter()">
+          <span style="font-size:11px;color:var(--muted2)">→</span>
+          <input class="inp" id="garage-filter-price-max" type="number" placeholder="Đến" style="width:90px;font-size:11px;padding:3px 6px" onchange="applyGarageFilter()">
+          <span style="font-size:11px;color:var(--muted2);margin-left:4px">⭐ Sao:</span>
+          <select id="garage-filter-stars" class="inp" style="width:auto;min-width:70px;font-size:11px;padding:3px 6px" onchange="applyGarageFilter()">
+            <option value="">Mọi sao</option>
+            <option value="1">⭐ 1+</option>
+            <option value="2">⭐⭐ 2+</option>
+            <option value="3">⭐⭐⭐ 3+</option>
+            <option value="4">⭐⭐⭐⭐ 4+</option>
+            <option value="5">⭐⭐⭐⭐⭐ 5</option>
+          </select>
+          <span style="font-size:11px;color:var(--muted2);margin-left:4px">📊 Sắp xếp:</span>
+          <select id="garage-filter-sort" class="inp" style="width:auto;min-width:100px;font-size:11px;padding:3px 6px" onchange="applyGarageFilter()">
+            <option value="">🔀 Mặc định</option>
+            <option value="price_asc">💰 Giá thấp → cao</option>
+            <option value="price_desc">💎 Giá cao → thấp</option>
+            <option value="dup_asc">🔩 Độ bền thấp → cao</option>
+            <option value="dup_desc">💪 Độ bền cao → thấp</option>
+            <option value="fuel_asc">🪫 Nhiên liệu thấp → cao</option>
+            <option value="fuel_desc">⛽ Nhiên liệu cao → thấp</option>
+            <option value="name_asc">🔤 Tên A→Z</option>
+            <option value="name_desc">🔤 Tên Z→A</option>
+          </select>
+        </div>
+        <button class="btn btn-ghost" style="font-size:10px;padding:3px 8px" onclick="resetGarageFilter()">✕ Xoá lọc</button>
+        <span id="garage-filter-count" style="font-size:11px;color:var(--muted2);margin-left:auto"></span>
+        <button id="garage-compare-btn" class="btn btn-ghost" style="font-size:10px;padding:3px 8px;display:none;color:var(--accent2)" onclick="openGarageCompare()">📊 So sánh (<span id="garage-compare-count">0</span>)</button>
+      </div>
+    </div>
+
+    <!-- Vehicle Grid -->
+    <div id="garage-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px"></div>
+
+  </div>
+
+  <!-- ──── TAB: BẢO DƯỠNG / SỬA NGAY ──── -->
+  <div id="garage-tab-maintenance" style="display:none">
+
+    <div class="card" style="margin-bottom:14px;padding:14px;border-color:rgba(245,158,11,.25)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <span style="font-size:24px">🔧</span>
+        <div>
+          <div style="font-size:14px;font-weight:700">Bảo dưỡng & Sửa ngay</div>
+          <div style="font-size:12px;color:var(--muted2)">Bảo dưỡng chủ động khi độ bền < 100 để tránh hỏng hóc. Phục hồi 20% độ bền tối đa.</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:12px;text-align:center">
+        <div style="background:var(--surface2);border-radius:8px;padding:8px">
+          <div style="font-size:20px;font-weight:900;color:var(--yellow)" id="maint-count">0</div>
+          <div style="color:var(--muted2)">Xe cần bảo dưỡng</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:8px">
+          <div style="font-size:16px;font-weight:800;color:var(--red)" id="maint-total-cost">0 VND</div>
+          <div style="color:var(--muted2)">Tổng chi phí ước tính</div>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:8px">
+          <div style="font-size:16px;font-weight:800;color:var(--green)" id="maint-tip">💡</div>
+          <div style="color:var(--muted2)">Gợi ý</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Maintenance Vehicle List -->
+    <div id="maint-vehicle-list" style="display:flex;flex-direction:column;gap:10px">
+      <div class="empty"><div class="ei">🔧</div><p>Đang tải dữ liệu bảo dưỡng…</p></div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ════════ MODAL: GARAGE COMPARE ════════ -->
+
+<div class="modal-overlay" id="modal-garage-compare">
+
+  <div class="modal" style="max-width:95vw;width:1200px;max-height:92vh;overflow-y:auto;padding:20px 24px">
+
+    <div class="row-sb" style="margin-bottom:14px">
+      <h3 style="font-size:18px">📊 So sánh xe</h3>
+      <button class="btn btn-ghost" style="font-size:13px;padding:4px 12px" onclick="closeGarageCompare()">✕ Đóng</button>
+    </div>
+
+    <div id="gc-content" style="min-height:200px">
+      <div class="empty"><div class="ei">📊</div><p>Đang tải dữ liệu so sánh…</p></div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  TECH LAB                                                      -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+
+<div class="page" id="page-techlab">
+
+  <div class="section-title">💻 Tech Lab</div>
+
+  <div class="section-sub">Quản lý thiết bị công nghệ, độ bền và bảo dưỡng</div>
+
+  <!-- Active Tech Banner -->
+  <div id="techlab-active-banner" style="display:none;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.3);border-radius:10px;padding:10px 14px;margin-bottom:14px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="font-size:20px" id="tlab-emoji">💻</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:700" id="tlab-name">…</div>
+        <!-- Durability bar in banner -->
+        <div style="margin-top:6px">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted2)">
+            <span>🔧 Độ bền</span>
+            <span id="tlab-dup">…</span>
+          </div>
+          <div class="fresh-wrap" style="width:100%;margin-top:2px">
+            <div id="tlab-dup-bar" style="height:100%;width:100%;background:var(--green);border-radius:2px;transition:width .4s ease"></div>
+          </div>
+        </div>
+        <div style="margin-top:4px;font-size:10px;color:var(--muted2)" id="tlab-status">✅ Đang hoạt động</div>
+      </div>
+      <button class="btn btn-ghost" style="font-size:11px;padding:4px 8px" onclick="deactivateCurrentTech()">🛑 Tắt</button>
+    </div>
+  </div>
+
+  <!-- Tech Grid -->
+  <div id="techlab-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px">
+    <div class="empty"><div class="ei">💻</div><p>Đang tải dữ liệu tech lab…</p></div>
+  </div>
+
+</div>
+
+
+<div class="page" id="page-settings">
+
+  <div class="section-title">⚙️ Cài đặt & Thông tin</div>
+
+  <div class="section-sub">Quản lý addon và dữ liệu của bạn</div>
+
+
+
+  <!-- Again Penalty config -->
+
+  <div class="card" style="margin-bottom:14px">
+
+    <div style="font-size:14px;font-weight:700;margin-bottom:10px">🚨 Cơ chế phạt Again</div>
+
+    <div style="font-size:13px;line-height:1.8;color:var(--muted2)">
+
+      <div class="row-sb"><span>Ngưỡng cảnh báo</span><span style="color:var(--yellow);font-weight:700">≥ 50 lần/ngày</span></div>
+
+      <div class="row-sb"><span>Ngưỡng bắt đầu phạt</span><span style="color:var(--red);font-weight:700">≥ 55 lần/ngày</span></div>
+
+      <div class="row-sb"><span>Ngưỡng phạt nặng (×2)</span><span style="color:var(--red);font-weight:700">≥ 60 lần/ngày</span></div>
+
+      <div class="row-sb" style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border)">
+
+        <span>Công thức phạt (balance ≥ 1M)</span>
+
+        <code style="color:var(--accent2);font-size:11px">3.000 + balance × 10% ÷ 5</code>
+
+      </div>
+
+      <div class="row-sb"><span>Công thức phạt (balance &lt; 1M)</span><span style="color:var(--accent2);font-weight:700">3.000đ cố định</span></div>
+
+      <div style="margin-top:8px;padding:8px;background:var(--surface2);border-radius:6px;font-size:12px;color:var(--muted2)">
+
+        💡 Balance âm = đang nợ. Vẫn tiếp tục học bình thường nhưng hiển thị số âm.
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- Lịch sử reset -->
+
+  <div class="card" style="margin-bottom:14px">
+
+    <div style="font-size:14px;font-weight:700;margin-bottom:10px">📋 Lịch sử Reset</div>
+
+    <div id="reset-log-list" style="max-height:280px;overflow-y:auto">
+
+      <div style="font-size:13px;color:var(--muted2)">Chưa có lần reset nào.</div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- Tax log -->
+
+  <div class="card" style="margin-bottom:14px">
+
+    <div style="font-size:14px;font-weight:700;margin-bottom:10px">🏛️ Lịch sử thuế (60 ngày gần nhất)</div>
+
+    <div id="tax-log-list" style="max-height:280px;overflow-y:auto">
+
+      <div style="font-size:13px;color:var(--muted2)">Chưa có lịch sử thuế.</div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- Công cụ Gỡ lỗi (debug_tools) - 1.1.0e -->
+
+  <div class="card" style="margin-bottom:14px;border-color:rgba(59,130,246,.3)">
+
+    <div style="font-size:14px;font-weight:700;margin-bottom:6px;color:var(--blue)">🔧 Công cụ Gỡ lỗi</div>
+
+    <p style="font-size:12px;color:var(--muted2);margin-bottom:12px">
+      Quét và sửa lỗi dữ liệu, xoá bộ nhớ đệm (cache) mà không làm mất tiến trình của bạn.
+      Dùng khi gặp lỗi hiển thị hoặc dữ liệu bị kẹt sau khi cập nhật.
+    </p>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+
+      <button class="btn btn-blue" id="debug-scan-btn" onclick="runDebugScan()">
+        🔍 Quét & Sửa lỗi
+      </button>
+
+      <button class="btn" style="background:var(--surface2);color:var(--muted2);border:1px solid var(--border)" id="debug-report-btn" onclick="runDebugReport()">
+        📋 Báo cáo hệ thống
+      </button>
+
+    </div>
+
+    <!-- Kết quả gỡ lỗi -->
+
+    <div id="debug-result" style="display:none;margin-top:6px;padding:10px;background:var(--surface2);border-radius:8px;font-size:12px;line-height:1.7;max-height:400px;overflow-y:auto;white-space:pre-wrap;font-family:monospace"></div>
+
+    <!-- Debug log nhỏ -->
+
+    <div id="debug-mini-status" style="font-size:11px;color:var(--muted2);margin-top:4px"></div>
+
+  </div>
+
+
+
+  <!-- Nút Reset nguy hiểm -->
+
+  <div class="card" style="border-color:rgba(239,68,68,.4)">
+
+    <div style="font-size:14px;font-weight:700;color:var(--red);margin-bottom:6px">🗑️ Vùng nguy hiểm</div>
+
+    <p style="font-size:13px;color:var(--muted2);margin-bottom:12px">
+
+      Reset toàn bộ tài sản và bắt đầu lại từ đầu. Hành động này không thể hoàn tác.
+
+    </p>
+
+    <button class="btn btn-red" id="reset-btn" onclick="openResetModal()">⚠️ Reset toàn bộ tài sản</button>
+
+    <div id="reset-btn-hint" style="font-size:12px;color:var(--muted2);margin-top:8px"></div>
+
+  </div>
+
+</div>
+
+
+
+<!-- MODAL: Payment Method (Shop) -->
+<div class="modal-overlay" id="modal-shop-payment">
+
+  <div class="modal" style="max-width:480px">
+
+    <div class="row-sb" style="margin-bottom:16px">
+
+      <h3>💳 Chọn phương thức thanh toán</h3>
+
+      <button class="btn btn-ghost" style="font-size:12px;padding:4px 10px" onclick="closePaymentModal()">✕</button>
+
+    </div>
+
+    <!-- Item info -->
+    <div id="sp-item-info" style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface2);border-radius:10px;margin-bottom:16px">
+
+      <span id="sp-item-emoji" style="font-size:32px">📦</span>
+
+      <div>
+
+        <div id="sp-item-name" style="font-weight:600;font-size:15px"></div>
+
+        <div id="sp-item-price" style="font-size:13px;color:var(--accent);margin-top:2px"></div>
+
+      </div>
+
+    </div>
+
+    <!-- Payment method selection -->
+    <label style="font-weight:600;font-size:13px;display:block;margin-bottom:8px">Phương thức thanh toán</label>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">
+
+      <button class="btn sp-method-btn" id="sp-method-cash" data-method="cash" onclick="selectPaymentMethod('cash')" style="border:2px solid var(--green);background:rgba(16,185,129,.1);color:var(--green);padding:12px 6px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer">
+
+        💵 Tiền mặt
+
+      </button>
+
+      <button class="btn sp-method-btn" id="sp-method-credit" data-method="credit" onclick="selectPaymentMethod('credit')" style="border:2px solid var(--border);background:var(--surface2);color:var(--text);padding:12px 6px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer">
+
+        💳 Thẻ tín dụng
+
+      </button>
+
+      <button class="btn sp-method-btn" id="sp-method-split" data-method="split" onclick="selectPaymentMethod('split')" style="border:2px solid var(--border);background:var(--surface2);color:var(--text);padding:12px 6px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer">
+
+        🔀 Chia nhỏ
+
+      </button>
+
+    </div>
+
+    <!-- Card selection (credit & split) -->
+    <div id="sp-card-section" style="display:none;margin-bottom:12px">
+
+      <label style="font-weight:600;font-size:13px;display:block;margin-bottom:6px">Chọn thẻ tín dụng</label>
+
+      <select class="inp" id="sp-card-select" style="margin-top:4px">
+
+        <option value="">— Chọn thẻ —</option>
+
+      </select>
+
+      <div id="sp-card-info" style="font-size:12px;color:var(--muted2);margin-top:4px"></div>
+
+    </div>
+
+    <!-- Split amount inputs -->
+    <div id="sp-split-section" style="display:none;margin-bottom:12px">
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+
+        <div>
+
+          <label style="font-weight:600;font-size:12px">💵 Tiền mặt</label>
+
+          <input class="inp" id="sp-cash-amount" type="number" min="0" step="10000" placeholder="0" style="margin-top:4px" oninput="updateSplitPreview()"/>
+
+        </div>
+
+        <div>
+
+          <label style="font-weight:600;font-size:12px">💳 Thẻ tín dụng</label>
+
+          <input class="inp" id="sp-card-amount" type="number" min="0" step="10000" placeholder="0" style="margin-top:4px" oninput="updateSplitPreview()"/>
+
+        </div>
+
+      </div>
+
+      <div id="sp-split-preview" style="font-size:12px;color:var(--muted2);margin-top:6px"></div>
+
+    </div>
+
+    <div class="modal-footer">
+
+      <button class="btn btn-ghost" onclick="closePaymentModal()">Huỷ</button>
+
+      <button class="btn btn-primary" id="sp-confirm-btn" onclick="confirmPayment()">✅ Xác nhận thanh toán</button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script src="JS/tycoon-state.js"></script>
+<script src="JS/tycoon-anim.js"></script>
+<script src="JS/tycoon-router.js"></script>
+<script src="JS/tycoon-balance.js"></script>
+<script src="JS/tycoon-dashboard.js"></script>
+<script src="JS/tycoon-shop.js"></script>
+<script src="JS/tycoon-inventory.js"></script>
+<script src="JS/tycoon-garage.js"></script>
+<script src="JS/tycoon-techlab.js"></script>
+<script src="JS/tycoon-bank.js"></script>
+<script src="JS/tycoon-finance.js"></script>
+<script src="JS/tycoon-debug.js"></script>
+<script src="JS/tycoon-tax.js"></script>
+<script src="JS/tycoon-learning.js"></script>
+<script src="JS/tycoon-achievement.js"></script>
+<script src="JS/tycoon-utils.js"></script>
+<script src="JS/tycoon-streak-quest.js"></script>
+<script src="JS/tycoon-knowledge.js"></script>
+<script src="JS/tycoon-realestate.js"></script>
+<script src="JS/tycoon-goals.js"></script>
+<script src="JS/tycoon-stocks.js"></script>
+<script src="JS/tycoon-digital.js"></script>
+<script src="JS/tycoon-credit.js"></script>
+<script src="JS/tycoon-ledger.js"></script>
+<script src="JS/tycoon-perf.js"></script>
+<script src="JS/tycoon-init.js"></script>
+
+</body>
+
+</html>
+
