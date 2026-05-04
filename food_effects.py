@@ -20,9 +20,21 @@ _KEY_FRESH  = "anki_tycoon_food_freshness"
 _KEY_PURCHASE_LOG    = "anki_tycoon_food_purchase_log"
 _KEY_STUDY_PURCHASE_LOG = "anki_tycoon_study_purchase_log"
 
+# ── Config keys cho hệ thống hủy boost & thời gian học ──────────
+_KEY_DAILY_CANCEL_COUNT = "anki_tycoon_daily_cancel_count"
+_KEY_DAILY_CANCEL_DATE  = "anki_tycoon_daily_cancel_date"
+_KEY_CARD_TIME_VALID    = "anki_tycoon_card_time_valid_count"
+_KEY_CARD_TIME_DATE     = "anki_tycoon_card_time_date"
+
 # ── Giới hạn mua vật phẩm học tập ──────────────────────────
 WEEKLY_STUDY_LIMIT = 7        # tối đa 7 món/tuần
-STUDY_MAX_VALUE    = 1000000  # tối đa 1 triệu VND/tuần
+STUDY_MAX_VALUE    = 3000000  # tối đa 3 triệu VND/tuần (tăng từ 1 triệu)
+
+# ── Giới hạn hủy boost & thời gian học ─────────────────────
+BASE_DAILY_CANCEL_LIMIT  = 10   # số lần hủy cơ bản mỗi ngày
+MAX_DAILY_CANCEL_LIMIT   = 20   # tối đa có thể mở rộng
+CARDS_PER_EXTRA_CANCEL   = 10   # mỗi N thẻ hợp lệ thêm 1 lần hủy
+MIN_CARD_TIME_SECONDS    = 10   # thời gian tối thiểu/thẻ để tính là hợp lệ
 
 # Danh sách item_id là đồ uống (phân loại từ shop_items.json)
 DRINK_ITEM_IDS = {
@@ -280,6 +292,136 @@ def get_daily_limits_info() -> dict:
         "food": {"current": food_count, "max": DAILY_FOOD_LIMIT},
         "drink": {"current": drink_count, "max": DAILY_DRINK_LIMIT},
     }
+
+
+# ── Daily Cancel Limit (hủy kích hoạt boost) ────────────────
+# Mỗi ngày được hủy tối đa N lần, mỗi 10 thẻ hợp lệ thêm 1 lần, tối đa 20.
+
+def _get_daily_cancel_count_raw() -> int:
+    """Đọc số lần hủy đã dùng hôm nay từ config."""
+    return cfg_int(_KEY_DAILY_CANCEL_COUNT, 0)
+
+def _get_daily_cancel_date() -> str:
+    """Đọc ngày ghi nhận hủy từ config."""
+    return cfg_str(_KEY_DAILY_CANCEL_DATE, "")
+
+def _set_daily_cancel_count(val: int):
+    cfg_set(_KEY_DAILY_CANCEL_COUNT, val)
+
+def _set_daily_cancel_date(val: str):
+    cfg_set(_KEY_DAILY_CANCEL_DATE, val)
+
+
+def get_daily_cancel_count() -> int:
+    """Trả về số lần hủy boost đã dùng hôm nay.
+    Tự động reset nếu sang ngày mới.
+    """
+    today = _get_today_key()
+    if _get_daily_cancel_date() != today:
+        _set_daily_cancel_count(0)
+        _set_daily_cancel_date(today)
+        return 0
+    return _get_daily_cancel_count_raw()
+
+
+def get_today_valid_card_count() -> int:
+    """Trả về số thẻ học hợp lệ (time_per_card >= 10s) hôm nay.
+    Tự động reset nếu sang ngày mới.
+    """
+    today = _get_today_key()
+    date = cfg_str(_KEY_CARD_TIME_DATE, "")
+    if date != today:
+        cfg_set(_KEY_CARD_TIME_VALID, 0)
+        cfg_set(_KEY_CARD_TIME_DATE, today)
+        return 0
+    return cfg_int(_KEY_CARD_TIME_VALID, 0)
+
+
+def record_card_review_time(time_seconds: float):
+    """Ghi nhận thời gian ôn 1 thẻ.
+    Nếu time_seconds >= MIN_CARD_TIME_SECONDS (10s), tính là thẻ hợp lệ
+    để mở rộng giới hạn hủy boost.
+    """
+    if time_seconds < MIN_CARD_TIME_SECONDS:
+        return  # không đủ thời gian → không tính
+    today = _get_today_key()
+    date = cfg_str(_KEY_CARD_TIME_DATE, "")
+    if date != today:
+        cfg_set(_KEY_CARD_TIME_VALID, 0)
+        cfg_set(_KEY_CARD_TIME_DATE, today)
+    count = cfg_int(_KEY_CARD_TIME_VALID, 0) + 1
+    cfg_set(_KEY_CARD_TIME_VALID, count)
+
+
+def get_daily_cancel_limit() -> dict:
+    """Tính toán limit hủy boost hôm nay.
+    Công thức: limit = min(MAX, BASE + floor(valid_cards / CARDS_PER_EXTRA_CANCEL))
+
+    Trả về: {
+        "base_limit": 10,
+        "max_limit": 20,
+        "extra_from_cards": 5,      # số lần được thêm từ học thẻ
+        "limit": 15,                # limit thực tế hôm nay
+        "used": 3,                  # đã dùng
+        "remaining": 12,            # còn lại
+        "total_valid_cards": 50,    # tổng thẻ hợp lệ hôm nay
+        "cards_for_next": 0,        # cần thêm ? thẻ để có thêm 1 lần hủy
+    }
+    """
+    valid_cards = get_today_valid_card_count()
+    extra = valid_cards // CARDS_PER_EXTRA_CANCEL
+    limit = BASE_DAILY_CANCEL_LIMIT + extra
+    if limit > MAX_DAILY_CANCEL_LIMIT:
+        limit = MAX_DAILY_CANCEL_LIMIT
+    used = get_daily_cancel_count()
+    remaining = max(0, limit - used)
+
+    # Tính xem cần thêm bao nhiêu thẻ để có thêm 1 lần hủy
+    next_extra = extra + 1
+    next_limit = BASE_DAILY_CANCEL_LIMIT + next_extra
+    if next_limit > MAX_DAILY_CANCEL_LIMIT:
+        cards_for_next = 0  # đã đạt max
+    else:
+        cards_for_next = (next_extra * CARDS_PER_EXTRA_CANCEL) - valid_cards
+
+    return {
+        "base_limit": BASE_DAILY_CANCEL_LIMIT,
+        "max_limit": MAX_DAILY_CANCEL_LIMIT,
+        "extra_from_cards": extra,
+        "limit": limit,
+        "used": used,
+        "remaining": remaining,
+        "total_valid_cards": valid_cards,
+        "cards_needed_for_next": max(0, cards_for_next),
+    }
+
+
+def record_cancel() -> dict:
+    """Ghi nhận 1 lần hủy boost. Tự động reset nếu sang ngày mới.
+    Trả về: {"ok": True/False, "remaining": int, "limit": int, "error": str}
+    """
+    today = _get_today_key()
+    if _get_daily_cancel_date() != today:
+        _set_daily_cancel_count(0)
+        _set_daily_cancel_date(today)
+
+    limit_info = get_daily_cancel_limit()
+    if limit_info["remaining"] <= 0:
+        return {
+            "ok": False,
+            "remaining": 0,
+            "limit": limit_info["limit"],
+            "error": (
+                f"⚠️ Bạn đã hết lượt hủy hôm nay ({limit_info['limit']}/{limit_info['limit']}). "
+                f"Học thêm {limit_info['cards_needed_for_next']} thẻ "
+                f"(mỗi thẻ ≥{MIN_CARD_TIME_SECONDS}s) để mở thêm 1 lượt hủy!"
+            ),
+        }
+
+    current = _get_daily_cancel_count_raw() + 1
+    _set_daily_cancel_count(current)
+    new_remaining = limit_info["remaining"] - 1
+    return {"ok": True, "remaining": new_remaining, "limit": limit_info["limit"]}
 
 
 # ── Helpers: Active Boosts & Freshness ───────────────────────
@@ -698,13 +840,23 @@ def get_boosts_summary() -> list:
 def deactivate_boost(slot_id: str) -> dict:
     """
     Hủy kích hoạt 1 boost đang active.
+    - Kiểm tra daily cancel limit (mặc định 10 lần/ngày, mở rộng đến 20)
+    - Mỗi 10 thẻ học hợp lệ (≥10s) thêm 1 lần hủy
     - Không hoàn tiền
-    - Không log
     - Xóa boost khỏi danh sách active
-    - Chỉ hủy boost đang thực sự active (đã lọc các boost hết hạn)
     """
     if not col_ready():
         return {"ok": False, "error": "Chưa sẵn sàng."}
+
+    # ── Kiểm tra daily cancel limit ──
+    cancel_check = record_cancel()
+    if not cancel_check["ok"]:
+        return {
+            "ok": False,
+            "error": cancel_check.get("error", "⚠️ Bạn đã hết lượt hủy hôm nay!"),
+            "remaining": cancel_check.get("remaining", 0),
+            "limit": cancel_check.get("limit", BASE_DAILY_CANCEL_LIMIT),
+        }
 
     # Dùng get_active_boosts() thay vì _get_active() để lọc boost đã hết hạn
     boosts = get_active_boosts()
@@ -719,4 +871,9 @@ def deactivate_boost(slot_id: str) -> dict:
 
     boosts.remove(found)
     _save_active(boosts)
-    return {"ok": True, "message": f"Đã hủy hiệu ứng {found.get('name', '')}"}
+    return {
+        "ok": True,
+        "message": f"Đã hủy hiệu ứng {found.get('name', '')}",
+        "remaining": cancel_check.get("remaining", 0),
+        "limit": cancel_check.get("limit", BASE_DAILY_CANCEL_LIMIT),
+    }

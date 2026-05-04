@@ -797,12 +797,21 @@ class TycoonBridge(QObject):
     def deactivateBoost(self, slot_id: str):
         """
         Hủy kích hoạt 1 boost (thức ăn/đồ học tập) đang active.
+        - Kiểm tra daily cancel limit (mặc định 10, mở rộng đến 20)
+        - Mỗi 10 thẻ học hợp lệ (≥10s) thêm 1 lần hủy
         - Không hoàn tiền
-        - Không log
         """
         from ..food_effects import deactivate_boost
         res = deactivate_boost(slot_id)
         return json.dumps(res, ensure_ascii=False)
+
+    @pyqtSlot(result=str)
+    def getDailyCancelInfo(self):
+        """
+        Trả về thông tin giới hạn hủy boost hôm nay cho UI.
+        """
+        from ..food_effects import get_daily_cancel_limit
+        return json.dumps(get_daily_cancel_limit(), ensure_ascii=False)
 
     # ── Vehicle & Garage ──────────────────────────────────────────
     @pyqtSlot(result=str)

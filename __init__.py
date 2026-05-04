@@ -22,11 +22,21 @@ from .daily_quest import update_quest_progress
 from .again_tracker import get_daily_again_count
 from ._safe_config import begin_batch, commit_batch
 
+import time
 import traceback
 
 # ── Cache rank để tránh get_rank_status + get_balance mỗi thẻ ──
 _last_rank_cache: str | None = None
 _rank_check_counter: int = 0
+
+# ── Thời gian bắt đầu hiện thẻ (để tính time_per_card) ──
+_card_show_timestamp: float | None = None
+
+
+def _record_card_show_time(card):
+    """Ghi nhận thời điểm thẻ được hiển thị (question)."""
+    global _card_show_timestamp
+    _card_show_timestamp = time.time()
 
 def _log_error(context: str):
     """Ghi log lỗi ra console Anki để dễ debug."""
@@ -38,6 +48,20 @@ def on_review_done(reviewer, card, ease):
     begin_batch()
     try:
         result = add_reward(ease)
+
+        # ── Ghi nhận thời gian học thẻ (cho hệ thống mở rộng limit hủy) ──
+        try:
+            global _card_show_timestamp
+            if _card_show_timestamp is not None:
+                elapsed = time.time() - _card_show_timestamp
+                # Giới hạn tối đa 5 phút để tránh sai số khi user rời Anki
+                if elapsed > 0 and elapsed < 300:
+                    from .food_effects import record_card_review_time
+                    record_card_review_time(elapsed)
+            _card_show_timestamp = None  # reset cho thẻ tiếp theo
+        except Exception:
+            pass
+
         _show_review_fx(reviewer, ease, result)
         _update_gamification(ease, result)
         stock_record_review(1)
@@ -304,6 +328,7 @@ def _show_rank_up(status: dict):
         _log_error("_show_rank_up")
 
 gui_hooks.reviewer_did_answer_card.append(on_review_done)
+gui_hooks.reviewer_did_show_question.append(_record_card_show_time)
 
 
 def _show_review_fx(reviewer, ease: int, result: dict):

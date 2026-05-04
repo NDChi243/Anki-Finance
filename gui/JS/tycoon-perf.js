@@ -264,11 +264,34 @@ function _renderBoostStrip(listEl) {
 
 // ── Deactivate Boost (hủy kích hoạt) ──
 
-function deactivateBoostConfirm(slotId) {
+async function deactivateBoostConfirm(slotId) {
 
   const boost = _boostStripState.find(b => b.id === slotId);
   if (!boost) return;
   const name = boost.name || 'vật phẩm';
+
+  // Fetch daily cancel info để hiển thị
+  let cancelInfo = { remaining: '...', limit: '...', cards_needed_for_next: 0, total_valid_cards: 0 };
+  try {
+    const raw = await B.getDailyCancelInfo();
+    cancelInfo = JSON.parse(raw);
+  } catch (e) {}
+
+  const remaining = cancelInfo.remaining;
+  const limit = cancelInfo.limit;
+  const cardsNeeded = cancelInfo.cards_needed_for_next || 0;
+  const validCards = cancelInfo.total_valid_cards || 0;
+
+  // Tạo progress bar text
+  let progressText = '';
+  if (limit > 10) {
+    const extraFromCards = limit - 10;
+    progressText = `<span style="font-size:11px;color:var(--muted2)">📊 Học thêm <strong>${cardsNeeded}</strong> thẻ hợp lệ (≥10s) để mở thêm 1 lượt hủy</span>`;
+  } else if (cardsNeeded > 0) {
+    progressText = `<span style="font-size:11px;color:var(--muted2)">📊 Học <strong>${cardsNeeded}</strong> thẻ hợp lệ (≥10s) nữa để mở rộng limit (hiện tại ${validCards} thẻ)</span>`;
+  } else {
+    progressText = `<span style="font-size:11px;color:var(--green)">✅ Đã đạt giới hạn hủy tối đa ${limit}/ngày!</span>`;
+  }
 
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay open';
@@ -281,9 +304,15 @@ function deactivateBoostConfirm(slotId) {
     <p style="font-size:13px;color:var(--muted2);margin-bottom:10px;line-height:1.6">
       Bạn có chắc muốn hủy <strong>${name}</strong>?
     </p>
+    <div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.3);border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:var(--muted2);line-height:1.5">
+      📋 Lượt hủy hôm nay: <strong style="color:${remaining > 0 ? 'var(--green)' : 'var(--red)'}">${remaining}/${limit}</strong>
+    </div>
     <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:10px 12px;margin-bottom:14px;font-size:12px;color:var(--muted2);line-height:1.5">
       ⛔ Toàn bộ hiệu ứng của vật phẩm sẽ bị hủy.<br>
       💸 Sẽ <strong>không được hoàn lại tiền</strong>.
+    </div>
+    <div style="margin-bottom:14px;font-size:11px;color:var(--muted2);line-height:1.5">
+      ${progressText}
     </div>
     <div class="modal-footer" style="gap:8px">
       <button class="btn btn-ghost" onclick="this.closest('.modal-overlay').remove()" style="flex:1">Đóng</button>
@@ -303,7 +332,7 @@ async function confirmDeactivateBoost(slotId) {
 
   const res = JSON.parse(await B.deactivateBoost(slotId));
   if (res.ok) {
-    toast('ok', `✅ ${res.message || 'Đã hủy kích hoạt!'}`);
+    toast('ok', `✅ ${res.message || 'Đã hủy kích hoạt!'} (còn ${res.remaining}/${res.limit} lượt hôm nay)`);
     await refreshBoostStrip();
     if (typeof loadInventory === 'function') {
       await loadInventory();
@@ -311,6 +340,90 @@ async function confirmDeactivateBoost(slotId) {
   } else {
     toast('err', '❌ ' + (res.error || 'Không thể hủy kích hoạt'));
   }
+
+}
+
+
+// ── Daily Cancel Badge (hiển thị số lượt hủy còn lại) ──
+
+let _cancelBadgeInterval = null;
+let _cancelBadgeLastSecond = null;
+
+async function refreshDailyCancelBadge() {
+
+  try {
+    const raw = await B.getDailyCancelInfo();
+    const info = JSON.parse(raw);
+    const remaining = info.remaining;
+    const limit = info.limit;
+    const validCards = info.total_valid_cards || 0;
+    const extraFromCards = info.extra_from_cards || 0;
+
+    // Tìm hoặc tạo badge
+    let badge = document.getElementById('daily-cancel-badge');
+    if (!badge) {
+      // Chỉ tạo nếu có boost strip đang hiển thị
+      const strip = document.getElementById('boost-strip');
+      if (!strip || strip.style.display === 'none') return;
+
+      badge = document.createElement('span');
+      badge.id = 'daily-cancel-badge';
+      badge.style.cssText = 'display:inline-block;font-size:10px;padding:1px 6px;border-radius:20px;margin-left:6px;vertical-align:middle';
+      const list = document.getElementById('boost-strip-list');
+      if (list && list.parentNode) {
+        list.parentNode.insertBefore(badge, list.nextSibling);
+      }
+    }
+
+    if (remaining <= 0) {
+      badge.textContent = `🚫 Hết lượt hủy (${limit}/${limit})`;
+      badge.style.background = 'rgba(239,68,68,.15)';
+      badge.style.color = '#ef4444';
+      badge.style.border = '1px solid rgba(239,68,68,.3)';
+    } else if (extraFromCards > 0) {
+      badge.textContent = `📋 Còn ${remaining}/${limit} lượt hủy (➕${extraFromCards} từ học thẻ)`;
+      badge.style.background = 'rgba(59,130,246,.12)';
+      badge.style.color = '#60a5fa';
+      badge.style.border = '1px solid rgba(59,130,246,.25)';
+    } else {
+      badge.textContent = `📋 Còn ${remaining}/${limit} lượt hủy`;
+      badge.style.background = 'rgba(59,130,246,.12)';
+      badge.style.color = '#60a5fa';
+      badge.style.border = '1px solid rgba(59,130,246,.25)';
+    }
+  } catch (e) {
+    console.error('refreshDailyCancelBadge error', e);
+  }
+
+}
+
+
+function startCancelBadgeTicker() {
+
+  stopCancelBadgeTicker();
+  refreshDailyCancelBadge();
+
+  const tick = () => {
+    const secondStamp = Math.floor(Date.now() / 1000);
+    if (_cancelBadgeLastSecond !== secondStamp) {
+      _cancelBadgeLastSecond = secondStamp;
+      refreshDailyCancelBadge();
+    }
+    _cancelBadgeInterval = requestAnimationFrame(tick);
+  };
+
+  _cancelBadgeInterval = requestAnimationFrame(tick);
+
+}
+
+
+function stopCancelBadgeTicker() {
+
+  if (_cancelBadgeInterval) {
+    cancelAnimationFrame(_cancelBadgeInterval);
+    _cancelBadgeInterval = null;
+  }
+  _cancelBadgeLastSecond = null;
 
 }
 
@@ -381,6 +494,7 @@ refreshBoostStrip = async function() {
     strip.style.display = 'none';
     _boostStripState = [];
     stopGarageBoostTicker();
+    stopCancelBadgeTicker();
     return;
   }
 
@@ -393,6 +507,7 @@ refreshBoostStrip = async function() {
 
   strip.style.display = 'block';
   _renderBoostStrip(list);
+  startCancelBadgeTicker();
 
   if (_isGaragePageActive()) {
     _startGarageBoostTicker(list);
