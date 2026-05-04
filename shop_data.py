@@ -65,8 +65,10 @@ def _default_items() -> list:
         {"id": "macbook_m3",    "name": "MacBook Pro M3",      "description": "16GB RAM / 512GB SSD",            "category": "Điện tử",     "price": 45000000,      "emoji": "💻"},
         {"id": "vacation_dalat","name": "Du lịch Đà Lạt",      "description": "Gói 3N2Đ, khách sạn 4 sao",      "category": "Du lịch",     "price": 3000000,       "emoji": "🌸"},
         {"id": "vacation_bali", "name": "Du lịch Bali",        "description": "Gói 5N4Đ, villa riêng",           "category": "Du lịch",     "price": 25000000,      "emoji": "🏝️"},
-        {"id": "honda_civic",   "name": "Honda Civic 2024",    "description": "Sedan hạng C, 1.5L Turbo",        "category": "Xe cộ",       "price": 800000000,     "emoji": "🚗"},
-        {"id": "tesla_model3",  "name": "Tesla Model 3",       "description": "Xe điện, phạm vi 570km",          "category": "Xe cộ",       "price": 1500000000,    "emoji": "⚡"},
+        # ── Xe cộ (fallback) ──────────────────────────────────────
+        # vehicle_group bắt buộc để xe được đăng ký vào garage, không vào inventory
+        {"id": "honda_civic",   "name": "Honda Civic 2024",    "description": "Sedan hạng C, 1.5L Turbo",        "category": "🚗 Showroom xe", "price": 800000000,     "emoji": "🚗",  "vehicle_group": "Ô tô",      "car_type": "Sedan"},
+        {"id": "tesla_model3",  "name": "Tesla Model 3",       "description": "Xe điện, phạm vi 570km",          "category": "🚗 Showroom xe", "price": 1500000000,    "emoji": "⚡",  "vehicle_group": "Xe điện",   "car_type": "Sedan", "fuel_type": "electric"},
         {"id": "rolex",         "name": "Rolex Submariner",    "description": "Đồng hồ luxury huyền thoại",      "category": "Xa xỉ phẩm", "price": 400000000,     "emoji": "⌚"},
-        {"id": "lamborghini",   "name": "Lamborghini Huracán", "description": "Siêu xe V10, 630 mã lực",         "category": "Xe cộ",       "price": 15000000000,   "emoji": "🏎️"},
+        {"id": "lamborghini",   "name": "Lamborghini Huracán", "description": "Siêu xe V10, 630 mã lực",         "category": "🚗 Showroom xe", "price": 15000000000,   "emoji": "🏎️", "vehicle_group": "Ô tô",      "car_type": "Supercar"},
     ]

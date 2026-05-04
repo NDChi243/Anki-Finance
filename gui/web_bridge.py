@@ -238,6 +238,10 @@ class TycoonBridge(QObject):
         cat = _get_item_category(item_id, item)
         is_food_or_drink = cat in ("food", "drink")
 
+        # ⚠️ Diagnostic: nếu item thuộc "Showroom xe" nhưng thiếu vehicle_group → cảnh báo
+        if "showroom xe" in item.get("category", "").lower() and not is_vehicle:
+            logger.warning("buyItem(%s): item category='%s' nhưng thiếu vehicle_group! Dữ liệu shop không hợp lệ.", item_id, item.get("category", ""))
+
         if is_vehicle:
             # Xe cộ chỉ vào garage, không vào inventory
             try:
@@ -300,8 +304,12 @@ class TycoonBridge(QObject):
             try:
                 from ..vehicle_system import register_vehicle
                 register_vehicle(item_id, item)
+                logger.info("buyItem(%s): đã đăng ký xe vào garage", item_id)
             except Exception as e:
                 logger.debug("purchaseItem (register_vehicle): %s", e)
+        elif "showroom xe" in item.get("category", "").lower():
+            # ⚠️ Item có category Showroom xe nhưng không có vehicle_group → lỗi dữ liệu
+            logger.error("buyItem(%s): category='%s' nhưng vehicle_group bị thiếu! Xe sẽ KHÔNG được đăng ký vào garage.", item_id, item.get("category", ""))
 
         # Nếu là đồ công nghệ → đăng ký vào tech lab (passive effects chỉ active khi dùng)
         if is_tech:
@@ -426,6 +434,10 @@ class TycoonBridge(QObject):
         cat = _get_item_category(item_id, item)
         is_food_or_drink = cat in ("food", "drink")
 
+        # ⚠️ Diagnostic: nếu item thuộc "Showroom xe" nhưng thiếu vehicle_group → cảnh báo
+        if "showroom xe" in item.get("category", "").lower() and not is_vehicle:
+            logger.warning("processShopPayment(%s): item category='%s' nhưng thiếu vehicle_group! Dữ liệu shop không hợp lệ.", item_id, item.get("category", ""))
+
         if is_vehicle:
             try:
                 from ..vehicle_system import get_total_garage_slots, get_garage_summary
@@ -518,8 +530,12 @@ class TycoonBridge(QObject):
             try:
                 from ..vehicle_system import register_vehicle
                 register_vehicle(item_id, item)
+                logger.info("processShopPayment(%s): đã đăng ký xe vào garage", item_id)
             except Exception as e:
                 logger.debug("processPayment (register_vehicle): %s", e)
+        elif "showroom xe" in item.get("category", "").lower():
+            # ⚠️ Item có category Showroom xe nhưng không có vehicle_group → lỗi dữ liệu
+            logger.error("processShopPayment(%s): category='%s' nhưng vehicle_group bị thiếu! Xe sẽ KHÔNG được đăng ký vào garage.", item_id, item.get("category", ""))
 
         # Tech
         if is_tech:

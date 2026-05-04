@@ -388,11 +388,13 @@ def _calc_speed_fuel_multiplier(elapsed_seconds: float) -> float:
 def register_vehicle(item_id: str, item_data: dict):
     """Khi mua xe từ showroom, đăng ký vào garage."""
     if not col_ready():
+        logger.warning("register_vehicle(%s): col_ready() == False, bỏ qua", item_id)
         return
     data = _get_data()
     garage = data.get("garage", {})
 
     if item_id in garage:
+        logger.info("register_vehicle(%s): xe đã tồn tại trong garage", item_id)
         return
 
     fuel_type = _get_fuel_type(item_data)
@@ -430,6 +432,7 @@ def register_vehicle(item_id: str, item_data: dict):
     garage[item_id] = entry
     data["garage"] = garage
     _save_data(data)
+    logger.info("register_vehicle(%s): đã đăng ký vào garage thành công (vehicle_group=%s, price=%d)", item_id, vg, price)
 
 
 def _calc_max_durability(item_data: dict) -> int:

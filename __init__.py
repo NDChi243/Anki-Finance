@@ -504,6 +504,28 @@ def _on_profile_loaded():
     except Exception as e:
         logger.warning("repair_crypto_passive_effects: %s", e)
 
+    # ── v1.1.6: Migration: sửa xe bị lưu nhầm vào inventory (thiếu vehicle_group) ──
+    try:
+        from .inventory import get_inventory, remove_from_inventory
+        from .shop_data import get_items_map
+        from .vehicle_system import register_vehicle, _get_data, _save_data
+        items_map = get_items_map()
+        inv = get_inventory()
+        migrated = 0
+        for iid in list(inv):
+            item = items_map.get(iid)
+            if item and item.get("vehicle_group"):
+                # Xe này đang bị lưu nhầm trong inventory → đưa về garage
+                register_vehicle(iid, item)
+                remove_from_inventory(iid)
+                migrated += 1
+        if migrated:
+            logger.info("Migration garage: đã sửa %d xe bị lưu nhầm vào inventory → garage", migrated)
+        else:
+            logger.debug("Migration garage: không có xe nào cần sửa")
+    except Exception as e:
+        logger.warning("repair_vehicle_inventory_migration: %s", e)
+
     # ── Economy Controls: thu phí đỗ xe garage hàng ngày ──
     _collect_garage_fees()
 
