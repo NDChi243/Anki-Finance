@@ -13,7 +13,7 @@ FIX v5.0:
 import time
 import datetime
 from .config import CONFIG_KEY_INVENTORY
-from ._safe_config import col_ready, cfg_dict, cfg_list, cfg_set
+from ._safe_config import col_ready, cfg_dict, cfg_list, cfg_set, cfg_str, cfg_int
 
 _KEY_ACTIVE = "anki_tycoon_active_boosts"
 _KEY_FRESH  = "anki_tycoon_food_freshness"
