@@ -51,6 +51,10 @@ SPENDING_TYPES = {
     "living_cost", "bank_deposit", "deposit",
     "loan_repay", "loan_interest", "penalty",
     "emergency",
+    # Vehicle & Tech operations
+    "vehicle_repair", "vehicle_maintenance", "vehicle_fuel",
+    "garage_slot", "tech_repair", "tech_maintenance",
+    "vehicle_buy",
 }
 
 # Danh sách type là income (kiếm tiền)
@@ -60,6 +64,8 @@ INCOME_TYPES = {
     "rent_income", "bank_withdraw", "withdraw",
     "loan", "loan_borrow",
     "pit_refund",
+    # Vehicle & Tech sales
+    "vehicle_sell", "tech_sell",
 }
 
 

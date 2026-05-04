@@ -511,6 +511,14 @@ def _on_profile_loaded():
         from .vehicle_system import register_vehicle, _get_data, _save_data
         items_map = get_items_map()
         inv = get_inventory()
+        
+        # Diagnostic: kiểm tra garage state TRƯỚC migration
+        try:
+            veh_data = _get_data()
+            garage_before = len(veh_data.get("garage", {}))
+        except Exception:
+            garage_before = -1
+        
         migrated = 0
         for iid in list(inv):
             item = items_map.get(iid)
@@ -520,9 +528,9 @@ def _on_profile_loaded():
                 remove_from_inventory(iid)
                 migrated += 1
         if migrated:
-            logger.info("Migration garage: đã sửa %d xe bị lưu nhầm vào inventory → garage", migrated)
+            logger.info("Migration garage: đã sửa %d xe bị lưu nhầm vào inventory → garage (trước migration: %d xe trong garage)", migrated, garage_before)
         else:
-            logger.debug("Migration garage: không có xe nào cần sửa")
+            logger.debug("Migration garage: không có xe nào cần sửa (garage có %d xe)", garage_before)
     except Exception as e:
         logger.warning("repair_vehicle_inventory_migration: %s", e)
 
@@ -752,7 +760,27 @@ def _collect_garage_fees():
     """Thu phí đỗ xe garage hàng ngày."""
     try:
         from .economy_controls import collect_garage_fees
+        # Diagnostic: kiểm tra garage state TRƯỚC khi thu phí
+        try:
+            from .vehicle_system import _get_data
+            veh_data = _get_data()
+            garage_before = len(veh_data.get("garage", {}))
+            logger.debug("_collect_garage_fees: garage có %d xe trước khi thu phí", garage_before)
+        except Exception as e:
+            logger.debug("_collect_garage_fees: không thể đọc garage trước: %s", e)
+        
         result = collect_garage_fees()
+        
+        # Diagnostic: kiểm tra garage state SAU khi thu phí
+        try:
+            veh_data2 = _get_data()
+            garage_after = len(veh_data2.get("garage", {}))
+            logger.debug("_collect_garage_fees: garage có %d xe sau khi thu phí", garage_after)
+            if garage_before >= 0 and garage_before != garage_after:
+                logger.error("_collect_garage_fees: garage THAY ĐỔI số lượng xe! trước=%d, sau=%d", garage_before, garage_after)
+        except Exception as e:
+            logger.debug("_collect_garage_fees: không thể đọc garage sau: %s", e)
+        
         if result.get("collected") and result.get("total_fees", 0) > 0:
             seized = result.get("seized_vehicles", [])
             total = result["total_fees"]

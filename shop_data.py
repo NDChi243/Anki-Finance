@@ -23,13 +23,30 @@ def load_shop_items(force_reload: bool = False) -> list:
     global _shop_cache, _shop_cache_ts
     now = time.time()
     if not force_reload and _shop_cache is not None and (now - _shop_cache_ts) < _SHOP_CACHE_TTL:
+        logger.debug("load_shop_items: dùng cache (%.1fs old)", now - _shop_cache_ts)
         return _shop_cache
 
     addon_dir = os.path.dirname(__file__)  # root addon
     json_path = os.path.join(addon_dir, "shop_items.json")
     try:
         with open(json_path, "r", encoding="utf-8") as f:
-            _shop_cache = json.load(f)
+            raw_items = json.load(f)
+            logger.info("load_shop_items: đã load %d items từ shop_items.json", len(raw_items))
+            
+            # --- AUTO-FIX BẮT ĐẦU: Tự động thêm vehicle_group nếu file JSON bị thiếu ---
+            fix_count = 0
+            for item in raw_items:
+                category = item.get("category", "").lower()
+                # Nhận diện xe qua category (ví dụ: "🚗 showroom xe")
+                if "xe" in category and "vehicle_group" not in item:
+                    # Gán mặc định là Ô tô để hệ thống đăng ký vào Garage thay vì Inventory
+                    item["vehicle_group"] = "Ô tô"
+                    fix_count += 1
+            if fix_count:
+                logger.warning("load_shop_items: auto-fix đã thêm vehicle_group cho %d item", fix_count)
+            # --- AUTO-FIX KẾT THÚC ---
+
+            _shop_cache = raw_items
             _shop_cache_ts = now
             return _shop_cache
     except Exception as e:

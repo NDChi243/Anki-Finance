@@ -995,6 +995,13 @@ def convert_convertible_bond(bond_id: str, quantity: int = None) -> dict:
     set_balance_and_log(new_bal, "convert", proceeds,
                         f"🔄 Chuyển đổi trái phiếu: {bond_def['name']} -> {shares_received} CP")
     
+    # Ghi log giao dịch
+    _add_txn("convert", bond_id, proceeds,
+             f"Chuyển đổi {conv_qty} đơn vị -> {shares_received} CP")
+    from .transactions import add_transaction
+    add_transaction("invest_income", proceeds,
+                    f"🔄 Chuyển đổi trái phiếu: {bond_def['name']} -> {shares_received} CP")
+    
     # Xóa holding hoặc giảm quantity
     remaining = max_qty - conv_qty
     if remaining <= 0:

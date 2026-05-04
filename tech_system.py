@@ -313,6 +313,8 @@ def start_repair(item_id: str) -> dict:
 
     new_bal = bal - repair_cost
     set_balance_and_log(new_bal, "purchase", -repair_cost, f"Sửa chữa tech: {item_data.get('name', item_id)}")
+    from .transactions import add_transaction
+    add_transaction("tech_repair", repair_cost, f"Sửa chữa tech: {item_data.get('name', item_id)}")
 
     info["in_repair"] = True
     info["repair_until"] = time.time() + repair_duration
@@ -369,6 +371,8 @@ def do_maintenance(item_id: str) -> dict:
 
     new_bal = bal - cost
     set_balance_and_log(new_bal, "purchase", -cost, f"Bảo dưỡng tech: {item_data.get('name', item_id)}")
+    from .transactions import add_transaction
+    add_transaction("tech_maintenance", cost, f"Bảo dưỡng tech: {item_data.get('name', item_id)}")
 
     info["maintenance_due"] = False
     # Bảo dưỡng phục hồi 20% độ bền
@@ -433,6 +437,9 @@ def sell_tech(item_id: str) -> dict:
     new_bal = get_balance() + sell_price
     set_balance_and_log(new_bal, "purchase", sell_price,
                         f"Bán tech: {item_data.get('name', item_id)}")
+    from .transactions import add_transaction
+    add_transaction("tech_sell", sell_price,
+                    f"Bán tech: {item_data.get('name', item_id)}")
 
     return {
         "ok": True,

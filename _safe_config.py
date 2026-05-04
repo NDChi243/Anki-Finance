@@ -170,15 +170,23 @@ def cfg_dict(key: str, default: dict | None = None) -> dict:
     cached = _cache_get(key)
     if cached is not None:
         if isinstance(cached, dict):
+            if key == "anki_tycoon_vehicle_data":
+                garage_size = len(cached.get("garage", {}))
+                logger.debug("cfg_dict(%s): HIT cache — garage có %d xe", key, garage_size)
             return dict(cached)
         # Cache bị lỗi kiểu dữ liệu (corrupted) — bỏ qua
+        logger.warning("cfg_dict(%s): cache corrupted (type=%s), bỏ qua", key, type(cached).__name__)
         _cache_invalidate(key)
 
     if not col_ready():
+        logger.warning("cfg_dict(%s): col_ready() == False, trả về default", key)
         return dict(default)
     try:
         v = mw.col.get_config(key, default)
         result = v if isinstance(v, dict) else dict(default)
+        if key == "anki_tycoon_vehicle_data":
+            garage_size = len(result.get("garage", {}))
+            logger.debug("cfg_dict(%s): MISS cache — đọc từ Anki config, garage có %d xe, v=%s", key, garage_size, type(v).__name__)
         _cache_set(key, result)
         return result
     except Exception as e:
@@ -236,14 +244,23 @@ def cfg_set(key: str, val):
     _cache_invalidate(key)
 
     if _batch_active:
+        if key == "anki_tycoon_vehicle_data":
+            garage_size = len(val.get("garage", {})) if isinstance(val, dict) else "N/A"
+            logger.debug("cfg_set(%s): batch mode — gom lại, garage có %s xe", key, garage_size)
         _batch_writes[key] = val
         return
 
     if not col_ready():
+        logger.warning("cfg_set(%s): col_ready() == False, bỏ qua ghi!", key)
         return
     try:
+        if key == "anki_tycoon_vehicle_data":
+            garage_size = len(val.get("garage", {})) if isinstance(val, dict) else "N/A"
+            logger.debug("cfg_set(%s): ghi config với garage có %s xe (type val=%s)", key, garage_size, type(val).__name__)
         mw.col.set_config(key, val)
         _cache_set(key, val)
+        if key == "anki_tycoon_vehicle_data":
+            logger.debug("cfg_set(%s): đã ghi và cache thành công", key)
     except Exception as e:
         logger.warning("cfg_set(%s): %s", key, e)
 

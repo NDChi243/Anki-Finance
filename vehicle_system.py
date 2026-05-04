@@ -229,15 +229,24 @@ def _calc_repair_cost_by_group(vehicle_group: str, price: int) -> int:
 
 def _get_data() -> dict:
     """Lấy toàn bộ dữ liệu vehicle system."""
-    return cfg_dict(_KEY_VEHICLE, {
+    result = cfg_dict(_KEY_VEHICLE, {
         "active_vehicle_id": None,
         "garage": {},        # {item_id: {"durability": int, "max_durability": int, "in_repair": bool, "repair_until": float}}
         "maintenance_due": {},  # {item_id: bool} - xe cần bảo dưỡng
     })
+    garage_size = len(result.get("garage", {}))
+    if garage_size == 0:
+        logger.warning("_get_data: garage RỖNG! active=%s, result keys=%s", result.get("active_vehicle_id"), list(result.keys()))
+    else:
+        logger.info("_get_data: garage có %d xe, active=%s", garage_size, result.get("active_vehicle_id"))
+    return result
 
 
 def _save_data(data: dict):
+    garage_size = len(data.get("garage", {}))
+    logger.info("_save_data: lưu garage với %d xe, active=%s", garage_size, data.get("active_vehicle_id"))
     cfg_set(_KEY_VEHICLE, data)
+    logger.info("_save_data: đã ghi xong config cho %d xe", garage_size)
 
 
 # ─── Garage slots ──────────────────────────────────────────────
@@ -285,6 +294,8 @@ def buy_garage_slot() -> dict:
 
     new_bal = bal - price
     set_balance_and_log(new_bal, "purchase", -price, "Mua thêm slot garage")
+    from .transactions import add_transaction
+    add_transaction("garage_slot", price, "Mua thêm slot garage")
     cfg_set(_KEY_GARAGE_SLOTS_BOUGHT, current + 1)
     return {"ok": True, "total_slots": get_total_garage_slots(), "price": price}
 
@@ -387,14 +398,21 @@ def _calc_speed_fuel_multiplier(elapsed_seconds: float) -> float:
 
 def register_vehicle(item_id: str, item_data: dict):
     """Khi mua xe từ showroom, đăng ký vào garage."""
+    logger.warning("=== register_vehicle(%s): BẮT ĐẦU === vehicle_group='%s', price=%d, item_data keys=%s",
+                   item_id,
+                   item_data.get("vehicle_group") if item_data else "N/A",
+                   item_data.get("price", 0) if item_data else 0,
+                   list(item_data.keys()) if item_data else "NONE")
     if not col_ready():
-        logger.warning("register_vehicle(%s): col_ready() == False, bỏ qua", item_id)
+        logger.warning("register_vehicle(%s): col_ready() == False, BỎ QUA!", item_id)
         return
     data = _get_data()
     garage = data.get("garage", {})
+    logger.warning("register_vehicle(%s): garage hiện có %d xe TRƯỚC khi thêm, garage keys=%s",
+                   item_id, len(garage), list(garage.keys()))
 
     if item_id in garage:
-        logger.info("register_vehicle(%s): xe đã tồn tại trong garage", item_id)
+        logger.warning("register_vehicle(%s): xe ĐÃ tồn tại trong garage, bỏ qua", item_id)
         return
 
     fuel_type = _get_fuel_type(item_data)
@@ -431,8 +449,11 @@ def register_vehicle(item_id: str, item_data: dict):
 
     garage[item_id] = entry
     data["garage"] = garage
+    logger.warning("register_vehicle(%s): garage sẽ có %d xe SAU khi thêm, chuẩn bị _save_data...",
+                   item_id, len(garage))
     _save_data(data)
-    logger.info("register_vehicle(%s): đã đăng ký vào garage thành công (vehicle_group=%s, price=%d)", item_id, vg, price)
+    logger.warning("=== register_vehicle(%s): KẾT THÚC — đã lưu garage thành công (vehicle_group=%s, price=%d) ===",
+                   item_id, vg, price)
 
 
 def _calc_max_durability(item_data: dict) -> int:
@@ -727,7 +748,7 @@ def consume_durability(cards: int = 1, learning_speed: float = None) -> dict:
 
 
 def get_vehicle_info(item_id: str) -> dict | None:
-    """Trả về thông tin chi tiết của 1 xe."""
+    """Trả về thông tiết của 1 xe."""
     data = _get_data()
     garage = data.get("garage", {})
     info = garage.get(item_id)
@@ -810,6 +831,7 @@ def _apply_passive_decay(data: dict, now: float) -> bool:
 def get_garage_summary() -> list:
     """Trả về danh sách tất cả xe trong garage kèm fuel, trạng thái & sell estimate."""
     data = _get_data()
+    logger.warning("get_garage_summary: _get_data trả về garage với %d xe", len(data.get("garage", {})))
 
     # Áp dụng passive decay trước khi lấy dữ liệu
     now = time.time()
@@ -886,6 +908,7 @@ def get_garage_summary() -> list:
             "energy_save_percent": info.get("energy_save_percent", 0.0),
             "total_cards_driven": info.get("total_cards_driven", 0),
         })
+    logger.warning("get_garage_summary: trả về %d xe cho UI", len(result))
     return result
 
 
@@ -921,6 +944,8 @@ def start_repair(item_id: str) -> dict:
 
     new_bal = bal - repair_cost
     set_balance_and_log(new_bal, "purchase", -repair_cost, f"Sửa chữa xe: {item_data.get('name', item_id)}")
+    from .transactions import add_transaction
+    add_transaction("vehicle_repair", repair_cost, f"Sửa chữa xe: {item_data.get('name', item_id)}")
 
     # Nếu xe đang active, stop
     if data.get("active_vehicle_id") == item_id:
@@ -968,6 +993,8 @@ def do_maintenance(item_id: str) -> dict:
 
     new_bal = bal - cost
     set_balance_and_log(new_bal, "purchase", -cost, f"Bảo dưỡng xe: {item_data.get('name', item_id)}")
+    from .transactions import add_transaction
+    add_transaction("vehicle_maintenance", cost, f"Bảo dưỡng xe: {item_data.get('name', item_id)}")
 
     info["maintenance_due"] = False
     # Bảo dưỡng phục hồi 20% độ bền
@@ -1082,6 +1109,9 @@ def quick_maintenance(item_id: str) -> dict:
     new_bal = bal - cost
     set_balance_and_log(new_bal, "purchase", -cost,
                         f"Bảo dưỡng chủ động: {item_data.get('name', item_id)}")
+    from .transactions import add_transaction
+    add_transaction("vehicle_maintenance", cost,
+                    f"Bảo dưỡng chủ động: {item_data.get('name', item_id)}")
 
     # Nếu xe đang active, stop
     if data.get("active_vehicle_id") == item_id:
@@ -1203,6 +1233,9 @@ def refuel_vehicle(item_id: str) -> dict:
     new_bal = bal - cost
     set_balance_and_log(new_bal, "purchase", -cost,
                         f"Đổ xăng: {item_data.get('name', item_id)} ({needed} đơn vị)")
+    from .transactions import add_transaction
+    add_transaction("vehicle_fuel", cost,
+                    f"Đổ xăng: {item_data.get('name', item_id)} ({needed} đơn vị)")
 
     info["fuel_level"] = max_fuel
     _save_data(data)
@@ -1256,6 +1289,9 @@ def recharge_vehicle(item_id: str) -> dict:
     new_bal = bal - cost
     set_balance_and_log(new_bal, "purchase", -cost,
                         f"Sạc điện: {item_data.get('name', item_id)}")
+    from .transactions import add_transaction
+    add_transaction("vehicle_fuel", cost,
+                    f"Sạc điện: {item_data.get('name', item_id)}")
 
     info["is_charging"] = True
     info["charge_until"] = time.time() + charge_duration
@@ -1327,6 +1363,9 @@ def sell_vehicle(item_id: str) -> dict:
     new_bal = get_balance() + sell_price
     set_balance_and_log(new_bal, "purchase", sell_price,
                         f"Bán xe: {item_data.get('name', item_id)}")
+    from .transactions import add_transaction
+    add_transaction("vehicle_sell", sell_price,
+                    f"Bán xe: {item_data.get('name', item_id)}")
 
     try:
         from .item_effects import unregister_passive_effect

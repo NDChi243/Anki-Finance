@@ -218,7 +218,10 @@ class TycoonBridge(QObject):
         items_map = get_items_map()
         item = items_map.get(item_id)
         if not item:
+            logger.warning("buyItem(%s): item không tồn tại trong items_map (items_map size=%d)", item_id, len(items_map))
             return json.dumps({"ok": False, "error": "Sản phẩm không tồn tại."})
+        logger.debug("buyItem(%s): vehicle_group='%s', category='%s', price=%d",
+                     item_id, item.get("vehicle_group"), item.get("category", ""), item.get("price", 0))
 
         # ── Kiểm tra daily purchase limit ──
         limit_check = check_daily_limit(item_id, item)
@@ -365,6 +368,7 @@ class TycoonBridge(QObject):
         new_balance = get_balance()
         self.balanceChanged.emit(new_balance)
 
+        logger.debug("buyItem(%s): hoàn tất — new_balance=%d", item_id, new_balance)
         return json.dumps({
             "ok":             True,
             "new_balance":    new_balance,
@@ -377,6 +381,7 @@ class TycoonBridge(QObject):
 
     @pyqtSlot(str, str, result=str)
     def processShopPayment(self, item_id: str, payment_json: str):
+        logger.debug("processShopPayment(%s): payment_json=%s", item_id, payment_json)
         """
         Mua item với lựa chọn phương thức thanh toán.
         payment_json (JSON string): {
@@ -589,6 +594,7 @@ class TycoonBridge(QObject):
         new_balance = get_balance()
         self.balanceChanged.emit(new_balance)
 
+        logger.debug("processShopPayment(%s): hoàn tất — new_balance=%d", item_id, new_balance)
         return json.dumps({
             "ok":             True,
             "new_balance":    new_balance,
@@ -842,8 +848,10 @@ class TycoonBridge(QObject):
     @pyqtSlot(result=str)
     def getGarageData(self):
         from ..vehicle_system import get_garage_summary, get_total_garage_slots, get_active_vehicle
+        vehicles = get_garage_summary()
+        logger.info("getGarageData: có %d xe trong garage", len(vehicles))
         data = {
-            "garage": get_garage_summary(),
+            "garage": vehicles,
             "total_slots": get_total_garage_slots(),
             "active_vehicle": get_active_vehicle(),
         }
