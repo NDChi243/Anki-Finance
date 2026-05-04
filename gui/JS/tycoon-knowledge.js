@@ -34,6 +34,9 @@ async function loadKnowledge() {
 
   stats.textContent = `${_kbNotes.length} ghi chú • ${pinned} ghim`;
 
+  // Load KN Perks (v1.1.5)
+  await loadKNPerks();
+
 }
 
 
@@ -462,6 +465,98 @@ async function kbSave() {
 
     toast('err', '❌ ' + (res.error || 'Lỗi lưu ghi chú'));
 
+  }
+
+}
+
+
+// ════════════════════════════════════════════
+
+//  KN PERKS (v1.1.5)
+
+// ════════════════════════════════════════════
+
+async function loadKNPerks() {
+
+  try {
+    const raw = await B.getKNPerks();
+    const data = JSON.parse(raw);
+    if (data.error) { console.error('loadKNPerks error', data.error); return; }
+
+    document.getElementById('knp-balance').textContent = (data.kn || 0).toLocaleString('vi-VN');
+
+    const bonusEl = document.getElementById('knp-active-bonuses');
+    const bonusList = document.getElementById('knp-bonus-list');
+    const bonuses = data.active_bonuses || {};
+
+    const bonusEntries = [];
+    if (bonuses.xp_mult > 0) bonusEntries.push(`📚 +${(bonuses.xp_mult * 100).toFixed(0)}% EXP`);
+    if (bonuses.reward_mult > 0) bonusEntries.push(`💰 +${(bonuses.reward_mult * 100).toFixed(0)}% tiền thưởng`);
+    if (bonuses.tax_reduction > 0) bonusEntries.push(`🏛️ -${(bonuses.tax_reduction * 100).toFixed(0)}% thuế`);
+    if (bonuses.interest_bonus > 0) bonusEntries.push(`🏦 +${(bonuses.interest_bonus * 100).toFixed(0)}% lãi suất`);
+
+    if (bonusEntries.length > 0) {
+      bonusEl.style.display = 'block';
+      bonusList.innerHTML = bonusEntries.map(b => `<span style="margin-right:12px">${b}</span>`).join('');
+    } else {
+      bonusEl.style.display = 'none';
+    }
+
+    const perks = data.perks || [];
+    const list = document.getElementById('knp-list');
+    list.innerHTML = perks.map(p => {
+      const status = p.unlocked
+        ? '<span style="color:var(--green);font-weight:700">✅ Đã mở</span>'
+        : (p.can_afford
+            ? `<button class="btn btn-primary" style="font-size:11px;padding:4px 12px" onclick="unlockKNPerk('${p.id}')">🔓 Mở khóa (${p.kn_cost.toLocaleString('vi-VN')} KN)</button>`
+            : `<span style="color:var(--muted2);font-size:11px">🔒 Cần ${p.kn_cost.toLocaleString('vi-VN')} KN</span>`);
+
+      return `<div class="card" style="padding:12px;${p.unlocked ? 'border-color:rgba(16,185,129,.3)' : ''}">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:24px">${p.emoji || '📜'}</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700;font-size:13px">${p.name}</div>
+            <div style="font-size:11px;color:var(--muted2);margin-top:2px">${p.description}</div>
+          </div>
+          <div style="flex-shrink:0">
+            ${status}
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+
+  } catch (e) {
+    console.error('loadKNPerks error', e);
+  }
+
+}
+
+
+async function unlockKNPerk(perkId) {
+
+  const res = JSON.parse(await B.unlockKNPerk(perkId));
+
+  if (res.ok) {
+    toast('ok', `🔓 Đã mở khóa <strong>${res.perk_name}</strong>! (-${res.kn_spent.toLocaleString('vi-VN')} KN)`);
+    await loadKNPerks();
+    // Cập nhật lại KN trong rank card
+    try {
+      const dashRaw = await B.getDashboardData();
+      const dashData = JSON.parse(dashRaw);
+      if (dashData.rank) {
+        const knSmEl = document.getElementById('rank-kn-sm');
+        if (knSmEl) {
+          setAnimatedNumberText(knSmEl, dashData.rank.kn || 0, {
+            format: 'locale',
+            prefix: '🧠 ',
+            suffix: ' KN',
+            duration: 400,
+          });
+        }
+      }
+    } catch (_) {}
+  } else {
+    toast('err', '❌ ' + (res.error || 'Không thể mở khóa perk'));
   }
 
 }

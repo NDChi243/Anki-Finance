@@ -524,6 +524,12 @@ def format_effect_desc(effect_type: str, value: Any) -> str:
     elif effect_type == "factor_boost":
         pct = int(value * 100)
         return f"🧠 +{pct}% ease factor thẻ"
+    elif effect_type == "energy_save":
+        pct = int(value * 100)
+        return f"⚡ Tiết kiệm {pct}% năng lượng"
+    elif effect_type == "fuel_efficiency":
+        pct = int(value * 100)
+        return f"⛽ Hiệu suất nhiên liệu +{pct}%"
     elif effect_type == "emergency_resistance":
         pct = int(value * 100)
         return f"🛡️ Giảm {pct}% rủi ro khủng hoảng"

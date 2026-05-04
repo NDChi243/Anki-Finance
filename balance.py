@@ -29,11 +29,12 @@ def set_balance_and_log(amount: int, txn_type: str, txn_amount: int,
 def _consume_energy_and_stamina() -> float:
     """
     Tiêu hao năng lượng khi review, áp dụng shield/reduce/regen từ boosts.
+    Tích hợp % tiết kiệm năng lượng từ xe đang active (v1.1.5b).
     Trả về energy_multiplier (1.0 nếu còn NL, 0.5 nếu kiệt sức).
     """
     try:
         import random
-        from .energy_system import consume_energy, restore_energy, get_reward_multiplier_from_energy
+        from .energy_system import consume_energy_with_vehicle, restore_energy, get_reward_multiplier_from_energy
         from .food_effects import get_active_boosts
 
         boosts = get_active_boosts()
@@ -53,10 +54,21 @@ def _consume_energy_and_stamina() -> float:
                 elif etype == "energy_reduce":
                     energy_reduce = min(energy_reduce, float(val))
 
+        # Lấy % tiết kiệm năng lượng từ xe đang active
+        vehicle_save = 0.0
+        try:
+            from .vehicle_system import get_active_vehicle
+            av = get_active_vehicle()
+            if av:
+                vehicle_save = float(av.get("energy_save_percent", 0.0))
+        except Exception:
+            pass
+
         # Tiêu hao năng lượng (có thể bị shield hoặc giảm xác suất)
         if not energy_shield:
             if energy_reduce >= 1.0 or random.random() < energy_reduce:
-                consume_energy(1)
+                # Dùng consume_energy_with_vehicle để áp dụng % tiết kiệm từ xe
+                consume_energy_with_vehicle(amount=1, vehicle_energy_save=vehicle_save)
 
         # Pass 2: hồi năng lượng từ stamina_regen / energy_regen
         for b in boosts:
@@ -120,6 +132,15 @@ def add_reward(ease: int) -> dict:
         logger.warning("add_reward: passive_xp_mult — %s", e)
         passive_xp_mult = 1.0
 
+    # ── KN Perks: reward_mult (buff tiền thưởng vĩnh viễn) ──
+    try:
+        from .kn_perks import get_active_bonuses
+        _kn_bonus = get_active_bonuses()
+        kn_reward_mult = 1.0 + float(_kn_bonus.get("reward_mult", 0.0))
+    except Exception as e:
+        logger.warning("add_reward: kn_perks reward_mult — %s", e)
+        kn_reward_mult = 1.0
+
     # ── Tiêu hao năng lượng + áp dụng stamina_regen ──
     energy_mult = _consume_energy_and_stamina()
 
@@ -157,7 +178,7 @@ def add_reward(ease: int) -> dict:
         if has_shield:
             # Có khiên: vẫn thưởng nhẹ, không phạt
             reward = REWARD_MAP.get(1, 500)
-            final_reward = int(reward * boost_info["multiplier"] * passive_xp_mult * energy_mult) + int(boost_info["bonus"])
+            final_reward = int(reward * boost_info["multiplier"] * passive_xp_mult * energy_mult * kn_reward_mult) + int(boost_info["bonus"])
             final_reward = _apply_reward_penalty(final_reward, boost_info)
 
             # ── Daily cap multiplier ──
@@ -186,7 +207,7 @@ def add_reward(ease: int) -> dict:
         result = record_again()
         if result.get("rewarded"):
             reward = REWARD_MAP.get(1, 0)
-            final_reward = int(reward * boost_info["multiplier"] * passive_xp_mult * energy_mult) + int(boost_info["bonus"])
+            final_reward = int(reward * boost_info["multiplier"] * passive_xp_mult * energy_mult * kn_reward_mult) + int(boost_info["bonus"])
             final_reward = _apply_reward_penalty(final_reward, boost_info)
 
             # ── Daily cap multiplier ──
@@ -238,7 +259,7 @@ def add_reward(ease: int) -> dict:
         _apply_food_penalties(boost_info)
 
         # Áp dụng CẢ active boost + passive xp_multiplier + energy_multiplier
-        final_reward = int(reward * boost_info["multiplier"] * passive_xp_mult * energy_mult) + int(boost_info["bonus"])
+        final_reward = int(reward * boost_info["multiplier"] * passive_xp_mult * energy_mult * kn_reward_mult) + int(boost_info["bonus"])
         # Áp dụng reward_penalty (giảm % tiền thưởng từ food trade-off)
         final_reward = _apply_reward_penalty(final_reward, boost_info)
 

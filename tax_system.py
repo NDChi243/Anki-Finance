@@ -50,13 +50,20 @@ MAX_LOG = 60
 
 def _get_tax_reduction_factor() -> float:
     """
-    Đọc tax_reduction từ passive effects.
+    Đọc tax_reduction từ passive effects và KN Perks.
     Trả về hệ số nhân thuế (1.0 = không giảm, 0.5 = giảm 50%).
     """
     try:
         from .item_effects import get_all_passive_effects
         passive = get_all_passive_effects()
         reduction = float(passive.get("tax_reduction", 0.0))
+        # Cộng dồn giảm thuế từ KN Perks
+        try:
+            from .kn_perks import get_active_bonuses
+            kn_bonuses = get_active_bonuses()
+            reduction += float(kn_bonuses.get("tax_reduction", 0.0))
+        except Exception as e:
+            logger.debug("_get_tax_reduction_factor (kn_perks): %s", e)
         reduction = min(max(reduction, 0.0), 0.9)  # cap 0%–90%
         if reduction > 0:
             return 1.0 - reduction

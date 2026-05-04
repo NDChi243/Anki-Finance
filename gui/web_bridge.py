@@ -919,6 +919,57 @@ class TycoonBridge(QObject):
         return json.dumps(res, ensure_ascii=False)
 
     @pyqtSlot(result=str)
+    def getVehicleEffects(self):
+        """
+        Trả về hiệu ứng và trạng thái của xe đang active (v1.1.5b).
+        Bao gồm: energy_save_percent, km_traveled, total_cards_driven, v.v.
+        """
+        try:
+            from ..vehicle_system import get_active_vehicle, get_active_vehicle_effects
+            av = get_active_vehicle()
+            if not av:
+                return json.dumps({"active": False}, ensure_ascii=False)
+            effects = get_active_vehicle_effects()
+            return json.dumps({
+                "active": True,
+                "vehicle_id": av.get("item_id") or av.get("vehicle_id"),
+                "name": av.get("name", ""),
+                "emoji": av.get("emoji", "🚗"),
+                "vehicle_group": av.get("vehicle_group", ""),
+                "fuel_type": av.get("fuel_type", "gasoline"),
+                "durability_pct": round(av.get("durability", 0) / max(av.get("max_durability", 1), 1) * 100, 1),
+                "fuel_pct": round(av.get("fuel_level", 0) / max(av.get("max_fuel", 1), 1) * 100, 1),
+                "km_traveled": float(av.get("km_traveled", 0.0)),
+                "total_cards_driven": int(av.get("total_cards_driven", 0)),
+                "energy_save_percent": round(float(av.get("energy_save_percent", 0.0)) * 100, 1),
+                "effects": effects,
+            }, ensure_ascii=False)
+        except Exception as e:
+            logger.warning("getVehicleEffects: %s", e)
+            return json.dumps({"active": False, "error": str(e)}, ensure_ascii=False)
+
+    @pyqtSlot(result=str)
+    def getVehicleEnergySaveInfo(self):
+        """
+        Trả về thông tin tiết kiệm năng lượng của xe đang active cho UI.
+        """
+        try:
+            from ..vehicle_effects import calc_effective_energy_cost, get_active_vehicle_energy_save, get_active_vehicle_km
+            save_pct = get_active_vehicle_energy_save()
+            km = get_active_vehicle_km()
+            cost_info = calc_effective_energy_cost(1)
+            return json.dumps({
+                "energy_save_percent": round(save_pct * 100, 1),
+                "km_traveled": km,
+                "actual_cost": cost_info.get("actual", 1),
+                "saved": cost_info.get("saved", 0),
+                "has_vehicle": save_pct > 0,
+            }, ensure_ascii=False)
+        except Exception as e:
+            logger.warning("getVehicleEnergySaveInfo: %s", e)
+            return json.dumps({"energy_save_percent": 0, "km_traveled": 0, "has_vehicle": False}, ensure_ascii=False)
+
+    @pyqtSlot(result=str)
     def getMaintenanceTabData(self):
         from ..vehicle_system import get_maintenance_tab_data
         return json.dumps(get_maintenance_tab_data(), ensure_ascii=False)
@@ -1904,8 +1955,29 @@ class TycoonBridge(QObject):
             return json.dumps(get_sct_for_item(item), ensure_ascii=False)
         except Exception as e:
             return json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False)
+    # ── KN Perks (v1.1.5) ──────────────────────────────────────────
 
-    # ── Rank / KN / EXP ─────────────────────────────────────────────────
+    @pyqtSlot(result=str)
+    def getKNPerks(self):
+        """Trả về toàn bộ thông tin KN Perks."""
+        try:
+            from ..kn_perks import get_kn_perks_summary
+            return json.dumps(get_kn_perks_summary(), ensure_ascii=False)
+        except Exception as e:
+            return json.dumps({"error": str(e)}, ensure_ascii=False)
+
+    @pyqtSlot(str, result=str)
+    def unlockKNPerk(self, perk_id: str):
+        """Mở khóa 1 perk bằng KN."""
+        try:
+            from ..kn_perks import unlock_perk
+            result = unlock_perk(perk_id)
+            return json.dumps(result, ensure_ascii=False)
+        except Exception as e:
+            return json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False)
+
+    # ── Rank / KN / EXP ──────────────────────────────────────────────
+
 
     @pyqtSlot(result=str)
     def getKN(self):

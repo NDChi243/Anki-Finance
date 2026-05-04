@@ -43,6 +43,28 @@ MAINTENANCE_INTERVAL = 50
 MAINTENANCE_COST_RATIO = 0.02
 MAINTENANCE_DURATION = 1800
 
+# ─── Tiết kiệm năng lượng & KM ─────────────────────────────────
+# Xe giá trị cao → giảm % năng lượng tiêu hao khi học thẻ
+# Format: [(price_threshold, energy_save_percent)]
+ENERGY_SAVE_THRESHOLDS = [
+    (10_000_000_000, 0.30),   # siêu xe >10B: giảm 30% năng lượng
+    (5_000_000_000,  0.25),   # >5B: giảm 25%
+    (1_000_000_000,  0.20),   # >1B: giảm 20%
+    (500_000_000,    0.15),   # >500M: giảm 15%
+    (100_000_000,    0.10),   # >100M: giảm 10%
+    (10_000_000,     0.05),   # >10M: giảm 5%
+    (0,              0.00),   # còn lại: 0%
+]
+
+# KM tracking: 10 cards = 1km
+CARDS_PER_KM = 10
+
+# Hệ số tốc độ học: học càng nhanh (càng ít giây) → tốn nhiều nhiên liệu hơn
+# Thời gian học "lý tưởng" (giây) — nếu học nhanh hơn mức này thì tốn thêm fuel
+IDEAL_LEARNING_TIME_S = 15.0
+# Tối đa hệ số nhân fuel khi học siêu nhanh
+MAX_SPEED_FUEL_MULTIPLIER = 2.5
+
 # ─── Chi phí & thời gian sửa chữa theo nhóm xe ───────────────────
 # Tỉ lệ chi phí (×giá xe) và thời gian (giây) theo nhóm + phân khúc giá
 # Công thức: cost = max(min_cost, price × ratio), tuỳ theo nhóm xe
@@ -333,6 +355,36 @@ def _calc_charge_duration(item_data: dict) -> int:
     return 3600
 
 
+def _calc_energy_save_percent(price: int) -> float:
+    """
+    Tính % năng lượng tiết kiệm dựa trên giá xe.
+    Xe càng giá trị cao → càng tiết kiệm năng lượng.
+    """
+    for threshold, save_pct in ENERGY_SAVE_THRESHOLDS:
+        if price >= threshold:
+            return save_pct
+    return 0.0
+
+
+def _calc_speed_fuel_multiplier(elapsed_seconds: float) -> float:
+    """
+    Tính hệ số nhân nhiên liệu dựa trên tốc độ học.
+    Học càng nhanh (elapsed càng nhỏ) → tốn càng nhiều nhiên liệu.
+    elapsed_seconds: thời gian từ lúc thẻ hiện ra đến lúc trả lời.
+    """
+    if elapsed_seconds <= 0:
+        return MAX_SPEED_FUEL_MULTIPLIER
+    if elapsed_seconds >= IDEAL_LEARNING_TIME_S * 2:
+        return 1.0  # học chậm, không bonus
+    # Tỉ lệ nghịch: càng nhanh càng tốn fuel
+    ratio = elapsed_seconds / IDEAL_LEARNING_TIME_S
+    # ratio = 1.0 (học đúng chuẩn) → mult = 1.0
+    # ratio = 0.5 (học siêu nhanh) → mult = 1.75
+    # ratio = 0.1 (học cực nhanh) → mult = MAX
+    multiplier = 1.0 + (MAX_SPEED_FUEL_MULTIPLIER - 1.0) * max(0.0, min(1.0, 1.0 - ratio))
+    return round(multiplier, 2)
+
+
 def register_vehicle(item_id: str, item_data: dict):
     """Khi mua xe từ showroom, đăng ký vào garage."""
     if not col_ready():
@@ -347,6 +399,8 @@ def register_vehicle(item_id: str, item_data: dict):
     max_durability = _calc_max_durability(item_data)
     max_fuel = _calc_max_fuel(item_data, fuel_type)
     fuel_consumption = _get_fuel_consumption(item_data)
+    price = item_data.get("price", 0)
+    energy_save = _calc_energy_save_percent(price)
     vg = item_data.get("vehicle_group", "Ô tô").lower()
     now = time.time()
 
@@ -363,6 +417,10 @@ def register_vehicle(item_id: str, item_data: dict):
         "vehicle_group": vg,                   # lưu để tính decay & effects
         "purchased_at": now,                   # timestamp mua xe (cho khấu hao thời gian)
         "last_passive_decay": now,             # lần cuối áp dụng passive decay
+        # MỚI v1.1.5b:
+        "km_traveled": 0.0,                    # tổng số km đã đi (10 thẻ = 1km)
+        "energy_save_percent": energy_save,     # % tiết kiệm năng lượng
+        "total_cards_driven": 0,                # tổng số thẻ đã học khi lái xe này
     }
 
     if fuel_type == "electric":
@@ -551,11 +609,13 @@ def _log_vehicle_thresholds(vid: str, old_dur: float, new_dur: float, max_dur: f
                 _vehicle_tooltip(f"⛽ {emoji} <b>{name}</b> sắp hết {label} ({new_fuel_pct:.0f}%)!", 4000)
 
 
-def consume_durability(cards: int = 1) -> dict:
+def consume_durability(cards: int = 1, learning_speed: float = None) -> dict:
     """
     Giảm độ bền + nhiên liệu của xe đang active khi review card.
     - Tiêu hao nhiên liệu theo rate thực tế của từng loại xe.
     - Thêm time-based decay mỗi 30 phút đang active.
+    - Track km_traveled (10 cards = 1km)
+    - Học càng nhanh (learning_speed càng nhỏ) → tốn càng nhiều nhiên liệu
     Gọi từ Anki hook on_review_done.
     """
     data = _get_data()
@@ -570,9 +630,16 @@ def consume_durability(cards: int = 1) -> dict:
 
     now = time.time()
 
-    # ── Giảm độ bền theo thẻ ──
+    # ── Tính hệ số tốc độ học ──
+    speed_mult = 1.0
+    if learning_speed is not None and learning_speed > 0:
+        speed_mult = _calc_speed_fuel_multiplier(learning_speed)
+    # Học càng nhanh → độ bền cũng giảm nhanh hơn
+    durability_speed_mult = 1.0 + (speed_mult - 1.0) * 0.5  # 50% effect lên độ bền
+
+    # ── Giảm độ bền theo thẻ (nhân với hệ số tốc độ) ──
     old_durability = info.get("durability", 0)
-    new_durability = max(0.0, old_durability - (DURABILITY_PER_CARD * cards))
+    new_durability = max(0.0, old_durability - (DURABILITY_PER_CARD * cards * durability_speed_mult))
 
     # ── Time-based active decay (thêm vào sau 30 phút active liên tục) ──
     last_time_decay = info.get("last_time_decay", info.get("activated_at", now))
@@ -587,20 +654,30 @@ def consume_durability(cards: int = 1) -> dict:
     new_durability = int(new_durability)
     info["durability"] = new_durability
 
-    # ── Tiêu hao nhiên liệu (rate thực tế theo loại xe) ──
+    # ── Tiêu hao nhiên liệu (rate thực tế × hệ số tốc độ học) ──
     fuel_type = info.get("fuel_type", "gasoline")
     fuel_ran_out = False
     old_fuel = info.get("fuel_level", 0)
 
     if fuel_type != "manual":
         rate = info.get("fuel_consumption", FUEL_CONSUMPTION_PER_CARD)
-        new_fuel = max(0.0, old_fuel - (rate * cards))
+        # Áp dụng hệ số tốc độ học vào nhiên liệu
+        adjusted_rate = rate * speed_mult
+        new_fuel = max(0.0, old_fuel - (adjusted_rate * cards))
         info["fuel_level"] = round(new_fuel, 2)
         if new_fuel <= 0 and old_fuel > 0:
             fuel_ran_out = True
             data["active_vehicle_id"] = None  # hết xăng/điện → tự dừng
     else:
         new_fuel = old_fuel
+
+    # ── Tracking KM & cards ──
+    total_cards = info.get("total_cards_driven", 0) + cards
+    info["total_cards_driven"] = total_cards
+    # 10 thẻ = 1km
+    old_km = info.get("km_traveled", 0.0)
+    new_km = round(total_cards / CARDS_PER_KM, 1)
+    info["km_traveled"] = new_km
 
     # ── Bảo dưỡng định kỳ ──
     max_durability_val = info.get("max_durability", DEFAULT_DURABILITY)
@@ -640,6 +717,9 @@ def consume_durability(cards: int = 1) -> dict:
         "old_fuel": old_fuel,
         "new_fuel": round(float(new_fuel), 2),
         "fuel_ran_out": fuel_ran_out,
+        "speed_multiplier": round(speed_mult, 2),  # MỚI
+        "km_traveled": new_km,                      # MỚI
+        "total_cards_driven": total_cards,          # MỚI
     }
 
 
@@ -798,6 +878,10 @@ def get_garage_summary() -> list:
             "is_charging": is_charging,
             "charge_remaining": charge_remaining,
             "sell_estimate": sell_estimate,
+            # MỚI v1.1.5b:
+            "km_traveled": info.get("km_traveled", 0.0),
+            "energy_save_percent": info.get("energy_save_percent", 0.0),
+            "total_cards_driven": info.get("total_cards_driven", 0),
         })
     return result
 

@@ -32,7 +32,7 @@ logger = get_logger(__name__)
 # CẤU HÌNH — chỉ sửa 2 dòng này
 # ═══════════════════════════════════════════════════════════════
 GITHUB_USER = "NDChi243"
-GITHUB_REPO = "Anki-Finance-1"
+GITHUB_REPO = "Anki-Finance"
 
 # Nội bộ
 _ADDON_DIR            = os.path.dirname(os.path.abspath(__file__))

@@ -103,6 +103,24 @@ async function loadGarage() {
       manualLabel.style.display = 'block';
     }
 
+    // ── KM traveled (v1.1.5b) ──
+    const kmSection = document.getElementById('gab-km-section');
+    const km = active.km_traveled || 0;
+    const totalCards = active.total_cards_driven || 0;
+    document.getElementById('gab-km').textContent = km.toFixed(1) + ' km';
+    document.getElementById('gab-cards-driven').textContent = totalCards.toLocaleString();
+    kmSection.style.display = 'flex';
+
+    // ── Energy save (v1.1.5b) ──
+    const esSection = document.getElementById('gab-energy-save-section');
+    const esPct = active.energy_save_percent || 0;
+    if (esPct > 0) {
+      document.getElementById('gab-energy-save').textContent = (esPct * 100).toFixed(1) + '%';
+      esSection.style.display = 'block';
+    } else {
+      esSection.style.display = 'none';
+    }
+
   } else {
 
     banner.style.display = 'none';
@@ -205,6 +223,8 @@ function applyGarageFilter() {
       case 'dup_desc':   filtered.sort((a,b) => (b.durability_pct||0) - (a.durability_pct||0)); break;
       case 'fuel_asc':   filtered.sort((a,b) => (a.fuel_pct||0) - (b.fuel_pct||0)); break;
       case 'fuel_desc':  filtered.sort((a,b) => (b.fuel_pct||0) - (a.fuel_pct||0)); break;
+      case 'km_asc':     filtered.sort((a,b) => (a.km_traveled||0) - (b.km_traveled||0)); break;
+      case 'km_desc':    filtered.sort((a,b) => (b.km_traveled||0) - (a.km_traveled||0)); break;
       case 'name_asc':   filtered.sort((a,b) => (a.name||'').localeCompare(b.name||'')); break;
       case 'name_desc':  filtered.sort((a,b) => (b.name||'').localeCompare(a.name||'')); break;
     }
@@ -302,6 +322,25 @@ function renderGarageGrid(vehicles) {
       </div>`;
     }
 
+    // KM traveled (v1.1.5b)
+    const kmVal = v.km_traveled || 0;
+    const cardsVal = v.total_cards_driven || 0;
+    const esVal = v.energy_save_percent || 0;
+    let kmLine = '';
+    if (kmVal > 0 || cardsVal > 0) {
+      kmLine = `<div style="font-size:10px;color:var(--muted2);margin-top:2px">
+        📍 ${kmVal.toFixed(1)} km &nbsp;•&nbsp; 📊 ${cardsVal.toLocaleString()} thẻ
+      </div>`;
+    }
+
+    // Energy save line (v1.1.5b)
+    let esLine = '';
+    if (esVal > 0) {
+      esLine = `<div style="font-size:10px;color:var(--green);margin-top:1px">
+        ⚡ Tiết kiệm ${(esVal * 100).toFixed(1)}% năng lượng
+      </div>`;
+    }
+
     // Sell estimate
     const sellEst = v.sell_estimate || 0;
     const sellLine = sellEst > 0
@@ -396,6 +435,8 @@ function renderGarageGrid(vehicles) {
         </div>
         ${dupBar}
         ${fuelBar}
+        ${kmLine}
+        ${esLine}
         ${sellLine}
         <div style="margin-top:6px">${actions}</div>
       </div>`;
@@ -505,6 +546,28 @@ if (!isManual) {
 } else {
   fuelSection.style.display = 'none';
   manualLabel.style.display = 'block';
+}
+
+// ── KM traveled (v1.1.5b) ──
+const kmSection = document.getElementById('gd-km-section');
+const kmVal = vehicle.km_traveled || 0;
+const cardsVal = vehicle.total_cards_driven || 0;
+if (kmVal > 0 || cardsVal > 0) {
+  document.getElementById('gd-km').textContent = kmVal.toFixed(1) + ' km';
+  document.getElementById('gd-cards-driven').textContent = cardsVal.toLocaleString();
+  kmSection.style.display = 'block';
+} else {
+  kmSection.style.display = 'none';
+}
+
+// ── Energy save (v1.1.5b) ──
+const esSection = document.getElementById('gd-energy-save-section');
+const esVal = vehicle.energy_save_percent || 0;
+if (esVal > 0) {
+  document.getElementById('gd-energy-save').textContent = (esVal * 100).toFixed(1) + '%';
+  esSection.style.display = 'block';
+} else {
+  esSection.style.display = 'none';
 }
 
 // Specs

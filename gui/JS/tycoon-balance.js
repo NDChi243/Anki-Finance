@@ -9,9 +9,6 @@ async function refreshBalance() {
 
   updateNavBal(curBal);
 
-  // Update EXP, KN, rank on navbar at the same time.
-  refreshNavExpKnRank();
-
 }
 
 
@@ -64,50 +61,6 @@ function updateNavBal(v) {
   document.getElementById('bal-sub').textContent = sub;
 
   updateResetButtonState();
-
-}
-
-
-async function refreshNavExpKnRank() {
-
-  try {
-
-    const [expRaw, knRaw, dashRaw] = await Promise.all([
-      B.getExp(),
-      B.getKN(),
-      B.getDashboardData(),
-    ]);
-
-    const expData = JSON.parse(expRaw);
-    const knData = JSON.parse(knRaw);
-    const dashData = JSON.parse(dashRaw);
-
-    const xpEl = document.getElementById('nav-xp');
-    const knEl = document.getElementById('nav-kn');
-    const rnEl = document.getElementById('nav-rank');
-
-    if (xpEl) {
-      const xp = expData.xp || 0;
-      _setAnimatedLocale(xpEl, xp, '⭐ ', ' EXP');
-    }
-
-    if (knEl) {
-      const kn = knData.kn || 0;
-      _setAnimatedLocale(knEl, kn, '🧠 ', ' KN');
-    }
-
-    if (rnEl && dashData.rank) {
-      const r = dashData.rank;
-      const emoji = r.rank_emoji || '📚';
-      const label = r.rank_label || '—';
-      rnEl.textContent = `${emoji} ${label.substring(0, 14)}`;
-    }
-
-  } catch (e) {
-
-    console.error('refreshNavExpKnRank error', e);
-
-  }
 
 }
 

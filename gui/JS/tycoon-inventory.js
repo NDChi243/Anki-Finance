@@ -4,6 +4,56 @@
 
 // ════════════════════════════════════════════
 
+// ── Inventory countdown state (v1.1.5) ────
+let _invCountdownData = [];     // [{ id, slotId, expiresAtMs, isFood, el }]
+let _invCountdownTimer = null;
+let _invCountdownLastSecond = 0;
+
+function _startInventoryCountdown() {
+  _stopInventoryCountdown();
+  const tick = () => {
+    const now = Date.now();
+    let anyChanged = false;
+    _invCountdownData = _invCountdownData.filter(d => {
+      const el = document.getElementById(d.elId);
+      if (!el) return false;
+      const remaining = Math.max(0, (d.expiresAtMs - now) / 1000);
+      const remH = remaining / 3600;
+      const pct = d.maxH > 0 ? Math.min(100, (remH / d.maxH) * 100) : 0;
+      const col = pct > 50 ? 'var(--green)' : pct > 20 ? 'var(--yellow)' : 'var(--red)';
+      const wholeRemaining = Math.floor(remaining);
+      if (wholeRemaining !== d._lastDisplayed) {
+        d._lastDisplayed = wholeRemaining;
+        anyChanged = true;
+        if (remaining <= 0) {
+          el.innerHTML = `<span style="color:var(--red)">0.0h còn lại</span>`;
+          return false; // remove from tracking
+        }
+        const labelEl = el.querySelector('.inv-fresh-label');
+        if (labelEl) labelEl.textContent = `${remH.toFixed(1)}h còn lại`;
+        const barEl = el.querySelector('.inv-fresh-bar');
+        if (barEl) barEl.style.width = `${pct}%`;
+        if (barEl) barEl.style.background = col;
+      }
+      return remaining > 0;
+    });
+    if (_invCountdownData.length > 0) {
+      _invCountdownTimer = requestAnimationFrame(tick);
+    } else {
+      _invCountdownTimer = null;
+    }
+  };
+  _invCountdownTimer = requestAnimationFrame(tick);
+}
+
+function _stopInventoryCountdown() {
+  if (_invCountdownTimer) {
+    cancelAnimationFrame(_invCountdownTimer);
+    _invCountdownTimer = null;
+  }
+}
+
+
 async function reloadImages() {
 
   await B.refreshImageCache();
@@ -58,6 +108,7 @@ async function loadInventory() {
 
     </div>`;
 
+    _stopInventoryCountdown();
     return;
 
   }
@@ -69,6 +120,9 @@ async function loadInventory() {
   await refreshBoostStrip();
 
 
+
+  // Reset countdown data
+  _invCountdownData = [];
 
   g.innerHTML = inv.map(i => {
 
@@ -89,11 +143,14 @@ async function loadInventory() {
 
     let foodExtra = '';
 
+
+
     if (isFood) {
 
-      // Freshness bar
+      // Freshness bar — realtime (v1.1.5)
 
       let freshBar = '';
+      const freshId = i.id + '_' + (firstSlot?.slot_id || '0');
 
       if (firstSlot) {
 
@@ -103,19 +160,31 @@ async function loadInventory() {
 
         const col   = pct > 50 ? 'var(--green)' : pct > 20 ? 'var(--yellow)' : 'var(--red)';
 
+        // Store expiry timestamp for countdown
+        const expiresAtMs = Date.now() + (remH * 3600 * 1000);
+        const maxH = i.expire_h || remH || 24;
+        _invCountdownData.push({
+          id: i.id,
+          slotId: firstSlot?.slot_id || '',
+          elId: 'inv-fresh-' + freshId,
+          expiresAtMs,
+          maxH,
+          _lastDisplayed: -1,
+        });
+
         freshBar = `
 
-          <div style="width:100%;margin-top:4px">
+          <div style="width:100%;margin-top:4px" id="inv-fresh-${freshId}">
 
             <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted2)">
 
-              <span>Độ tươi</span><span style="color:${col}">${remH.toFixed(1)}h còn lại</span>
+              <span>Độ tươi</span><span class="inv-fresh-label" style="color:${col}">${remH.toFixed(1)}h còn lại</span>
 
             </div>
 
             <div class="fresh-wrap" style="width:100%">
 
-              <div style="height:100%;width:${pct}%;background:${col};border-radius:2px;transition:width .3s"></div>
+              <div class="inv-fresh-bar" style="height:100%;width:${pct}%;background:${col};border-radius:2px;transition:width .3s"></div>
 
             </div>
 
@@ -149,23 +218,35 @@ async function loadInventory() {
 
     } else if (isStudy) {
       let freshBar = '';
+      const freshId = i.id + '_' + (firstSlot?.slot_id || '0');
       if (firstSlot) {
         const pct   = firstSlot.fresh_pct || 0;
         const remH  = firstSlot.remaining_h || 0;
         const col   = pct > 50 ? 'var(--green)' : pct > 20 ? 'var(--yellow)' : 'var(--red)';
+        // Store expiry timestamp for countdown
+        const expiresAtMs = Date.now() + (remH * 3600 * 1000);
+        const maxH = i.expire_h || remH || 24;
+        _invCountdownData.push({
+          id: i.id,
+          slotId: firstSlot?.slot_id || '',
+          elId: 'inv-fresh-' + freshId,
+          expiresAtMs,
+          maxH,
+          _lastDisplayed: -1,
+        });
         freshBar = `
 
-          <div style="width:100%;margin-top:4px">
+          <div style="width:100%;margin-top:4px" id="inv-fresh-${freshId}">
 
             <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted2)">
 
-              <span>Hạn sử dụng</span><span style="color:${col}">${remH.toFixed(1)}h còn lại</span>
+              <span>Hạn sử dụng</span><span class="inv-fresh-label" style="color:${col}">${remH.toFixed(1)}h còn lại</span>
 
             </div>
 
             <div class="fresh-wrap" style="width:100%">
 
-              <div style="height:100%;width:${pct}%;background:${col};border-radius:2px;transition:width .3s"></div>
+              <div class="inv-fresh-bar" style="height:100%;width:${pct}%;background:${col};border-radius:2px;transition:width .3s"></div>
 
             </div>
 
@@ -196,8 +277,6 @@ async function loadInventory() {
         ${slots.length > 1 ? `<div style="font-size:10px;color:var(--muted2);margin-top:2px">${slots.length} cái trong kho</div>` : ''}`;
 
     }
-
-
 
     return `
 
@@ -236,6 +315,9 @@ async function loadInventory() {
     </div>`;
 
   }).join('');
+
+  // Start real-time countdown for freshness bars
+  _startInventoryCountdown();
 
 }
 

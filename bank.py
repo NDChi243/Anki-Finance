@@ -128,6 +128,13 @@ def _get_product_rate(product_code: str, term_months: int, amount: int) -> float
         from .item_effects import get_all_passive_effects
         passive = get_all_passive_effects()
         interest_bonus = float(passive.get("interest_bonus", 0.0))
+        # Cộng dồn interest_bonus từ KN Perks
+        try:
+            from .kn_perks import get_active_bonuses
+            kn_bonuses = get_active_bonuses()
+            interest_bonus += float(kn_bonuses.get("interest_bonus", 0.0))
+        except Exception as e:
+            logger.debug("_get_product_rate: kn_perks interest_bonus — %s", e)
         if interest_bonus > 0:
             rate = rate * (1.0 + interest_bonus)
     except Exception as e:
@@ -245,6 +252,13 @@ def calc_demand_interest() -> float:
         from .item_effects import get_all_passive_effects
         passive = get_all_passive_effects()
         interest_bonus = float(passive.get("interest_bonus", 0.0))
+        # Cộng dồn interest_bonus từ KN Perks
+        try:
+            from .kn_perks import get_active_bonuses
+            kn_bonuses = get_active_bonuses()
+            interest_bonus += float(kn_bonuses.get("interest_bonus", 0.0))
+        except Exception as e:
+            logger.debug("calc_demand_interest: kn_perks interest_bonus — %s", e)
         if interest_bonus > 0:
             rate = rate * (1.0 + interest_bonus)
     except Exception as e:

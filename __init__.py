@@ -51,10 +51,12 @@ def _log_error(context: str):
 def on_review_done(reviewer, card, ease):
     # Batch tất cả cfg_set() → 1 lần ghi Anki config duy nhất
     begin_batch()
+    # Biến lưu learning_speed từ _card_show_timestamp
+    _learning_speed = None
     try:
         result = add_reward(ease)
 
-        # ── Ghi nhận thời gian học thẻ (cho hệ thống mở rộng limit hủy) ──
+        # ── Ghi nhận thời gian học thẻ (cho hệ thống mở rộng limit hủy + tốc độ học) ──
         try:
             global _card_show_timestamp
             if _card_show_timestamp is not None:
@@ -63,6 +65,7 @@ def on_review_done(reviewer, card, ease):
                 if elapsed > 0 and elapsed < 300:
                     from .food_effects import record_card_review_time
                     record_card_review_time(elapsed)
+                    _learning_speed = elapsed  # lưu lại cho vehicle consume_durability
             _card_show_timestamp = None  # reset cho thẻ tiếp theo
         except Exception as e:
             logger.warning("record_card_review_time: %s", e)
@@ -88,7 +91,7 @@ def on_review_done(reviewer, card, ease):
         except Exception as e:
             logger.warning("check_and_unlock(card_reviewed): %s", e)
 
-        # ── Economy Controls Integration ──
+        # ── Economy Controls & Vehicle Integration ──
         try:
             from .economy_controls import (
                 increment_daily_cards_count,
@@ -101,12 +104,15 @@ def on_review_done(reviewer, card, ease):
             increment_total_system_cards()
 
             # Tiêu hao độ bền + nhiên liệu cho xe đang active
+            # Truyền learning_speed (thời gian học thẻ) để tính hệ số tốc độ (v1.1.5b)
+            # Năng lượng tiêu hao đã được balance.py xử lý với % tiết kiệm từ xe
             active_veh = get_active_vehicle()
             if active_veh:
                 veh_id = active_veh.get("item_id") or active_veh.get("vehicle_id")
                 if veh_id:
-                    # Gọi consume_durability thực sự (giảm độ bền + xăng/điện)
-                    veh_consume_durability(1)
+                    # Gọi consume_durability với learning_speed (tốc độ học)
+                    # Nếu _learning_speed là None (không có timestamp), truyền None → dùng mặc định
+                    veh_consume_durability(1, learning_speed=_learning_speed)
 
                     # Kiểm tra sự cố ngẫu nhiên
                     breakdown = check_breakdown_on_review(veh_id)
@@ -256,6 +262,15 @@ def _update_gamification(ease: int, result: dict):
                     xp = max(1, int(xp * xp_mult))
             except Exception as e:
                 logger.warning("xp_multiplier: %s", e)
+            # Áp dụng xp_mult từ KN Perks (buff EXP vĩnh viễn)
+            try:
+                from .kn_perks import get_active_bonuses
+                kn_bonuses = get_active_bonuses()
+                kn_xp_mult = 1.0 + float(kn_bonuses.get("xp_mult", 0.0))
+                if kn_xp_mult > 0:
+                    xp = max(1, int(xp * kn_xp_mult))
+            except Exception as e:
+                logger.warning("kn_perks xp_mult: %s", e)
             add_xp(xp)
             _rank_check_counter += 1
             if _rank_check_counter >= 20 or _last_rank_cache is None:

@@ -75,6 +75,38 @@ def consume_energy(amount: int = 1) -> int:
     return current
 
 
+def consume_energy_with_vehicle(amount: int = 1, vehicle_energy_save: float = 0.0) -> dict:
+    """
+    Tiêu hao năng lượng khi review thẻ, có tính % tiết kiệm từ xe.
+    
+    Args:
+        amount: Lượng năng lượng cơ bản tiêu hao (mặc định 1)
+        vehicle_energy_save: % tiết kiệm từ xe (0.0 = 0%, 0.30 = 30%)
+    
+    Returns:
+        {"energy_left": int, "actual_consumed": float, "saved": float, "save_percent": float}
+    """
+    if not col_ready():
+        return {"energy_left": BASE_MAX_ENERGY, "actual_consumed": amount, "saved": 0.0, "save_percent": 0.0}
+    
+    # Tính lượng năng lượng thực tế tiêu hao sau khi trừ % tiết kiệm
+    save_pct = max(0.0, min(1.0, vehicle_energy_save))
+    saved = amount * save_pct
+    actual_consumed = max(0.0, amount - saved)
+    
+    _auto_regen()
+    current = cfg_int(_KEY_ENERGY, BASE_MAX_ENERGY)
+    current = max(0, int(current - actual_consumed))
+    cfg_set(_KEY_ENERGY, current)
+    
+    return {
+        "energy_left": current,
+        "actual_consumed": round(actual_consumed, 2),
+        "saved": round(saved, 2),
+        "save_percent": round(save_pct * 100, 1),
+    }
+
+
 def restore_energy(amount: int) -> int:
     """
     Hồi năng lượng từ food/stamina_regen.

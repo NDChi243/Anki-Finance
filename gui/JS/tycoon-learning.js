@@ -1096,6 +1096,18 @@ async function loadSettings() {
 
   updateResetButtonState();
 
+  // Hiển thị phiên bản hiện tại
+
+  try {
+    const raw = await B.getUpdateInfo();
+    const info = JSON.parse(raw);
+    if (info.current_version) {
+      document.getElementById('settings-current-ver').textContent = 'v' + info.current_version;
+    }
+  } catch (e) {
+    document.getElementById('settings-current-ver').textContent = '?';
+  }
+
   // Reset log
 
   const logRaw = await B.getResetLog();
@@ -1127,6 +1139,84 @@ async function loadSettings() {
   // Tax log
 
   await loadTaxLog();
+
+}
+
+
+async function checkForUpdate() {
+
+  const btn = document.getElementById('check-update-btn');
+  const resultEl = document.getElementById('update-result');
+  const dlBtn = document.getElementById('download-update-btn');
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Đang kiểm tra...';
+  resultEl.style.display = 'none';
+  dlBtn.style.display = 'none';
+
+  try {
+    const raw = await B.checkForUpdates();
+    const res = JSON.parse(raw);
+
+    resultEl.style.display = 'block';
+
+    if (!res.ok) {
+      resultEl.innerHTML = `<span style="color:var(--red)">❌ ${res.error || 'Lỗi kết nối'}</span>`;
+      return;
+    }
+
+    if (res.has_update) {
+      const changelog = res.changelog ? `\n\n📋 Changelog:\n${res.changelog}` : '';
+      resultEl.innerHTML = `<span style="color:var(--green)">✅ Có bản cập nhật mới!</span>\n\n` +
+        `Hiện tại: <strong>v${res.current_version}</strong>\n` +
+        `Mới nhất: <strong style="color:var(--accent2)">v${res.latest_version}</strong>` +
+        changelog.replace(/\n/g, '<br>');
+
+      dlBtn.style.display = 'inline-flex';
+    } else {
+      resultEl.innerHTML = `<span style="color:var(--green)">✅ ${res.message || 'Bạn đang dùng phiên bản mới nhất.'}</span>\n\n` +
+        `Phiên bản hiện tại: <strong>v${res.current_version}</strong>`;
+    }
+  } catch (e) {
+    resultEl.style.display = 'block';
+    resultEl.innerHTML = `<span style="color:var(--red)">❌ Lỗi: ${e.message || e}</span>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🔍 Kiểm tra cập nhật';
+  }
+
+}
+
+
+async function downloadUpdateNow() {
+
+  const dlBtn = document.getElementById('download-update-btn');
+  const resultEl = document.getElementById('update-result');
+  const checkBtn = document.getElementById('check-update-btn');
+
+  dlBtn.disabled = true;
+  dlBtn.textContent = '⏳ Đang tải...';
+  checkBtn.disabled = true;
+
+  try {
+    const raw = await B.downloadUpdate();
+    const res = JSON.parse(raw);
+
+    if (res.ok) {
+      resultEl.innerHTML = `<span style="color:var(--green);font-weight:700">${res.message || '✅ Cập nhật thành công!'}</span>`;
+      dlBtn.style.display = 'none';
+    } else {
+      resultEl.innerHTML = `<span style="color:var(--red)">❌ ${res.error || 'Tải thất bại'}</span>`;
+      dlBtn.disabled = false;
+      dlBtn.textContent = '⬇️ Thử lại';
+    }
+  } catch (e) {
+    resultEl.innerHTML = `<span style="color:var(--red)">❌ Lỗi: ${e.message || e}</span>`;
+    dlBtn.disabled = false;
+    dlBtn.textContent = '⬇️ Thử lại';
+  } finally {
+    checkBtn.disabled = false;
+  }
 
 }
 

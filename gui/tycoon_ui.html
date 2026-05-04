@@ -61,9 +61,6 @@
   <div class="nav-bal">
     <span class="live-dot" title="Đồng bộ trực tiếp"></span>
     <span style="font-size:13px">💰 <span id="nav-bal" class="num-mono">…</span></span>
-    <span id="nav-xp" class="nav-chip chip-xp" title="Experience Points">⭐ 0 XP</span>
-    <span id="nav-kn" class="nav-chip chip-kn" title="Knowledge Points">🧠 0 KN</span>
-    <span id="nav-rank" class="nav-chip chip-rank" title="Rank hiện tại">📚 SV1</span>
   </div>
 
 </nav>
@@ -1091,6 +1088,28 @@
         </div>
       </div>
       <div id="gd-manual-label" style="margin-top:4px;font-size:12px;color:var(--muted2);display:none">🚲 Không tốn nhiên liệu</div>
+
+      <!-- KM traveled (v1.1.5b) -->
+      <div id="gd-km-section" style="margin-top:6px;display:none">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted2)">
+          <span>📍 Số Km đã đi</span>
+          <span id="gd-km" style="font-weight:600">0 km</span>
+        </div>
+        <div style="font-size:11px;color:var(--muted2);margin-top:2px">
+          📊 <span id="gd-cards-driven">0</span> thẻ đã học &nbsp;•&nbsp; 10 thẻ = 1km
+        </div>
+      </div>
+
+      <!-- Energy save (v1.1.5b) -->
+      <div id="gd-energy-save-section" style="margin-top:6px;display:none">
+        <div style="display:flex;justify-content:space-between;font-size:12px;">
+          <span>⚡ Tiết kiệm năng lượng</span>
+          <span id="gd-energy-save" style="font-weight:600;color:var(--green)">0%</span>
+        </div>
+        <div style="font-size:11px;color:var(--muted2);margin-top:2px">
+          Mỗi thẻ review tốn ít năng lượng hơn nhờ xe giá trị cao
+        </div>
+      </div>
 
       <!-- Specs -->
       <div class="sd-specs" id="gd-specs" style="margin-top:10px"></div>
@@ -3051,6 +3070,44 @@
 
   </div>
 
+
+
+  <!-- KN PERKS (v1.1.5) -->
+
+  <div id="kn-perks-section" style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+
+    <div class="row-sb" style="margin-bottom:10px">
+
+      <div>
+
+        <div class="section-title" style="font-size:15px">🔮 KN Perks — Vĩnh viễn</div>
+
+        <div class="section-sub" style="margin-bottom:0">Dùng điểm Kiến Thức (KN) để mở khóa buff vĩnh viễn</div>
+
+      </div>
+
+      <div style="text-align:right">
+
+        <div style="font-size:24px;font-weight:900;color:var(--green)" id="knp-balance">0</div>
+
+        <div style="font-size:11px;color:var(--muted2)">KN hiện có</div>
+
+      </div>
+
+    </div>
+
+    <div id="knp-active-bonuses" style="margin-bottom:12px;font-size:12px;color:var(--muted2);background:var(--surface2);border-radius:8px;padding:10px;display:none">
+
+      <div style="font-weight:700;margin-bottom:4px">✅ Bonus đang active:</div>
+
+      <div id="knp-bonus-list"></div>
+
+    </div>
+
+    <div id="knp-list" style="display:flex;flex-direction:column;gap:8px"></div>
+
+  </div>
+
 </div>
 
 
@@ -4277,6 +4334,23 @@
           </div>
           <!-- Bicycle no-fuel label -->
           <div id="gab-manual-label" style="margin-top:4px;font-size:10px;color:var(--muted2);display:none">🚲 Không tốn nhiên liệu</div>
+          <!-- KM traveled (v1.1.5b) -->
+          <div id="gab-km-section" style="margin-top:4px;display:none">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted2)">
+              <span>📍 Số Km đã đi</span>
+              <span id="gab-km" style="font-weight:600">0 km</span>
+            </div>
+            <div style="font-size:9px;color:var(--muted2);margin-top:1px">
+              <span id="gab-cards-driven">0</span> thẻ đã học &nbsp;•&nbsp; 10 thẻ = 1km
+            </div>
+          </div>
+          <!-- Energy save (v1.1.5b) -->
+          <div id="gab-energy-save-section" style="margin-top:4px;display:none">
+            <div style="display:flex;justify-content:space-between;font-size:10px;">
+              <span>⚡ Tiết kiệm năng lượng</span>
+              <span id="gab-energy-save" style="font-weight:600;color:var(--green)">0%</span>
+            </div>
+          </div>
         </div>
         <button class="btn btn-ghost" style="font-size:11px;padding:4px 8px" onclick="stopCurrentVehicle()">🛑 Dừng</button>
       </div>
@@ -4341,6 +4415,8 @@
             <option value="dup_desc">💪 Độ bền cao → thấp</option>
             <option value="fuel_asc">🪫 Nhiên liệu thấp → cao</option>
             <option value="fuel_desc">⛽ Nhiên liệu cao → thấp</option>
+            <option value="km_asc">📍 Km thấp → cao</option>
+            <option value="km_desc">📍 Km cao → thấp</option>
             <option value="name_asc">🔤 Tên A→Z</option>
             <option value="name_desc">🔤 Tên Z→A</option>
           </select>
@@ -4490,6 +4566,34 @@
       </div>
 
     </div>
+
+  </div>
+
+
+
+  <!-- Kiểm tra cập nhật (v1.1.5) -->
+
+  <div class="card" style="margin-bottom:14px;border-color:rgba(59,130,246,.3)">
+
+    <div style="font-size:14px;font-weight:700;margin-bottom:6px;color:var(--blue)">🔄 Cập nhật</div>
+
+    <p style="font-size:12px;color:var(--muted2);margin-bottom:12px">
+      Phiên bản hiện tại: <strong id="settings-current-ver">...</strong>
+    </p>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+
+      <button class="btn btn-blue" id="check-update-btn" onclick="checkForUpdate()">
+        🔍 Kiểm tra cập nhật
+      </button>
+
+      <button class="btn btn-primary" id="download-update-btn" style="display:none" onclick="downloadUpdateNow()">
+        ⬇️ Cập nhật ngay
+      </button>
+
+    </div>
+
+    <div id="update-result" style="display:none;margin-top:6px;padding:10px;background:var(--surface2);border-radius:8px;font-size:12px;line-height:1.7;white-space:pre-wrap;max-height:300px;overflow-y:auto"></div>
 
   </div>
 
