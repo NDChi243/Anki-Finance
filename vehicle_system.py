@@ -23,6 +23,9 @@ Chức năng:
 import time
 import random
 from ._safe_config import cfg_dict, cfg_set, col_ready, cfg_int
+from .logger import get_logger
+
+logger = get_logger(__name__)
 
 _KEY_VEHICLE = "anki_tycoon_vehicle_data"
 _KEY_GARAGE_SLOTS_BOUGHT = "anki_tycoon_garage_slots_bought"
@@ -171,8 +174,8 @@ def _vehicle_tooltip(msg: str, period: int = 4500):
     try:
         from aqt.utils import tooltip
         tooltip(msg, period=period)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("_vehicle_tooltip: %s", e)
 
 
 def _calc_repair_duration_by_group(vehicle_group: str, price: int) -> int:
@@ -240,8 +243,8 @@ def get_total_garage_slots() -> int:
                 housing_bonus = 2
             elif rid == "apartment_mini":
                 housing_bonus = 1
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("get_total_garage_slots: %s", e)
     return BASE_GARAGE_SLOTS + bought + housing_bonus
 
 
@@ -511,7 +514,8 @@ def _log_vehicle_thresholds(vid: str, old_dur: float, new_dur: float, max_dur: f
         items = {i["id"]: i for i in load_shop_items()}
         name = items.get(vid, {}).get("name", vid)
         emoji = items.get(vid, {}).get("emoji", "🚗")
-    except Exception:
+    except Exception as e:
+        logger.debug("_log_vehicle_thresholds: %s", e)
         name, emoji = vid, "🚗"
 
     if broke:
@@ -622,8 +626,8 @@ def consume_durability(cards: int = 1) -> dict:
         for gid, ginfo in garage.items():
             if ginfo.get("breakdown_repair", False):
                 progress_breakdown_repair(gid)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("consume_durability (breakdown repair): %s", e)
 
     return {
         "ok": True,
@@ -975,8 +979,8 @@ def quick_maintenance(item_id: str) -> dict:
         discount = agg.get("maintenance_discount", 0)
         if discount > 0:
             effects_note = f" (giảm {int(discount*100)}% nhờ hiệu ứng)"
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("quick_maintenance (effects): %s", e)
 
     # Áp dụng giảm giá từ item effects
     if discount > 0:
@@ -1240,8 +1244,8 @@ def sell_vehicle(item_id: str) -> dict:
     try:
         from .item_effects import unregister_passive_effect
         unregister_passive_effect(item_id)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("sell_vehicle (unregister passive): %s", e)
 
     return {
         "ok": True,
@@ -1285,8 +1289,8 @@ def get_active_vehicle_effects() -> dict:
             # Xe điện: công nghệ cao, an toàn nhất, eco-friendly → bonus kép
             effects["emergency_resistance"]   = round(0.12 * eff_factor, 3)
             effects["emergency_cost_reduction"] = round(0.05 * eff_factor, 3)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("get_active_vehicle_effects: %s", e)
     return effects
 
 

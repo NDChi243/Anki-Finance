@@ -4,6 +4,9 @@ from __future__ import annotations
 from aqt import mw
 from .config import CONFIG_KEY_BALANCE, CONFIG_KEY_STATS, REWARD_MAP
 from ._safe_config import col_ready, cfg_int, cfg_dict, cfg_set
+from .logger import get_logger
+
+logger = get_logger(__name__)
 
 
 def get_balance() -> int:
@@ -68,7 +71,8 @@ def _consume_energy_and_stamina() -> float:
                         restore_energy(val)
 
         return get_reward_multiplier_from_energy()
-    except Exception:
+    except Exception as e:
+        logger.warning("_consume_energy_and_stamina: %s", e)
         return 1.0
 
 
@@ -82,8 +86,8 @@ def _apply_food_penalties(boost_info: dict) -> None:
         stamina = int(boost_info.get("stamina_cost", 0) or 0)
         if stamina > 0:
             consume_energy(stamina)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("_apply_food_penalties: %s", e)
 
 
 def _apply_reward_penalty(reward: int, boost_info: dict) -> int:
@@ -112,7 +116,8 @@ def add_reward(ease: int) -> dict:
         from .item_effects import get_all_passive_effects
         _passive = get_all_passive_effects()
         passive_xp_mult = float(_passive.get("xp_multiplier", 1.0))
-    except Exception:
+    except Exception as e:
+        logger.warning("add_reward: passive_xp_mult — %s", e)
         passive_xp_mult = 1.0
 
     # ── Tiêu hao năng lượng + áp dụng stamina_regen ──
@@ -128,7 +133,8 @@ def add_reward(ease: int) -> dict:
             increment_total_system_cards,
         )
         econ_available = True
-    except Exception:
+    except Exception as e:
+        logger.warning("add_reward: economy_controls — %s", e)
         econ_available = False
 
     if ease == 1:
@@ -140,8 +146,8 @@ def add_reward(ease: int) -> dict:
         try:
             from .food_effects import consume_boost_card
             boost_info = consume_boost_card(1)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("add_reward(again): consume_boost_card — %s", e)
 
         # Áp dụng trade-off penalties từ food/drink
         _apply_food_penalties(boost_info)
@@ -225,8 +231,8 @@ def add_reward(ease: int) -> dict:
         try:
             from .food_effects import consume_boost_card
             boost_info = consume_boost_card(ease)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("add_reward(ease=%s): consume_boost_card — %s", ease, e)
 
         # Áp dụng trade-off penalties từ food/drink (trước khi tính thưởng)
         _apply_food_penalties(boost_info)
@@ -298,8 +304,8 @@ def _update_stats(ease: int, reward: int) -> None:
     try:
         from .tax_system import record_monthly_card
         record_monthly_card()
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("_update_stats: record_monthly_card — %s", e)
 
 
 def record_purchase(amount: int, item_name: str = "") -> None:
@@ -337,7 +343,8 @@ def _apply_pit_withholding(gross_income: int) -> tuple[int, int]:
         result = apply_pit_withholding_on_income(gross_income)
         pit = result.get("withheld", 0)
         return gross_income - pit, pit
-    except Exception:
+    except Exception as e:
+        logger.warning("_apply_pit_withholding: %s", e)
         return gross_income, 0
 
 
@@ -348,8 +355,8 @@ def _apply_loan_repay(reward: int) -> int:
         if get_loan_info()["has_loan"]:
             res = repay_from_reward(reward)
             return res["remaining"]
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("_apply_loan_repay: %s", e)
     return reward
 
 
@@ -361,5 +368,5 @@ def _refresh_topbar() -> None:
             win = getattr(mw.tycoon_topbar, "_window", None)
             if win and hasattr(win, "bridge"):
                 win.bridge.balanceChanged.emit(get_balance())
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("_refresh_topbar: %s", e)

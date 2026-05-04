@@ -14,6 +14,9 @@ Chức năng:
 
 import time
 from ._safe_config import cfg_dict, cfg_set
+from .logger import get_logger
+
+logger = get_logger(__name__)
 
 _KEY_TECH = "anki_tycoon_tech_data"
 
@@ -171,8 +174,8 @@ def activate_tech(item_id: str) -> dict:
         item_data = get_items_map().get(item_id, {})
         if item_data:
             register_passive_effect(item_id, item_data)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("activate_tech (register passive): %s", e)
 
     return {
         "ok": True,
@@ -195,8 +198,8 @@ def deactivate_tech() -> dict:
     try:
         from .item_effects import unregister_passive_effect
         unregister_passive_effect(old_active)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("deactivate_tech: %s", e)
 
     return {"ok": True, "item_id": old_active}
 
@@ -249,8 +252,8 @@ def consume_durability(cards: int = 1) -> dict:
         try:
             from .item_effects import unregister_passive_effect
             unregister_passive_effect(active_id)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("consume_durability (unregister passive): %s", e)
 
     _save_data(data)
 
@@ -321,8 +324,8 @@ def start_repair(item_id: str) -> dict:
         try:
             from .item_effects import unregister_passive_effect
             unregister_passive_effect(item_id)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("start_repair (unregister passive): %s", e)
 
     _save_data(data)
 
@@ -411,8 +414,8 @@ def sell_tech(item_id: str) -> dict:
         try:
             from .item_effects import unregister_passive_effect
             unregister_passive_effect(item_id)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("sell_tech (unregister passive): %s", e)
 
     # Xoá khỏi tech lab
     del tech_lab[item_id]
@@ -422,8 +425,8 @@ def sell_tech(item_id: str) -> dict:
     try:
         from .inventory import remove_from_inventory
         remove_from_inventory(item_id)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("sell_tech (remove inventory): %s", e)
 
     # Cộng tiền
     from .balance import get_balance, set_balance_and_log

@@ -13,6 +13,10 @@ Tối ưu hiệu suất:
 from aqt import mw
 import time
 
+from .logger import get_logger
+
+logger = get_logger(__name__)
+
 # ── In-memory cache ──────────────────────────────────────────────
 _config_cache = {}       # {key: (value, timestamp)}
 _cache_ttl = 10.0        # Thời gian sống của cache (giây) — tăng từ 2s lên 10s để giảm I/O
@@ -76,7 +80,8 @@ def set_cache_enabled(enabled: bool):
 def col_ready() -> bool:
     try:
         return mw is not None and mw.col is not None
-    except Exception:
+    except Exception as e:
+        logger.debug("col_ready: %s", e)
         return False
 
 
@@ -92,7 +97,7 @@ def cfg_int(key: str, default: int = 0) -> int:
             try:
                 return int(cached)
             except (ValueError, TypeError):
-                pass
+                logger.debug("cfg_int: cached string '%s' not int for key '%s'", cached, key)
         # Cache bị lỗi kiểu — xoá cache và đọc lại từ config
         _cache_invalidate(key)
 
@@ -109,12 +114,14 @@ def cfg_int(key: str, default: int = 0) -> int:
             try:
                 result = int(v)
             except (ValueError, TypeError):
+                logger.debug("cfg_int: config value '%s' not int for key '%s'", v, key)
                 return default
         else:
             return default
         _cache_set(key, result)
         return result
-    except Exception:
+    except Exception as e:
+        logger.warning("cfg_int(%s): %s", key, e)
         return default
 
 
@@ -130,7 +137,8 @@ def cfg_str(key: str, default: str = "") -> str:
         result = str(v) if v is not None else default
         _cache_set(key, result)
         return result
-    except Exception:
+    except Exception as e:
+        logger.warning("cfg_str(%s): %s", key, e)
         return default
 
 
@@ -151,7 +159,8 @@ def cfg_list(key: str, default: list | None = None) -> list:
         result = v if isinstance(v, list) else list(default)
         _cache_set(key, result)
         return result
-    except Exception:
+    except Exception as e:
+        logger.warning("cfg_list(%s): %s", key, e)
         return list(default)
 
 
@@ -172,7 +181,8 @@ def cfg_dict(key: str, default: dict | None = None) -> dict:
         result = v if isinstance(v, dict) else dict(default)
         _cache_set(key, result)
         return result
-    except Exception:
+    except Exception as e:
+        logger.warning("cfg_dict(%s): %s", key, e)
         return dict(default)
 
 
@@ -199,8 +209,8 @@ def commit_batch():
     try:
         for key, val in _batch_writes.items():
             _raw_set(key, val)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("commit_batch: %s", e)
     _batch_writes = {}
 
 
@@ -216,8 +226,8 @@ def _raw_set(key: str, val):
     try:
         mw.col.set_config(key, val)
         _cache_set(key, val)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("_raw_set(%s): %s", key, e)
 
 
 def cfg_set(key: str, val):
@@ -234,8 +244,8 @@ def cfg_set(key: str, val):
     try:
         mw.col.set_config(key, val)
         _cache_set(key, val)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("cfg_set(%s): %s", key, e)
 
 
 def cfg_remove(key: str):
@@ -248,8 +258,8 @@ def cfg_remove(key: str):
             mw.col.remove_config(key)
         else:
             mw.col.set_config(key, 0)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("cfg_remove(%s): %s", key, e)
 
 
 def purge_none_keys(keys: list):
@@ -273,5 +283,5 @@ def purge_none_keys(keys: list):
                 else:
                     mw.col.set_config(key, 0)
                     _cache_set(key, 0)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("purge_none_keys(%s): %s", key, e)

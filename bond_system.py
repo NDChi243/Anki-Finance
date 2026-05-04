@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
+from .logger import get_logger
+logger = get_logger(__name__)
 """
 bond_system.py — Hệ thống Trái phiếu Anki Finance v1.0
 ======================================================
@@ -1015,8 +1017,8 @@ def convert_convertible_bond(bond_id: str, quantity: int = None) -> dict:
         symbol = stock_symbols.get(bond_id)
         if symbol:
             _add_shares_directly(symbol, shares_received, proceeds)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("convert_bond: _add_shares_directly — %s", e)
     
     _add_txn("convert", bond_id, proceeds, f"Chuyển đổi {conv_qty} đơn vị -> {shares_received} CP")
     

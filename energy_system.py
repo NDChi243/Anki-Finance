@@ -12,6 +12,8 @@ Cơ chế:
 
 import time
 from ._safe_config import col_ready, cfg_int, cfg_set
+from .logger import get_logger
+logger = get_logger(__name__)
 
 _KEY_ENERGY       = "anki_tycoon_energy"
 _KEY_MAX_ENERGY   = "anki_tycoon_max_energy_base"
@@ -29,7 +31,8 @@ def _get_passive_effects():
     try:
         from .item_effects import get_all_passive_effects
         return get_all_passive_effects()
-    except Exception:
+    except Exception as e:
+        logger.debug("_get_passive_effects: %s", e)
         return {}
 
 
@@ -150,8 +153,8 @@ def _auto_regen():
         # Cập nhật mốc thời gian — chỉ lưu khi đã hồi xong
         new_last = last + (points_to_regen * REGEN_INTERVAL)
         cfg_set(_KEY_LAST_REGEN, new_last)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("_auto_regen: %s", e)
 
 
 def get_energy_status() -> dict:

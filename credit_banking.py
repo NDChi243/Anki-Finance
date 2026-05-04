@@ -21,6 +21,8 @@ from datetime import datetime, timedelta
 from typing import Any
 
 from ._safe_config import col_ready, cfg_dict, cfg_list, cfg_set, cfg_int
+from .logger import get_logger
+logger = get_logger(__name__)
 
 # ═══════════════════════════════════════════════════════════════
 # CONFIG KEYS
@@ -427,7 +429,8 @@ def _get_rank_id() -> str:
     try:
         from .rank_system import get_rank_status
         return get_rank_status().get("rank_id", "sv1")
-    except Exception:
+    except Exception as e:
+        logger.debug("_get_rank_id: %s", e)
         return "sv1"
 
 def _get_rank_group() -> str:
@@ -435,7 +438,8 @@ def _get_rank_group() -> str:
     try:
         from .rank_system import get_rank_status
         return get_rank_status().get("rank_group", "Học giả")
-    except Exception:
+    except Exception as e:
+        logger.debug("_get_rank_group: %s", e)
         return "Học giả"
 
 def _get_rank_index(rank_id: str = None) -> int:
@@ -447,7 +451,8 @@ def _get_rank_index(rank_id: str = None) -> int:
             if r["id"] == (rank_id or _get_rank_id()):
                 return i
         return 0
-    except Exception:
+    except Exception as e:
+        logger.debug("_get_rank_index: %s", e)
         return 0
 
 def _check_rank_requirement(product_id: str) -> dict:
@@ -469,7 +474,8 @@ def _check_rank_requirement(product_id: str) -> dict:
         req_label = ranks[req_idx]["label"] if req_idx >= 0 else req_rank
         return {"ok": False, "required": req_rank, "required_label": req_label,
                 "current": current_rank, "error": f"Yêu cầu {req_label} trở lên"}
-    except Exception:
+    except Exception as e:
+        logger.debug("_check_rank_requirement: %s", e)
         return {"ok": True}
 
 def _get_study_stats() -> dict:
@@ -488,7 +494,8 @@ def _get_study_stats() -> dict:
                 "easy": int(stats.get("ease_4", 0) or 0),
             }
         }
-    except Exception:
+    except Exception as e:
+        logger.debug("_get_study_stats: %s", e)
         return {"cards_reviewed": 0, "total_earned": 0, "ease_distribution": {}}
 
 def _get_streak_info() -> dict:
@@ -500,7 +507,8 @@ def _get_streak_info() -> dict:
             "current": int(s.get("current", 0)) if isinstance(s, dict) else 0,
             "longest": int(s.get("longest", 0)) if isinstance(s, dict) else 0,
         }
-    except Exception:
+    except Exception as e:
+        logger.debug("_get_streak_info: %s", e)
         return {"current": 0, "longest": 0}
 
 def _get_total_asset_value() -> int:
@@ -509,24 +517,24 @@ def _get_total_asset_value() -> int:
     try:
         from .balance import get_balance
         total += get_balance()
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("_get_total_asset_value (balance): %s", e)
     try:
         from .bank import get_total_savings
         total += get_total_savings()
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("_get_total_asset_value (bank): %s", e)
     try:
         from .real_estate import get_re_summary
         re = get_re_summary()
         total += int(re.get("total_value", 0) or 0)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("_get_total_asset_value (real_estate): %s", e)
     try:
         from .stock_market import get_portfolio_value
         total += int(get_portfolio_value())
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("_get_total_asset_value (stock): %s", e)
     return total
 
 def _generate_id(prefix: str = "") -> str:
@@ -777,8 +785,8 @@ def get_my_credit_cards() -> list:
                 fee_date = datetime.fromisoformat(last_fee) if last_fee else datetime.now()
                 if (now - fee_date.timestamp()) >= 365 * 86400:
                     annual_fee_due = True
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("_process_credit_cards (annual fee date): %s", e)
 
         # Tính sao kê
         payment_info = _calc_card_payment_info(card)
@@ -955,7 +963,8 @@ def process_credit_card_annual_fees() -> list:
         last_fee_str = card.get("last_annual_fee_date", card.get("opened_date", ""))
         try:
             last_fee = datetime.fromisoformat(last_fee_str).timestamp() if last_fee_str else 0
-        except Exception:
+        except Exception as e:
+            logger.debug("_charge_annual_fees (date parse): %s", e)
             last_fee = 0
 
         # Miễn phí năm đầu nếu có
@@ -1789,7 +1798,8 @@ def _valuate_asset(collateral_type: str, asset_id: str = None, estimated_value: 
             if savings > 0:
                 return {"valuation": savings, "method": "face_value"}
             return {"error": "Không có sổ tiết kiệm nào."}
-        except Exception:
+        except Exception as e:
+            logger.debug("_collateral_valuation (savings): %s", e)
             return {"error": "Không thể định giá sổ tiết kiệm."}
 
     elif collateral_type == "real_estate":
@@ -1800,7 +1810,8 @@ def _valuate_asset(collateral_type: str, asset_id: str = None, estimated_value: 
             if total_value > 0:
                 return {"valuation": total_value, "method": "market_price"}
             return {"error": "Không có bất động sản nào."}
-        except Exception:
+        except Exception as e:
+            logger.debug("_collateral_valuation (real_estate): %s", e)
             return {"error": "Không thể định giá BĐS."}
 
     elif collateral_type == "vehicle":
@@ -1820,7 +1831,8 @@ def _valuate_asset(collateral_type: str, asset_id: str = None, estimated_value: 
             if total_value > 0:
                 return {"valuation": total_value, "method": "purchase_price_depreciated"}
             return {"error": "Không có xe nào trong kho.", "needs_manual": True}
-        except Exception:
+        except Exception as e:
+            logger.debug("_collateral_valuation (vehicle): %s", e)
             return {"error": "Không thể định giá xe."}
 
     elif collateral_type == "stock":
@@ -1830,7 +1842,8 @@ def _valuate_asset(collateral_type: str, asset_id: str = None, estimated_value: 
             if value > 0:
                 return {"valuation": value, "method": "market_value"}
             return {"error": "Không có cổ phiếu nào."}
-        except Exception:
+        except Exception as e:
+            logger.debug("_collateral_valuation (stock): %s", e)
             return {"error": "Không thể định giá cổ phiếu."}
 
     elif collateral_type == "digital_asset":
@@ -1840,7 +1853,8 @@ def _valuate_asset(collateral_type: str, asset_id: str = None, estimated_value: 
             if value > 0:
                 return {"valuation": value, "method": "market_value"}
             return {"error": "Không có tài sản số nào."}
-        except Exception:
+        except Exception as e:
+            logger.debug("_collateral_valuation (digital_asset): %s", e)
             return {"error": "Không thể định giá tài sản số."}
 
     return {"error": "Không thể định giá tài sản này."}
@@ -1904,8 +1918,8 @@ def calculate_verified_income() -> dict:
     try:
         from .balance import get_balance
         balance = get_balance()
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("get_credit_score (balance): %s", e)
 
     asset_value = _get_total_asset_value()
     cards_reviewed = study.get("cards_reviewed", 0)

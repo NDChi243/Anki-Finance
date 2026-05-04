@@ -21,6 +21,9 @@ Version: 1.1.0e
 import time
 import traceback
 from aqt import mw
+from .logger import get_logger
+
+logger = get_logger(__name__)
 
 
 # ── Danh sách keys được bảo vệ (không quét type, không sửa) ──────
@@ -256,7 +259,8 @@ EXPECTED_TYPES: dict[str, str] = {
 def _col_ready() -> bool:
     try:
         return mw is not None and mw.col is not None
-    except Exception:
+    except Exception as e:
+        logger.debug("_col_ready: %s", e)
         return False
 
 
@@ -338,8 +342,8 @@ def run_debug_tools() -> dict:
                     v = mw.col.get_config(key, None)
                     if v is None:
                         none_before.append(key)
-                except Exception:
-                    pass
+                except Exception as e:
+                    logger.debug("run_debug_tools (none check): %s", e)
             # Thực hiện sửa
             purge_none_keys(all_keys)
             # Ghi lại keys đã sửa (dựa trên những key từng là None)
@@ -395,8 +399,8 @@ def run_debug_tools() -> dict:
         try:
             from ._safe_config import _cache_invalidate
             _cache_invalidate()
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug("run_debug_tools (cache invalidate): %s", e)
 
     except Exception as e:
         report["ok"] = False
@@ -438,15 +442,16 @@ def get_debug_report() -> dict:
         try:
             from .auto_update import get_current_version
             report["version"] = get_current_version()
-        except Exception:
+        except Exception as e:
+            logger.debug("get_debug_report (version): %s", e)
             report["version"] = "?"
 
         # Balance
         try:
             from .balance import get_balance
             report["balance"] = get_balance()
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug("get_debug_report (balance): %s", e)
 
         # Đếm keys đang hoạt động
         active = 0
@@ -455,28 +460,30 @@ def get_debug_report() -> dict:
                 v = mw.col.get_config(key, None)
                 if v is not None:
                     active += 1
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("get_debug_report (active keys): %s", e)
         report["active_keys"] = active
 
         # Cache size
         try:
             from ._safe_config import _config_cache
             report["cache_size"] = len(_config_cache)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug("get_debug_report (cache): %s", e)
 
         # Profile
         try:
             report["profile"] = str(mw.pm.name)
-        except Exception:
+        except Exception as e:
+            logger.debug("get_debug_report (profile): %s", e)
             report["profile"] = "?"
 
         # Anki version
         try:
             from anki import version as anki_ver
             report["anki_version"] = str(anki_ver)
-        except Exception:
+        except Exception as e:
+            logger.debug("get_debug_report (anki version): %s", e)
             report["anki_version"] = "?"
 
     except Exception as e:

@@ -8,6 +8,8 @@ inventory.py — Hệ thống inventory & slot limits (v2.0)
 """
 
 from .config import CONFIG_KEY_INVENTORY
+from .logger import get_logger
+logger = get_logger(__name__)
 from ._safe_config import cfg_list, cfg_set
 
 # Base slots mặc định
@@ -41,16 +43,16 @@ def get_max_inventory_slots() -> int:
                 slots += 20
             elif rid == "room_ktx":
                 slots += 10
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("get_max_inventory_slots: housing bonus — %s", e)
 
     # Bonus từ passive effects (inventory_capacity)
     try:
         from .item_effects import get_all_passive_effects
         passive = get_all_passive_effects()
         slots += int(passive.get("inventory_capacity", 0))
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("get_max_inventory_slots: passive effects — %s", e)
 
     return slots
 
@@ -103,8 +105,8 @@ def remove_from_inventory(item_id: str) -> bool:
         try:
             from .item_effects import unregister_passive_effect
             unregister_passive_effect(item_id)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug("remove_from_inventory: unregister_passive_effect — %s", e)
         return True
     return False
 

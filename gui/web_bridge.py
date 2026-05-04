@@ -10,6 +10,9 @@ import json
 import time
 from aqt.qt import QObject, pyqtSlot, pyqtSignal
 
+from ..logger import get_logger
+logger = get_logger(__name__)
+
 from ..balance import get_balance, set_balance_and_log, get_stats, record_purchase as record_purchase_balance
 from ..inventory import get_inventory, add_to_inventory, count_item, can_add_to_inventory, get_inventory_slots_info
 from ..shop_data import load_shop_items, get_items_map
@@ -156,21 +159,24 @@ class TycoonBridge(QObject):
                     "total":    get_total_count(),
                     "recent":   get_recent_unlocked(3),
                 }
-            except Exception:
+            except Exception as e:
+                logger.debug("getDashboard (achievements): %s", e)
                 ach_summary = {"unlocked": 0, "total": 0, "recent": []}
 
             # Real Estate summary
             try:
                 from ..real_estate import get_re_summary
                 re_summary = get_re_summary()
-            except Exception:
+            except Exception as e:
+                logger.debug("getDashboard (real_estate): %s", e)
                 re_summary = {}
 
             # Stock dividend summary
             try:
                 from ..stock_market import get_dividend_summary
                 stock_dividends = get_dividend_summary()
-            except Exception:
+            except Exception as e:
+                logger.debug("getDashboard (stock_dividends): %s", e)
                 stock_dividends = {}
 
             return json.dumps({
@@ -243,8 +249,8 @@ class TycoonBridge(QObject):
                         "ok": False,
                         "error": f"🚗 Garage đầy! ({used}/{total} slot). Mua thêm slot hoặc bán xe cũ trước khi mua xe mới.",
                     }, ensure_ascii=False)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("purchaseItem (garage check): %s", e)
         else:
             if not is_food_or_drink:
                 if not can_add_to_inventory():
@@ -294,32 +300,32 @@ class TycoonBridge(QObject):
             try:
                 from ..vehicle_system import register_vehicle
                 register_vehicle(item_id, item)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("purchaseItem (register_vehicle): %s", e)
 
         # Nếu là đồ công nghệ → đăng ký vào tech lab (passive effects chỉ active khi dùng)
         if is_tech:
             try:
                 from ..tech_system import register_tech
                 register_tech(item_id, item)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("purchaseItem (register_tech): %s", e)
 
         # Nếu là BĐS → tạo entry trong portfolio
         if item.get("is_real_estate"):
             try:
                 from ..real_estate import add_property
                 add_property(item_id, item)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("purchaseItem (add_property): %s", e)
 
         # Nếu là tài sản số → tạo holding crypto + đăng ký effects
         if item.get("is_digital_asset"):
             try:
                 from ..digital_assets import add_digital_asset
                 add_digital_asset(item_id, item)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("purchaseItem (add_digital_asset): %s", e)
             # Passive effects (passive_income_bonus, crypto_cooldown_reduction, ...) → đăng ký ngay
             register_passive_effect(item_id, item)
             # Boost chủ động có giới hạn thẻ/giờ (meme coins: xp_bonus) → kích hoạt ngay
@@ -345,8 +351,8 @@ class TycoonBridge(QObject):
             sct_info = get_sct_for_item(item)
             if sct_info["has_sct"]:
                 sct_amount = collect_sct(item)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug("purchaseItem (SCT): %s", e)
 
         new_balance = get_balance()
         self.balanceChanged.emit(new_balance)
@@ -374,7 +380,8 @@ class TycoonBridge(QObject):
         """
         try:
             payment = json.loads(payment_json)
-        except Exception:
+        except Exception as e:
+            logger.debug("processPayment (parse): %s", e)
             return json.dumps({"ok": False, "error": "Dữ liệu thanh toán không hợp lệ."})
 
         method = payment.get("method", "cash")
@@ -429,8 +436,8 @@ class TycoonBridge(QObject):
                         "ok": False,
                         "error": f"🚗 Garage đầy! ({used}/{total} slot). Mua thêm slot hoặc bán xe cũ trước khi mua xe mới.",
                     }, ensure_ascii=False)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("processPayment (garage check): %s", e)
         else:
             if not is_food_or_drink:
                 if not can_add_to_inventory():
@@ -468,8 +475,8 @@ class TycoonBridge(QObject):
             try:
                 add_finance_txn("credit_card_purchase", card_amount,
                                 f"Mua: {item['name']} (thẻ tín dụng)")
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("processPayment (credit card txn): %s", e)
 
         # ── Inventory / Garage ───────────────────────────────────
         # ⚠️ LUÔN thêm vào inventory (trừ xe - xe vào garage riêng).
@@ -511,32 +518,32 @@ class TycoonBridge(QObject):
             try:
                 from ..vehicle_system import register_vehicle
                 register_vehicle(item_id, item)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("processPayment (register_vehicle): %s", e)
 
         # Tech
         if is_tech:
             try:
                 from ..tech_system import register_tech
                 register_tech(item_id, item)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("processPayment (register_tech): %s", e)
 
         # Real Estate
         if item.get("is_real_estate"):
             try:
                 from ..real_estate import add_property
                 add_property(item_id, item)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("processPayment (add_property): %s", e)
 
         # Digital assets
         if item.get("is_digital_asset"):
             try:
                 from ..digital_assets import add_digital_asset
                 add_digital_asset(item_id, item)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("processPayment (add_digital_asset): %s", e)
             register_passive_effect(item_id, item)
             import uuid as _uuid2
             _active_effs = [
@@ -560,8 +567,8 @@ class TycoonBridge(QObject):
             sct_info = get_sct_for_item(item)
             if sct_info["has_sct"]:
                 sct_amount = collect_sct(item)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug("processPayment (SCT): %s", e)
 
         new_balance = get_balance()
         self.balanceChanged.emit(new_balance)
@@ -618,13 +625,15 @@ class TycoonBridge(QObject):
         try:
             from ..living_costs import get_living_cost_status
             lc_status = get_living_cost_status()
-        except Exception:
+        except Exception as e:
+            logger.debug("getFinanceStatus (living_costs): %s", e)
             lc_status = {}
         # Tính tổng tài sản ròng (ví + ngân hàng + CK + crypto + BĐS + xe)
         try:
             from ..economy_controls import get_total_net_worth
             total_net_worth = get_total_net_worth()
-        except Exception:
+        except Exception as e:
+            logger.debug("getFinanceStatus (net_worth): %s", e)
             total_net_worth = 0
         return json.dumps({
             "budget":           get_budget(),
@@ -873,8 +882,8 @@ class TycoonBridge(QObject):
             try:
                 from ..inventory import remove_from_inventory
                 remove_from_inventory(vehicle_id)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("sellVehicle (remove legacy): %s", e)
             self.balanceChanged.emit(get_balance())
         return json.dumps(res, ensure_ascii=False)
 
@@ -1904,7 +1913,8 @@ class TycoonBridge(QObject):
         try:
             from ..rank_system import get_kn
             return json.dumps({"kn": get_kn()}, ensure_ascii=False)
-        except Exception:
+        except Exception as e:
+            logger.debug("getKn: %s", e)
             return json.dumps({"kn": 0}, ensure_ascii=False)
 
     @pyqtSlot(result=str)
@@ -1913,7 +1923,8 @@ class TycoonBridge(QObject):
         try:
             from ..rank_system import get_xp
             return json.dumps({"xp": get_xp()}, ensure_ascii=False)
-        except Exception:
+        except Exception as e:
+            logger.debug("getExp: %s", e)
             return json.dumps({"xp": 0}, ensure_ascii=False)
 
     # ── Finance Quiz ──────────────────────────────────────────────────
@@ -1924,7 +1935,8 @@ class TycoonBridge(QObject):
         try:
             from ..finance_quiz import get_quiz_stats
             return json.dumps(get_quiz_stats(), ensure_ascii=False)
-        except Exception:
+        except Exception as e:
+            logger.debug("getQuizStats: %s", e)
             return json.dumps({"correct": 0, "total": 0, "streak": 0, "best_streak": 0, "accuracy": 0}, ensure_ascii=False)
 
     @pyqtSlot(result=str)
@@ -1937,7 +1949,8 @@ class TycoonBridge(QObject):
                 "quiz_set": data,
                 "set_size": QUIZ_SET_SIZE,
             }, ensure_ascii=False)
-        except Exception:
+        except Exception as e:
+            logger.debug("getQuizSet: %s", e)
             return json.dumps({"quiz_set": [], "set_size": 12}, ensure_ascii=False)
 
     @pyqtSlot(result=str)
@@ -1950,7 +1963,8 @@ class TycoonBridge(QObject):
                 "quiz_set": data,
                 "set_size": QUIZ_SET_SIZE,
             }, ensure_ascii=False)
-        except Exception:
+        except Exception as e:
+            logger.debug("newQuizSet: %s", e)
             return json.dumps({"quiz_set": [], "set_size": 12}, ensure_ascii=False)
 
     @pyqtSlot(result=str)
@@ -1959,7 +1973,8 @@ class TycoonBridge(QObject):
         try:
             from ..finance_quiz import QUIZ_TOPICS
             return json.dumps(QUIZ_TOPICS, ensure_ascii=False)
-        except Exception:
+        except Exception as e:
+            logger.debug("getQuizTopics: %s", e)
             return json.dumps({}, ensure_ascii=False)
 
     @pyqtSlot(str, result=str)
@@ -1973,7 +1988,8 @@ class TycoonBridge(QObject):
                 "set_size": QUIZ_SET_SIZE,
                 "topic": topic,
             }, ensure_ascii=False)
-        except Exception:
+        except Exception as e:
+            logger.debug("newQuizSetByTopic: %s", e)
             return json.dumps({"quiz_set": [], "set_size": 12, "topic": ""}, ensure_ascii=False)
 
     @pyqtSlot(int, int, result=str)
@@ -1983,7 +1999,8 @@ class TycoonBridge(QObject):
             from ..finance_quiz import record_quiz_answer
             result = record_quiz_answer(q_index, selected)
             return json.dumps(result, ensure_ascii=False)
-        except Exception:
+        except Exception as e:
+            logger.debug("submitQuizAnswer: %s", e)
             return json.dumps({"error": "Lỗi xử lý câu trả lời"}, ensure_ascii=False)
 
     @pyqtSlot(result=str)
@@ -1993,7 +2010,8 @@ class TycoonBridge(QObject):
         try:
             from ..finance_quiz import get_daily_quiz_info
             return json.dumps(get_daily_quiz_info(), ensure_ascii=False)
-        except Exception:
+        except Exception as e:
+            logger.debug("getQuizDailyInfo: %s", e)
             return json.dumps({
                 "correct_today": 0, "count": 0, "limit": 5, "remaining": 5,
                 "next_reset_seconds": 0, "date": "",
@@ -2007,7 +2025,8 @@ class TycoonBridge(QObject):
         try:
             from ..emergency_events import get_emergency_log
             return json.dumps(get_emergency_log(), ensure_ascii=False)
-        except Exception:
+        except Exception as e:
+            logger.debug("getEmergencyLog: %s", e)
             return json.dumps([], ensure_ascii=False)
 
     # ── Auto Update ───────────────────────────────────────────────────

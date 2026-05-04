@@ -25,6 +25,9 @@ from datetime import datetime, timedelta
 from urllib.request import urlopen, Request
 from urllib.error import URLError
 
+from .logger import get_logger
+logger = get_logger(__name__)
+
 # ═══════════════════════════════════════════════════════════════
 # CẤU HÌNH — chỉ sửa 2 dòng này
 # ═══════════════════════════════════════════════════════════════
@@ -66,8 +69,8 @@ def _detect_git_branch() -> str:
             _GIT_BRANCH = branch
             _log(f"🔀 Phát hiện branch: {branch}")
             return branch
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("_detect_git_branch: không xác định được branch: %s", e)
 
     _GIT_BRANCH = "main"
     _log("ℹ️ Không phát hiện git repo, dùng branch 'main' làm mặc định.")
@@ -84,7 +87,7 @@ _PENDING_RESTART  = False
 # ── Helpers ──────────────────────────────────────────────────────
 
 def _log(msg: str):
-    print(f"[AnkiFinance][AutoUpdate] {msg}")
+    logger.info(msg)
 
 
 def _parse_version(v: str) -> tuple:
@@ -115,7 +118,8 @@ def _parse_version(v: str) -> tuple:
         while len(nums) < 4:
             nums.append(0)
         return tuple(nums[:4])
-    except Exception:
+    except Exception as e:
+        logger.warning("_parse_version: lỗi parse version '%s': %s", v, e)
         return (0, 0, 0, 0)
 
 
@@ -127,6 +131,7 @@ def _read_state() -> dict:
         with open(_STATE_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     except Exception:
+        logger.debug("_read_state: chưa có file state, trả về dict rỗng")
         return {}
 
 
@@ -149,6 +154,7 @@ def _read_local_version_file() -> str:
         with open(_VERSION_FILE, "r", encoding="utf-8") as f:
             return str(json.load(f).get("version", "0.0.0"))
     except Exception:
+        logger.debug("_read_local_version_file: chưa có file version, trả về 0.0.0")
         return "0.0.0"
 
 
@@ -180,8 +186,8 @@ def _should_check_now() -> bool:
             # ⚡ Dùng seconds thay vì minutes
             if datetime.now() - last_time < timedelta(seconds=_UPDATE_CHECK_INTERVAL_SECONDS):
                 return False
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("_should_check_now: lỗi parse last_check '%s': %s", last, e)
     return True
 
 
@@ -216,11 +222,12 @@ def _run_on_main(func):
     try:
         from aqt import mw
         mw.taskman.run_on_main(func)
-    except Exception:
+    except Exception as e:
+        logger.warning("_run_on_main: không đưa được func lên main thread: %s", e)
         try:
             func()
-        except Exception:
-            pass
+        except Exception as e2:
+            logger.warning("_run_on_main: func fallback cũng lỗi: %s", e2)
 
 
 # ── Fetch remote version ──────────────────────────────────────────
@@ -354,8 +361,8 @@ def _notify(msg: str, period: int = 7000):
     try:
         from aqt.utils import tooltip
         tooltip(msg, period=period)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("_notify: không hiện được tooltip: %s", e)
 
 
 def _show_update_popup_if_needed():
@@ -653,18 +660,19 @@ def _schedule_anki_restart(delay_seconds: int = 3):
             profile_name = mw.pm.name
             if profile_name:
                 mw.pm.set_next_profile(profile_name)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("_schedule_anki_restart: lỗi set_next_profile: %s", e)
 
         def _do_restart():
             _log("🔄 Khởi động lại Anki...")
             try:
                 mw.restart()
             except AttributeError:
+                logger.warning("_do_restart: mw.restart không có, thử close")
                 try:
                     mw.close()
-                except Exception:
-                    pass
+                except Exception as e:
+                    logger.warning("_do_restart: không restart được: %s", e)
 
         QTimer.singleShot(delay_seconds * 1000, _do_restart)
     except Exception as e:

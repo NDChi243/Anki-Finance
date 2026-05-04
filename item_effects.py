@@ -12,6 +12,8 @@ Kiến trúc:
 
 import time
 from typing import Any
+from .logger import get_logger
+logger = get_logger(__name__)
 
 from ._safe_config import cfg_list, cfg_set, cfg_dict, col_ready
 
@@ -194,7 +196,8 @@ def _get_owned_item_ids() -> set[str]:
     try:
         from .inventory import get_inventory
         return set(get_inventory())
-    except Exception:
+    except Exception as e:
+        logger.debug("_get_owned_item_ids: %s", e)
         return set(_get_passive_raw().keys())
 
 
@@ -325,8 +328,8 @@ def repair_crypto_passive_effects():
                 changed = True
         if changed:
             _save_passive(passive)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("_scan_digital_asset_passives: %s", e)
 
 
 def get_all_passive_effects() -> dict:
@@ -395,8 +398,8 @@ def get_all_passive_effects() -> dict:
         ach_effects = get_permanent_effects()
         for etype, evalue in ach_effects.items():
             _merge_effect_value(aggregated, etype, evalue)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("get_all_passive_effects: achievements effects — %s", e)
 
     return aggregated
 

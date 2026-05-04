@@ -26,6 +26,9 @@ import math
 import random
 from datetime import datetime
 from ._safe_config import col_ready, cfg_list, cfg_dict, cfg_set, cfg_int
+from .logger import get_logger
+
+logger = get_logger(__name__)
 
 _KEY_PORTFOLIO     = "anki_tycoon_re_portfolio"      # [{slot_id, item_id, ...}]
 _KEY_LAST_COLLECT  = "anki_tycoon_re_last_collect"
@@ -93,8 +96,8 @@ def _seed_re_market():
                     "trend": trend,
                     "updated": _now(),
                 }
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("_seed_re_market: %s", e)
     _save_market_data(data)
     return data
 
@@ -265,8 +268,8 @@ def upgrade_property(slot_id: str) -> dict:
         add_transaction("re_upgrade", cost,
                         f"🔨 Nâng cấp BĐS {prop.get('name','')} lên cấp {next_level}",
                         {"slot_id": slot_id, "level": next_level, "cost": cost})
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("upgrade_property: add_transaction — %s", e)
 
     return {
         "ok": True,

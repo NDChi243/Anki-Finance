@@ -3,6 +3,9 @@
 from aqt.qt import QWidget, QHBoxLayout, QLabel, QPushButton, Qt
 from aqt.qt import QTimer
 
+from ..logger import get_logger
+logger = get_logger(__name__)
+
 
 class TycoonTopBar(QWidget):
     """
@@ -217,8 +220,8 @@ class TycoonTopBar(QWidget):
                     f"🧠 KN: {kn:,}\n"
                     f"📊 Tiến độ: {rank['overall_pct']}%"
                 )
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("_refresh_display (rank tooltip): %s", e)
             self.balance_label.setText(f"{bal:,} VND".replace(",", "."))
             # Tooltip: quick stats
             stats = get_stats() or {}
@@ -229,13 +232,15 @@ class TycoonTopBar(QWidget):
                 from ..streak_system import get_streak_status
                 s = get_streak_status()
                 mult = s.get("multiplier", 1.0)
-            except Exception:
+            except Exception as e:
+                logger.debug("get_streak_status: %s", e)
                 mult = 1.0
             try:
                 from ..rank_system import get_rank_status
                 rank = get_rank_status(bal)
                 rank_label = rank.get("rank_label", "—")
-            except Exception:
+            except Exception as e:
+                logger.debug("get_rank_status: %s", e)
                 rank_label = "—"
             self.balance_label.setToolTip(
                 f"🔥 Streak: {streak} ngày (×{mult:.1f})\n"
@@ -263,9 +268,11 @@ class TycoonTopBar(QWidget):
                     f"{'⚠️ Kiệt sức! ×0.5 tiền thưởng' if eng['exhausted'] else '✅ Học tập hiệu quả'}\n"
                     "⏳ Hồi 1 điểm mỗi 30 phút"
                 )
-            except Exception:
+            except Exception as e:
+                logger.debug("_refresh_display (energy inner): %s", e)
                 self.energy_label.setText("?%")
-        except Exception:
+        except Exception as e:
+            logger.warning("_refresh_display: %s", e)
             self.balance_label.setText("0 VND")
             self.balance_label.setToolTip("⚠️ Không thể tải thông tin")
             self.energy_label.setText("?%")
@@ -321,7 +328,8 @@ class TycoonTopBar(QWidget):
                 )
                 self._vehicle_label.setToolTip("Không có xe nào đang sử dụng")
                 self._sep_vehicle.hide()
-        except Exception:
+        except Exception as e:
+            logger.debug("_refresh_display (vehicle): %s", e)
             self._vehicle_label.setText("—")
             self._sep_vehicle.hide()
 
@@ -380,7 +388,8 @@ class TycoonTopBar(QWidget):
             # ── Mặc định: ẩn nút ──
             self.update_btn.hide()
 
-        except Exception:
+        except Exception as e:
+            logger.debug("_check_update_status: %s", e)
             self.update_btn.hide()
 
     def _on_update_clicked(self):

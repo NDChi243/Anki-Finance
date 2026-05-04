@@ -11,6 +11,8 @@ import random
 import time
 import math
 from ._safe_config import col_ready, cfg_int, cfg_dict, cfg_list, cfg_set, cfg_str
+from .logger import get_logger
+logger = get_logger(__name__)
 
 _KEY_QUIZ_STATS     = "anki_tycoon_quiz_stats"
 _KEY_QUIZ_SET_INDEX = "anki_tycoon_quiz_set_index"
@@ -982,7 +984,8 @@ def record_quiz_answer(q_index: int, selected: int) -> dict:
         try:
             from .rank_system import add_kn
             add_kn(kn_awarded)
-        except Exception:
+        except Exception as e:
+            logger.debug("answer_question: add_kn — %s", e)
             kn_awarded = 0
 
     return {
@@ -1052,5 +1055,6 @@ def _give_bonus() -> bool:
         add_transaction("reward", QUIZ_BONUS,
                         f"🎓 Quiz tài chính — trả lời đúng +{QUIZ_BONUS:,}đ".replace(",", "."))
         return True
-    except Exception:
+    except Exception as e:
+        logger.warning("_give_bonus: %s", e)
         return False

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
+from .logger import get_logger
+logger = get_logger(__name__)
 """
 streak_system.py — Streak học tập hàng ngày.
 
@@ -131,8 +133,8 @@ def record_card_reviewed() -> dict:
     try:
         from .achievements import check_and_unlock
         check_and_unlock("streak_updated", streak)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("update_streak: achievements trigger — %s", e)
 
     return result
 

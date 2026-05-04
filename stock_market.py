@@ -19,6 +19,8 @@ import math
 import random
 from datetime import datetime, timedelta
 from ._safe_config import col_ready, cfg_int, cfg_dict, cfg_list, cfg_set
+from .logger import get_logger
+logger = get_logger(__name__)
 
 # ── Config keys ──────────────────────────────────────────────
 _KEY_MARKET        = "anki_tycoon_stocks_market"         # dict{symbol: stock_data}
@@ -288,8 +290,8 @@ def _compute_tplus_release(purchase_ts: float) -> float:
             gap = t2_dt.timestamp() - t1_dt.timestamp()
             release_ts = t1_dt.timestamp() + gap * (1.0 - reduction)
             return release_ts
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("_calc_release_time: %s", e)
 
     return t2_dt.timestamp()
 
@@ -340,7 +342,8 @@ def _cfg_get_raw(key: str, default=None):
         if mw is None or mw.col is None:
             return default
         return mw.col.get_config(key, default)
-    except Exception:
+    except Exception as e:
+        logger.debug("_get_raw: %s", e)
         return default
 
 
@@ -557,8 +560,8 @@ def _process_dividends(market: dict) -> list:
                 add_transaction("dividend", total_div_paid,
                                 f"💰 Cổ tức {sym}: {total_div_paid:,}đ ({div_per_share:,}đ/cp × {sum(h.get('shares',0) for h in portfolio if h.get('symbol')==sym)} cp)".replace(",", "."),
                                 {"symbol": sym, "div_per_share": div_per_share, "total": total_div_paid})
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("_process_dividends (add_txn): %s", e)
 
     _save_dividend_data(div_data)
     if portfolio:
@@ -682,8 +685,8 @@ def _process_corporate_actions(market: dict) -> list:
                 add_transaction("stock_split", 0,
                                 f"🔀 {sym} tách cổ phiếu tỷ lệ {ratio}:1",
                                 {"symbol": sym, "ratio": ratio})
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("_process_corporate_actions (split txn): %s", e)
             continue
 
         # ── Bonus Shares ──
@@ -716,8 +719,8 @@ def _process_corporate_actions(market: dict) -> list:
                 add_transaction("bonus_share", 0,
                                 f"🎁 {sym} cổ phiếu thưởng {round(bonus_pct*100,1)}%",
                                 {"symbol": sym, "bonus_pct": round(bonus_pct*100,1)})
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("_process_corporate_actions (bonus txn): %s", e)
             continue
 
         # ── Rights Issue ──
@@ -759,10 +762,10 @@ def _process_corporate_actions(market: dict) -> list:
                                 add_transaction("rights_issue", cost,
                                                 f"📋 {sym} quyền mua: {rights_shares} cp × {preferred_price:,}đ".replace(",","."),
                                                 {"symbol": sym, "shares": rights_shares, "price": preferred_price})
-                            except Exception:
-                                pass
-                    except Exception:
-                        pass
+                            except Exception as e:
+                                logger.debug("_process_corporate_actions (rights txn): %s", e)
+                    except Exception as e:
+                        logger.warning("_process_corporate_actions (rights outer): %s", e)
 
     if portfolio:
         _save_portfolio(portfolio)
@@ -975,8 +978,8 @@ def _process_limit_orders(market: dict) -> list:
                 add_transaction("stock_buy", total_cost,
                     f"📈 [Limit] Mua {remaining} CP {sym} giá {cur_price:,}đ".replace(",", "."),
                     {"symbol": sym, "shares": remaining, "price": cur_price, "order_type": order_type})
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("_process_limit_orders (buy txn): %s", e)
 
         elif direction == "sell":
             holding = next((h for h in portfolio if h["symbol"] == sym), None)
@@ -1012,8 +1015,8 @@ def _process_limit_orders(market: dict) -> list:
                 add_transaction("stock_sell", total_received,
                     f"📉 [{'Stop-Loss' if order_type == 'stop_loss' else 'Limit'}] Bán {sell_qty} CP {sym} giá {cur_price:,}đ".replace(",", "."),
                     {"symbol": sym, "shares": sell_qty, "price": cur_price, "order_type": order_type})
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("_process_limit_orders (sell txn): %s", e)
 
         o["filled_at"] = _now()
         o["filled_price"] = cur_price
@@ -1298,25 +1301,25 @@ def update_prices_if_needed() -> bool:
         # Áp dụng tin tức thị trường (sau price simulation, trước dividends)
         try:
             _apply_news_impact(market)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("update_prices_if_needed (news): %s", e)
         _save_market(market)
         _append_history(market)
         cfg_set(_KEY_LAST_UPDATE, now)
         # Xử lý cổ tức + corporate actions
         try:
             _process_dividends(market)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("update_prices_if_needed (dividends): %s", e)
         try:
             _process_corporate_actions(market)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("update_prices_if_needed (corp_actions): %s", e)
         # Xử lý limit/stop-loss orders
         try:
             _process_limit_orders(market)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("update_prices_if_needed (limit_orders): %s", e)
         return True
 
     return False
@@ -1339,25 +1342,25 @@ def _force_update_prices():
     # Áp dụng tin tức thị trường (sau price simulation, trước dividends)
     try:
         _apply_news_impact(market)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("_force_update_prices (news): %s", e)
     _save_market(market)
     _append_history(market)
     cfg_set(_KEY_LAST_UPDATE, now)
     # Xử lý cổ tức + corporate actions
     try:
         _process_dividends(market)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("_force_update_prices (dividends): %s", e)
     try:
         _process_corporate_actions(market)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("_force_update_prices (corp_actions): %s", e)
     # Xử lý limit/stop-loss orders
     try:
         _process_limit_orders(market)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("_force_update_prices (limit_orders): %s", e)
     return True
 
 
@@ -1419,8 +1422,8 @@ def _cycle_trading_session():
             "updated_by": "review",
             "timestamp": _now(),
         })
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("_cycle_trading_session: %s", e)
 
 
 def record_review(count: int = 1):
@@ -1441,8 +1444,8 @@ def record_review(count: int = 1):
             cfg_set(_KEY_REVIEW_COUNT, 0)
         else:
             cfg_set(_KEY_REVIEW_COUNT, current)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("record_review: %s", e)
 
 
 def get_stock_price(symbol: str) -> dict | None:
@@ -1616,8 +1619,8 @@ def buy_stock(symbol: str, shares: int) -> dict:
     try:
         from .achievements import check_and_unlock
         check_and_unlock("stock_traded", True)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("buy_stock (achievement): %s", e)
 
     return {
         "ok":          True,
@@ -1729,8 +1732,8 @@ def sell_stock(symbol: str, shares: int) -> dict:
     try:
         from .achievements import check_and_unlock
         check_and_unlock("stock_traded", True)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("sell_stock (achievement): %s", e)
 
     return {
         "ok":          True,

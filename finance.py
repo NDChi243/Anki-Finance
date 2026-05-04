@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 from aqt import mw
 
+from .logger import get_logger
+
+logger = get_logger(__name__)
+
 CONFIG_KEY_BUDGET           = "anki_tycoon_budget"
 CONFIG_KEY_MONTHLY_SPENDING = "anki_tycoon_monthly_spending"
 CONFIG_KEY_MONTHLY_INCOME   = "anki_tycoon_monthly_income"
@@ -10,7 +14,8 @@ CONFIG_KEY_LAST_MONTH_RESET = "anki_tycoon_last_month_reset"
 def _col_ready() -> bool:
     try:
         return mw is not None and mw.col is not None
-    except Exception:
+    except Exception as e:
+        logger.debug("_col_ready: %s", e)
         return False
 
 
@@ -23,7 +28,8 @@ def _cfg_int(key: str, default: int = 0) -> int:
         if v is None:
             return default
         return int(v)
-    except Exception:
+    except Exception as e:
+        logger.warning("_cfg_int(%s): %s", key, e)
         return default
 
 
@@ -33,7 +39,8 @@ def _cfg_str(key: str, default: str = "") -> str:
     try:
         v = mw.col.get_config(key, default)
         return str(v) if v is not None else default
-    except Exception:
+    except Exception as e:
+        logger.warning("_cfg_str(%s): %s", key, e)
         return default
 
 
@@ -42,8 +49,8 @@ def _cfg_set(key: str, val):
         return
     try:
         mw.col.set_config(key, val)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("_cfg_set(%s): %s", key, e)
 
 
 def get_budget() -> int:
@@ -77,8 +84,8 @@ def reset_monthly_if_needed() -> bool:
             from .tax_system import collect_monthly_pit, collect_monthly_land_tax
             collect_monthly_pit()
             collect_monthly_land_tax()
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("reset_monthly_if_needed: %s", e)
         _cfg_set(CONFIG_KEY_MONTHLY_SPENDING, 0)
         _cfg_set(CONFIG_KEY_MONTHLY_INCOME, 0)
         _cfg_set(CONFIG_KEY_LAST_MONTH_RESET, current_month)
@@ -95,7 +102,8 @@ def get_budget_status() -> dict:
         from .transactions import get_transactions_by_type
         living_txns = get_transactions_by_type("living_cost")
         living_cost_total = sum(int(t.get("amount", 0)) for t in living_txns)
-    except Exception:
+    except Exception as e:
+        logger.warning("get_budget_status: living_cost — %s", e)
         living_cost_total = 0
     if budget <= 0:
         return {"percent": 0, "warning": False, "remaining": 0,

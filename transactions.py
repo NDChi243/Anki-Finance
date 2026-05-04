@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
+from .logger import get_logger
+logger = get_logger(__name__)
 """
 transactions.py — Hệ thống ghi nhận lịch sử giao dịch tập trung.
 
@@ -99,8 +101,8 @@ def add_transaction(txn_type: str, amount: int, description: str, metadata: dict
             add_spending(int(amount))
         elif txn_type in INCOME_TYPES:
             add_income(int(amount))
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("add_transaction: finance stats — %s", e)
 
 
 def clear_transactions() -> None:

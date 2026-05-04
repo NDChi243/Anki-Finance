@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from .logger import get_logger
+logger = get_logger(__name__)
 """
 daily_quest.py — 30 nhiệm vụ hàng ngày, random 3/ngày, reset lúc nửa đêm.
 
@@ -228,8 +230,8 @@ def claim_quest_reward(quest_id: str) -> dict:
     try:
         from .achievements import check_and_unlock
         check_and_unlock("quest_claimed", 1)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("claim_quest_reward: achievements trigger — %s", e)
 
     return {"ok": True, "money": money, "xp": xp, "quest_title": q["title"]}
 

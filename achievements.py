@@ -16,6 +16,8 @@ Trigger points gọi check_and_unlock() từ:
 """
 
 from ._safe_config import col_ready, cfg_dict, cfg_set
+from .logger import get_logger
+logger = get_logger(__name__)
 
 _KEY_ACH_DATA    = "anki_tycoon_achievement_data"     # {stats, unlocked_ids, claimed_ids}
 _KEY_ACH_EFFECTS = "anki_tycoon_achievement_effects"  # {effect_type: value, ...}
@@ -453,7 +455,8 @@ def _count_owned_in_category(category: str) -> int:
             if item and category in item.get("category", ""):
                 count += 1
         return count
-    except Exception:
+    except Exception as e:
+        logger.warning("_count_owned_in_category: %s", e)
         return 0
 
 
@@ -466,22 +469,23 @@ def _get_net_worth() -> int:
         try:
             from .bank import get_total_current_value
             total += int(get_total_current_value())
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug("_get_net_worth: bank total_current_value — %s", e)
         try:
             from .stock_market import get_portfolio_summary
             ps = get_portfolio_summary()
             total += int(ps.get("total_value", 0))
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug("_get_net_worth: stocks portfolio_summary — %s", e)
         try:
             from .digital_assets import get_portfolio_summary
             cps = get_portfolio_summary()
             total += int(cps.get("total_value_vnd", 0))
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug("_get_net_worth: crypto portfolio_summary — %s", e)
         return max(0, total)
-    except Exception:
+    except Exception as e:
+        logger.warning("_get_net_worth: %s", e)
         return 0
 
 
@@ -490,7 +494,8 @@ def _get_total_savings() -> int:
     try:
         from .bank import get_total_savings
         return get_total_savings()
-    except Exception:
+    except Exception as e:
+        logger.warning("_get_total_savings: %s", e)
         return 0
 
 
@@ -606,8 +611,8 @@ def _handle_trigger(data: dict, trigger_type: str, trigger_value):
                 cat = item.get("category", "")
                 if "\u00d4 t\u00f4" in cat or "Showroom xe" in cat:
                     pass  # own_category tự đếm từ inventory
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug("_handle_trigger item_purchased: %s", e)
 
     elif trigger_type == "stock_traded":
         stats["stock_first_trade"] = True
@@ -786,8 +791,8 @@ def get_all_achievements() -> list:
                     entry["progress_current"] = current
                     entry["progress_target"] = target
                     entry["progress_percent"] = round(pct, 1)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("get_achievements_list: rank_reach progress — %s", e)
             # Không set current/target mặc định
         elif ctype == "rugpull_victim":
             current = 1 if stats.get("rugpull_victim") else 0

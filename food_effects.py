@@ -14,6 +14,9 @@ import time
 import datetime
 from .config import CONFIG_KEY_INVENTORY
 from ._safe_config import col_ready, cfg_dict, cfg_list, cfg_set, cfg_str, cfg_int
+from .logger import get_logger
+
+logger = get_logger(__name__)
 
 _KEY_ACTIVE = "anki_tycoon_active_boosts"
 _KEY_FRESH  = "anki_tycoon_food_freshness"
@@ -552,8 +555,8 @@ def activate_boost(item_id: str, effect: dict, slot_id: str) -> dict:
             match = next((i for i in shop_items if i["id"] == item_id), None)
             if match:
                 item_category = _get_item_category(item_id, match)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("activate_boost: _get_item_category fallback — %s", e)
 
     # ── Kiểm tra giới hạn: 1 food + 1 drink + 1 study ──
     if item_category in ("food", "drink", "study"):
@@ -633,8 +636,8 @@ def activate_boost(item_id: str, effect: dict, slot_id: str) -> dict:
             try:
                 from .energy_system import restore_energy
                 restore_energy(int(val))
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning("activate_boost: energy_burst restore_energy — %s", e)
         elif etype == "effect_extend":
             # Kéo dài thời gian các boost đang active khác
             ext_s = int(val)

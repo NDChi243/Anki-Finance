@@ -16,6 +16,9 @@ Items có thể ảnh hưởng đến emergency events:
 import random
 import time
 from ._safe_config import col_ready, cfg_dict, cfg_list, cfg_str, cfg_set
+from .logger import get_logger
+
+logger = get_logger(__name__)
 
 _KEY_LAST_DATE = "anki_tycoon_emergency_last_date"
 _KEY_LOG       = "anki_tycoon_emergency_log"
@@ -881,15 +884,15 @@ def _get_passive_effects_safe() -> dict:
     try:
         from .item_effects import get_all_passive_effects
         effects = dict(get_all_passive_effects())
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("_get_passive_effects_safe (item_effects): %s", e)
     try:
         from .vehicle_system import get_active_vehicle_effects
         veh_effects = get_active_vehicle_effects()
         for k, v in veh_effects.items():
             effects[k] = effects.get(k, 0.0) + v
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("_get_passive_effects_safe (vehicle): %s", e)
     return effects
 
 
@@ -909,8 +912,8 @@ def _build_context() -> dict:
     try:
         from .vehicle_system import get_garage_summary
         garage_vehicles = get_garage_summary()
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("_build_context: %s", e)
 
     cars      = [v for v in garage_vehicles if v.get("vehicle_group", "").lower() in _CAR_GROUPS]
     motorbikes = [v for v in garage_vehicles if v.get("vehicle_group", "").lower() in _BIKE_GROUPS]
@@ -1284,8 +1287,8 @@ def check_and_trigger_emergency(parent=None) -> bool:
             "emergency", insured_cost,
             f"🚨 Sự kiện khẩn cấp: {event['title']}"
         )
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("check_and_trigger_emergency (pay): %s", e)
 
     # Lưu log
     try:
@@ -1299,8 +1302,8 @@ def check_and_trigger_emergency(parent=None) -> bool:
             "insured":    factor < 0.999,
         })
         cfg_set(_KEY_LOG, log[:30])
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("check_and_trigger_emergency (log): %s", e)
 
     # Hiện dialog sau 1.5 giây (tránh chồng chất với các tooltip khác)
     from aqt.qt import QTimer
@@ -1315,8 +1318,8 @@ def check_and_trigger_emergency(parent=None) -> bool:
     try:
         from .achievements import check_and_unlock
         check_and_unlock("emergency_handled", 1)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("check_and_trigger_emergency (achievement): %s", e)
 
     return True
 

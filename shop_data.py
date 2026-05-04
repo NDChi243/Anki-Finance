@@ -4,6 +4,9 @@ import json
 import os
 import time
 
+from .logger import get_logger
+logger = get_logger(__name__)
+
 # ── In-memory cache cho shop items ──────────────────────────────
 # Tránh đọc file JSON từ disk mỗi lần gọi (có thể 5-10 lần/tab)
 _shop_cache = None
@@ -29,7 +32,8 @@ def load_shop_items(force_reload: bool = False) -> list:
             _shop_cache = json.load(f)
             _shop_cache_ts = now
             return _shop_cache
-    except Exception:
+    except Exception as e:
+        logger.warning("load_shop_items: lỗi đọc file shop_items.json: %s", e)
         result = _default_items()
         _shop_cache = result
         _shop_cache_ts = now

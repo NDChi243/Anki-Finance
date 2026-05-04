@@ -17,6 +17,9 @@ import random
 import uuid
 from datetime import datetime
 from ._safe_config import col_ready, cfg_int, cfg_dict, cfg_list, cfg_set
+from .logger import get_logger
+
+logger = get_logger(__name__)
 
 # ── Config keys ──────────────────────────────────────────────
 _KEY_MARKET       = "anki_tycoon_crypto_market"         # dict{symbol: asset_data}
@@ -48,8 +51,8 @@ def _get_effective_trading_fee() -> float:
         reduction = min(max(reduction, 0.0), 0.9)  # cap 0%–90%
         if reduction > 0:
             return TRADING_FEE * (1.0 - reduction)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("_get_effective_trading_fee: %s", e)
     return TRADING_FEE
 
 
@@ -93,7 +96,8 @@ def _cfg_get_raw(key: str, default=None):
         if mw is None or mw.col is None:
             return default
         return mw.col.get_config(key, default)
-    except Exception:
+    except Exception as e:
+        logger.debug("_cfg_get_raw: %s", e)
         return default
 
 
@@ -341,7 +345,8 @@ def _get_streak_days() -> int:
         from .streak_system import get_streak_status
         status = get_streak_status()
         return int(status.get("current_streak", 0))
-    except Exception:
+    except Exception as e:
+        logger.debug("_get_streak_days: %s", e)
         return 0
 
 
@@ -412,8 +417,8 @@ def record_review(count: int = 1):
             cfg_set(_KEY_REVIEW_COUNT, 0)
         else:
             cfg_set(_KEY_REVIEW_COUNT, current)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("record_review: %s", e)
 
 
 def _maybe_trigger_event(total_reviews: int):
@@ -953,8 +958,8 @@ def _add_txn(txn_type: str, symbol: str, quantity: float, price: float,
         add_transaction(main_type, abs(total_vnd) if total_vnd else int(price * quantity),
                         f"{emoji} {description}",
                         {"symbol": symbol, "quantity": quantity, "price": int(price)})
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("_record_txn: %s", e)
 
 
 # ── Shop integration ─────────────────────────────────────────

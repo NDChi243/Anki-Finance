@@ -11,8 +11,12 @@ Cơ chế:
 """
 
 import time
+import logging
 from aqt import mw
 from datetime import datetime
+
+from .logger import get_logger
+logger = get_logger(__name__)
 
 CONFIRM_PHRASE  = "XAC NHAN CHOI LAI"
 _KEY_RESET_LOG  = "anki_tycoon_reset_log"
@@ -29,8 +33,8 @@ def _invalidate_cache(key: str):
     try:
         from ._safe_config import _cache_invalidate
         _cache_invalidate(key)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("_invalidate_cache: %s", e)
 
 
 def _flush_all_cache():
@@ -38,8 +42,8 @@ def _flush_all_cache():
     try:
         from ._safe_config import _cache_invalidate
         _cache_invalidate()  # None = clear all
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("_flush_all_cache: %s", e)
 
 
 def _safe_remove(key: str):
@@ -50,8 +54,8 @@ def _safe_remove(key: str):
             mw.col.remove_config(key)
         else:
             _set_empty_by_key(key)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("_safe_remove: %s", e)
 
 
 def _set_empty_by_key(key: str):
@@ -107,7 +111,8 @@ def is_reset_just_done() -> bool:
         from ._safe_config import cfg_dict
         raw = cfg_dict(_KEY_RESET_FLAG, {})
         return bool(raw)
-    except Exception:
+    except Exception as e:
+        logger.warning("is_reset_just_done: %s", e)
         return False
 
 
@@ -303,15 +308,15 @@ def perform_reset(confirm_input: str, hard: bool = False) -> dict:
             "snapshot": snapshot,
             "hard":     hard,
         }])
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("perform_reset: ghi log reset thất bại: %s", e)
 
     # ── Bước 5: Refresh topbar ────────────────────────────────
     try:
         if hasattr(mw, "tycoon_topbar") and mw.tycoon_topbar:
             mw.tycoon_topbar.refresh()
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("perform_reset: refresh topbar thất bại: %s", e)
 
     return {"ok": True, "snapshot": snapshot}
 
@@ -330,5 +335,6 @@ def get_reset_log() -> list:
     try:
         val = mw.col.get_config(_KEY_RESET_LOG, [])
         return val if isinstance(val, list) else []
-    except Exception:
+    except Exception as e:
+        logger.warning("get_reset_log: %s", e)
         return []

@@ -22,8 +22,13 @@ from .daily_quest import update_quest_progress
 from .again_tracker import get_daily_again_count
 from ._safe_config import begin_batch, commit_batch
 
+from .logger import get_logger, setup_logging
+
 import time
 import traceback
+
+# ── Logger ────────────────────────────────────────────────────────
+logger = get_logger(__name__)
 
 # ── Cache rank để tránh get_rank_status + get_balance mỗi thẻ ──
 _last_rank_cache: str | None = None
@@ -39,8 +44,8 @@ def _record_card_show_time(card):
     _card_show_timestamp = time.time()
 
 def _log_error(context: str):
-    """Ghi log lỗi ra console Anki để dễ debug."""
-    print(f"[AnkiFinance] ⛔ ERROR in {context}: {traceback.format_exc()}")
+    """Ghi log lỗi ra console Anki để dễ debug (tương thích ngược)."""
+    logger.error("[%s] %s", context, traceback.format_exc())
 
 # ── Hook: thưởng/phạt tiền sau mỗi lần ôn thẻ ───────────────────
 def on_review_done(reviewer, card, ease):
@@ -59,8 +64,8 @@ def on_review_done(reviewer, card, ease):
                     from .food_effects import record_card_review_time
                     record_card_review_time(elapsed)
             _card_show_timestamp = None  # reset cho thẻ tiếp theo
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("record_card_review_time: %s", e)
 
         _show_review_fx(reviewer, ease, result)
         _update_gamification(ease, result)
@@ -70,8 +75,8 @@ def on_review_done(reviewer, card, ease):
         try:
             from .bond_system import record_review as bond_record_review
             bond_record_review(1)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("bond_record_review: %s", e)
         # Hồi năng lượng từ food boost (energy_regen)
         _apply_energy_regen(result)
         # Áp dụng hiệu ứng học tập thực tế lên interval của thẻ
@@ -80,8 +85,8 @@ def on_review_done(reviewer, card, ease):
         try:
             from .achievements import check_and_unlock
             check_and_unlock("card_reviewed", ease)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("check_and_unlock(card_reviewed): %s", e)
 
         # ── Economy Controls Integration ──
         try:
@@ -119,17 +124,17 @@ def on_review_done(reviewer, card, ease):
                                 f"Chi phí sửa chữa: <b>{cost:,}đ</b><br>"
                                 f"<small>Hoàn thành {reviews_req} thẻ review để sửa xong.</small>"
                             )
-                        except Exception:
-                            pass
+                        except Exception as e:
+                            logger.warning("showInfo(breakdown): %s", e)
 
             # Tiêu hao độ bền cho tech item đang active
             try:
                 from .tech_system import consume_durability as tech_consume_durability
                 tech_consume_durability(1)
-            except Exception:
-                pass
-        except Exception:
-            pass
+            except Exception as e:
+                logger.warning("tech_consume_durability: %s", e)
+        except Exception as e:
+            logger.warning("Economy Controls Integration: %s", e)
     except Exception:
         _log_error("on_review_done")
     finally:
@@ -226,8 +231,8 @@ def _apply_energy_regen(result: dict):
             return
         from .energy_system import restore_energy
         restore_energy(regen)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("_apply_energy_regen: %s", e)
 
 
 def _update_gamification(ease: int, result: dict):
@@ -249,8 +254,8 @@ def _update_gamification(ease: int, result: dict):
                 xp_mult = float(passive.get("xp_multiplier", 1.0))
                 if xp_mult > 0:
                     xp = max(1, int(xp * xp_mult))
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning("xp_multiplier: %s", e)
             add_xp(xp)
             _rank_check_counter += 1
             if _rank_check_counter >= 20 or _last_rank_cache is None:
@@ -434,12 +439,15 @@ def _migrate_none_keys():
         _log_error("_migrate_none_keys")
 
 def _on_profile_loaded():
+    # Khởi tạo logging framework
+    setup_logging()
+
     # Xoá flag reset nếu còn sót từ phiên trước (reset đã hoàn tất)
     try:
         from .reset_manager import clear_reset_flag
         clear_reset_flag()
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("clear_reset_flag: %s", e)
 
     _migrate_none_keys()
 
@@ -448,16 +456,16 @@ def _on_profile_loaded():
         from .debug_tools import quick_repair
         qr = quick_repair()
         if qr.get("repaired"):
-            print(f"[AnkiFinance][Debug] 🔧 Quick repair: {qr.get('details', 'ok')}")
-    except Exception:
-        pass
+            logger.info("Quick repair: %s", qr.get('details', 'ok'))
+    except Exception as e:
+        logger.warning("quick_repair: %s", e)
 
     # Tự động kiểm tra cập nhật từ GitHub (chạy thread nền)
     try:
         from .auto_update import auto_update_on_startup
         auto_update_on_startup()
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("auto_update_on_startup: %s", e)
 
     _ensure_new_player()
     _inject_topbar()
@@ -478,8 +486,8 @@ def _on_profile_loaded():
     try:
         from .item_effects import repair_crypto_passive_effects
         repair_crypto_passive_effects()
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("repair_crypto_passive_effects: %s", e)
 
     # ── Economy Controls: thu phí đỗ xe garage hàng ngày ──
     _collect_garage_fees()
@@ -725,8 +733,8 @@ def _collect_garage_fees():
                     f"🚗 Phí đỗ xe garage: {paid:,}đ".replace(",", "."),
                     period=3000
                 )
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("_collect_garage_fees: %s", e)
 
 
 def _auto_collect_bond_coupon():

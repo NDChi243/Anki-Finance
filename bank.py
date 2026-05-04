@@ -8,6 +8,8 @@ import time
 import uuid
 from datetime import datetime
 from ._safe_config import col_ready, cfg_dict, cfg_list, cfg_set
+from .logger import get_logger
+logger = get_logger(__name__)
 
 _KEY_DEMAND   = "anki_tycoon_demand_savings"
 _KEY_DEPOSITS = "anki_tycoon_term_deposits"
@@ -128,8 +130,8 @@ def _get_product_rate(product_code: str, term_months: int, amount: int) -> float
         interest_bonus = float(passive.get("interest_bonus", 0.0))
         if interest_bonus > 0:
             rate = rate * (1.0 + interest_bonus)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("_get_product_rate: passive effects interest_bonus — %s", e)
 
     return rate
 
@@ -245,8 +247,8 @@ def calc_demand_interest() -> float:
         interest_bonus = float(passive.get("interest_bonus", 0.0))
         if interest_bonus > 0:
             rate = rate * (1.0 + interest_bonus)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("calc_demand_interest: passive effects interest_bonus — %s", e)
     return amount * rate * elapsed_years
 
 
@@ -409,7 +411,8 @@ def _calc_term_value(dep: dict, at_time: float = None) -> dict:
     # Ví dụ: boost = 0.5 → elapsed × 1.5 → lãi nhanh hơn 50%
     try:
         speed_boost = get_interest_speed_boost()
-    except Exception:
+    except Exception as e:
+        logger.debug("_calc_term_value: get_interest_speed_boost — %s", e)
         speed_boost = 0.0
     speed_factor = 1.0 + speed_boost  # 1.0 = bình thường, 1.5 = nhanh hơn 50%
 
@@ -687,7 +690,8 @@ def get_interest_speed_boost() -> float:
         from .item_effects import get_all_passive_effects
         passive = get_all_passive_effects()
         return float(passive.get("interest_speed_boost", 0.0))
-    except Exception:
+    except Exception as e:
+        logger.debug("get_interest_speed_boost: %s", e)
         return 0.0
 
 
@@ -705,7 +709,8 @@ def get_instant_interest_cooldown() -> float:
         if cooldown > 0 and reduction > 0:
             cooldown = cooldown * max(0.1, 1.0 - reduction)
         return cooldown
-    except Exception:
+    except Exception as e:
+        logger.debug("get_instant_interest_cooldown: %s", e)
         return 0.0
 
 

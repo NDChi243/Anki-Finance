@@ -28,6 +28,9 @@ import random
 import math
 from datetime import date, datetime
 from ._safe_config import col_ready, cfg_int, cfg_str, cfg_list, cfg_set, cfg_dict
+from .logger import get_logger
+
+logger = get_logger(__name__)
 
 
 # ── Helper: today key dùng Unix timestamp (chống time travel) ──
@@ -144,7 +147,8 @@ def get_again_recovery_fee() -> int:
         bal = get_balance()
         fee = max(AGAIN_RECOVERY_MIN, min(AGAIN_RECOVERY_MAX, int(bal * AGAIN_RECOVERY_FEE_RATIO)))
         return fee
-    except Exception:
+    except Exception as e:
+        logger.debug("get_again_recovery_fee: %s", e)
         return AGAIN_RECOVERY_MIN
 
 
@@ -285,7 +289,8 @@ def calculate_garage_fees() -> dict:
             "breakdown": breakdown,
             "vehicle_count": len(breakdown),
         }
-    except Exception:
+    except Exception as e:
+        logger.warning("calculate_garage_fees: %s", e)
         return {"total_fees": 0, "breakdown": [], "vehicle_count": 0}
 
 
@@ -455,7 +460,8 @@ def check_breakdown_on_review(vehicle_item_id: str = None) -> dict:
             "reviews_required": BREAKDOWN_REVIEWS_REQUIRED,
             "reviews_done": 0,
         }
-    except Exception:
+    except Exception as e:
+        logger.warning("check_breakdown_on_review: %s", e)
         return {"broken": False}
 
 
@@ -558,7 +564,8 @@ def progress_breakdown_repair(vehicle_item_id: str) -> dict:
             "reviews_required": reviews_required,
             "reviews_remaining": max(0, reviews_required - reviews_done),
         }
-    except Exception:
+    except Exception as e:
+        logger.warning("progress_breakdown_repair: %s", e)
         return {"still_repairing": False, "done": False}
 
 
@@ -740,32 +747,33 @@ def get_total_net_worth() -> int:
         try:
             from .bank import get_total_current_value
             total += int(get_total_current_value())
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug("get_total_net_worth (bank): %s", e)
         
         try:
             from .stock_market import get_portfolio_summary
             ps = get_portfolio_summary()
             total += int(ps.get("total_value", 0))
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug("get_total_net_worth (stock): %s", e)
         
         try:
             from .digital_assets import get_portfolio_summary
             cps = get_portfolio_summary()
             total += int(cps.get("total_value_vnd", 0))
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug("get_total_net_worth (crypto): %s", e)
         
         try:
             from .bond_system import get_portfolio_summary as get_bond_summary
             bps = get_bond_summary()
             total += int(bps.get("total_value", 0))
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug("get_total_net_worth (bonds): %s", e)
         
         return max(0, total)
-    except Exception:
+    except Exception as e:
+        logger.warning("get_total_net_worth: %s", e)
         return 0
 
 
@@ -793,8 +801,8 @@ def apply_wealth_tax_on_reward(gross_reward: int) -> tuple[int, int, float]:
         reduction = min(max(reduction, 0.0), 0.9)
         if reduction > 0:
             tax_rate = tax_rate * (1.0 - reduction)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("apply_wealth_tax_on_reward: %s", e)
     
     tax_amount = int(gross_reward * tax_rate)
     net_reward = gross_reward - tax_amount

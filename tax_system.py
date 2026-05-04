@@ -28,6 +28,9 @@ E. Thuế chuyển nhượng BĐS:
 
 import time
 from ._safe_config import col_ready, cfg_int, cfg_str, cfg_list, cfg_set
+from .logger import get_logger
+
+logger = get_logger(__name__)
 
 _KEY_LAST_TAX_DATE = "anki_tycoon_last_tax_date"
 _KEY_TAX_LOG       = "anki_tycoon_tax_log"
@@ -57,8 +60,8 @@ def _get_tax_reduction_factor() -> float:
         reduction = min(max(reduction, 0.0), 0.9)  # cap 0%–90%
         if reduction > 0:
             return 1.0 - reduction
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug("_get_tax_reduction_factor: %s", e)
     return 1.0
 
 
@@ -123,11 +126,13 @@ def check_and_collect_tax() -> dict:
         try:
             from .digital_assets import get_crypto_portfolio_value
             crypto_value = get_crypto_portfolio_value()
-        except Exception:
+        except Exception as e:
+            logger.debug("collect_daily_tax (crypto): %s", e)
             crypto_value = 0
         total   = wallet + savings + crypto_value
         income  = get_monthly_income()
-    except Exception:
+    except Exception as e:
+        logger.warning("collect_daily_tax: %s", e)
         return {"collected": False, "reason": "error"}
 
     tax_info = calculate_tax(total, income)
@@ -208,7 +213,8 @@ def get_tax_status_today() -> dict:
     try:
         from .digital_assets import get_crypto_portfolio_value
         crypto_value = get_crypto_portfolio_value()
-    except Exception:
+    except Exception as e:
+        logger.debug("get_tax_status_today (crypto): %s", e)
         crypto_value = 0
     total   = wallet + savings + crypto_value
     income  = get_monthly_income()
@@ -491,8 +497,8 @@ def get_sct_for_item(item: dict) -> dict:
                     "label":   label,
                     "rate_pct": rate * 100,
                 }
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug("get_sct_for_item: %s", e)
     return {"has_sct": False, "rate": 0, "amount": 0, "label": "", "rate_pct": 0}
 
 
@@ -551,8 +557,8 @@ def collect_monthly_land_tax() -> dict:
         if land > 0:
             total_tax += land
             breakdown.append({"type": "residence", "name": res["name"], "tax": land})
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("collect_monthly_land_tax (residence): %s", e)
 
     # BĐS đầu tư
     try:
@@ -572,8 +578,8 @@ def collect_monthly_land_tax() -> dict:
                     "rate_pct": rate * 100,
                     "tax":      tax,
                 })
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("collect_monthly_land_tax (investment): %s", e)
 
     # Áp dụng giảm thuế đất từ passive effects
     if total_tax > 0:
@@ -651,12 +657,14 @@ def get_full_tax_status() -> dict:
     try:
         from .housing_residence import get_monthly_land_tax, get_residence
         land_res = get_monthly_land_tax(get_residence())
-    except Exception:
+    except Exception as e:
+        logger.debug("get_full_tax_status (land): %s", e)
         land_res = 0
     try:
         from .loan_system import get_loan_info
         loan = get_loan_info()
-    except Exception:
+    except Exception as e:
+        logger.debug("get_full_tax_status (loan): %s", e)
         loan = {"has_loan": False}
 
     tax_guide = {

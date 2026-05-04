@@ -13,6 +13,8 @@ Chi phí gồm:
 
 import time
 from ._safe_config import col_ready, cfg_str, cfg_list, cfg_set, begin_batch, commit_batch
+from .logger import get_logger
+logger = get_logger(__name__)
 
 _KEY_LAST_DATE = "anki_tycoon_last_living_cost_date"
 _KEY_LOG       = "anki_tycoon_living_cost_log"
@@ -42,13 +44,14 @@ def _get_cards_reviewed_yesterday() -> int:
                 end_ts,
             )
             return int(stats) if stats else 0
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug("_get_cards_yesterday: Anki stats — %s", e)
         # Fallback: streak_system có stats ngày hiện tại
         from .streak_system import get_streak_status
         s = get_streak_status()
         return int(s.get("cards_today", 0))
-    except Exception:
+    except Exception as e:
+        logger.warning("_get_cards_yesterday: %s", e)
         return 0
 
 
@@ -161,8 +164,8 @@ def collect_daily_living_costs() -> dict:
             from aqt import mw
             if hasattr(mw, "tycoon_topbar") and mw.tycoon_topbar:
                 mw.tycoon_topbar.refresh()
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug("collect_daily_living_costs: refresh topbar — %s", e)
 
         return {
             "collected": True,
@@ -170,13 +173,14 @@ def collect_daily_living_costs() -> dict:
             "breakdown": breakdown,
             "loan":      loan_result,
         }
-    except Exception:
+    except Exception as e:
         # Nếu có lỗi, huỷ batch để tránh ghi dở dang
+        logger.warning("collect_daily_living_costs: %s", e)
         try:
             from ._safe_config import discard_batch
             discard_batch()
-        except Exception:
-            pass
+        except Exception as e2:
+            logger.warning("collect_daily_living_costs: discard_batch — %s", e2)
         return {"collected": False, "reason": "error"}
 
 
@@ -202,7 +206,8 @@ def get_living_cost_status() -> dict:
         living_txns = get_transactions_by_type("living_cost")
         living_cost_mtd = sum(int(t.get("amount", 0)) for t in living_txns)
         living_cost_count = len(living_txns)
-    except Exception:
+    except Exception as e:
+        logger.debug("get_living_cost_status: transactions — %s", e)
         living_cost_mtd = 0
         living_cost_count = 0
 
@@ -210,7 +215,8 @@ def get_living_cost_status() -> dict:
     try:
         from .finance import get_monthly_spending, get_budget, get_budget_status
         budget_status = get_budget_status()
-    except Exception:
+    except Exception as e:
+        logger.debug("get_living_cost_status: budget — %s", e)
         budget_status = {}
 
     return {
