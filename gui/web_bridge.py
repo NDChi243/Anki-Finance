@@ -857,6 +857,71 @@ class TycoonBridge(QObject):
         }
         return json.dumps(data, ensure_ascii=False)
 
+    @pyqtSlot(result=str)
+    def getVehicleDiagnostic(self):
+        """Trả về diagnostic data cho hệ thống xe — gọi từ JS console: JSON.parse(await B.getVehicleDiagnostic())"""
+        from ..vehicle_system import (_get_data, get_garage_summary, get_total_garage_slots,
+                                       _KEY_VEHICLE, get_active_vehicle)
+        from .._safe_config import _config_cache, cfg_dict
+        from aqt import mw
+        import time
+        result = {"ok": True}
+        try:
+            # 1. Anki config raw
+            raw = mw.col.get_config(_KEY_VEHICLE, None)
+            result["anki_config_raw"] = raw
+            if isinstance(raw, dict):
+                result["anki_garage_size"] = len(raw.get("garage", {}))
+                result["anki_garage_keys"] = list(raw.get("garage", {}).keys())
+            else:
+                result["anki_config_type"] = type(raw).__name__ if raw is not None else "None"
+        except Exception as e:
+            result["anki_config_error"] = str(e)
+
+        # 2. Cache info
+        try:
+            entry = _config_cache.get(_KEY_VEHICLE)
+            if entry is not None:
+                val, ts = entry
+                age = time.time() - ts
+                result["cache_age"] = round(age, 1)
+                result["cache_hit"] = True
+                if isinstance(val, dict):
+                    result["cache_garage_size"] = len(val.get("garage", {}))
+                    result["cache_garage_keys"] = list(val.get("garage", {}).keys())
+                else:
+                    result["cache_val_type"] = type(val).__name__
+            else:
+                result["cache_hit"] = False
+        except Exception as e:
+            result["cache_error"] = str(e)
+
+        # 3. get_garage_summary()
+        try:
+            summary = get_garage_summary()
+            result["summary_count"] = len(summary)
+            result["summary_ids"] = [v.get("item_id") for v in summary]
+            result["summary_names"] = [v.get("name") for v in summary]
+        except Exception as e:
+            result["summary_error"] = str(e)
+            import traceback
+            result["summary_traceback"] = traceback.format_exc()
+
+        # 4. get_total_garage_slots()
+        try:
+            result["total_slots"] = get_total_garage_slots()
+        except Exception as e:
+            result["slots_error"] = str(e)
+
+        # 5. col_ready()
+        try:
+            from .._safe_config import col_ready
+            result["col_ready"] = col_ready()
+        except Exception as e:
+            result["col_ready_error"] = str(e)
+
+        return json.dumps(result, ensure_ascii=False, default=str)
+
     @pyqtSlot(str, result=str)
     def selectVehicle(self, vehicle_id: str):
         from ..vehicle_system import select_vehicle

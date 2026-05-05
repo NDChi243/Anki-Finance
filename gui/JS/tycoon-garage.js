@@ -6,129 +6,143 @@ let _garageAllVehicles = [];
 
 async function loadGarage() {
 
-  const res = JSON.parse(await B.getGarageData());
+  try {
 
-  const garage = res.garage || [];
+    const raw = await B.getGarageData();
+    const res = JSON.parse(raw);
 
-  const active = res.active_vehicle;
+    const garage = res.garage || [];
 
-  const slots  = res.total_slots || 1;
+    const active = res.active_vehicle;
 
-  // Store full list for filtering
-  _garageAllVehicles = garage;
+    const slots  = res.total_slots || 1;
 
-  // ── Slot info ──
+    // Store full list for filtering
+    _garageAllVehicles = garage;
 
-  document.getElementById('garage-slot-text').textContent =
+    console.log('[Garage] loadGarage: vehicles=', garage.length, 'raw length=', raw.length);
 
-    `${garage.length} / ${slots} slot`;
+    // ── Slot info ──
 
+    const slotEl = document.getElementById('garage-slot-text');
+    if (slotEl) {
+      slotEl.textContent = `${garage.length} / ${slots} slot`;
+    }
 
-  // ── Active vehicle banner ──
+    // ── Active vehicle banner ──
 
-  const banner = document.getElementById('garage-active-banner');
+    const banner = document.getElementById('garage-active-banner');
 
-  if (active) {
+    if (active) {
 
-    banner.style.display = 'block';
+      if (banner) banner.style.display = 'block';
 
-    document.getElementById('gab-emoji').textContent = active.emoji || '🚗';
+      const emojiEl = document.getElementById('gab-emoji');
+      if (emojiEl) emojiEl.textContent = active.emoji || '🚗';
 
-    document.getElementById('gab-name').textContent = active.name || '';
+      const nameEl = document.getElementById('gab-name');
+      if (nameEl) nameEl.textContent = active.name || '';
 
-    // Durability bar
-    const dupPct = active.durability_pct || 0;
-    const dupCol = dupPct > 50 ? 'var(--green)' : dupPct > 20 ? 'var(--yellow)' : 'var(--red)';
-    document.getElementById('gab-dup').textContent = `${active.durability || 0}/${active.max_durability || 0}`;
-    const dupBar = document.getElementById('gab-dup-bar');
-    dupBar.style.width = dupPct + '%';
-    dupBar.style.background = dupCol;
+      // Durability bar
+      const dupPct = active.durability_pct || 0;
+      const dupCol = dupPct > 50 ? 'var(--green)' : dupPct > 20 ? 'var(--yellow)' : 'var(--red)';
+      const gabDup = document.getElementById('gab-dup');
+      if (gabDup) gabDup.textContent = `${active.durability || 0}/${active.max_durability || 0}`;
+      const dupBar = document.getElementById('gab-dup-bar');
+      if (dupBar) { dupBar.style.width = dupPct + '%'; dupBar.style.background = dupCol; }
 
-    // Fuel section
-    const fuelSection = document.getElementById('gab-fuel-section');
-    const manualLabel = document.getElementById('gab-manual-label');
-    const fuelWarning = document.getElementById('gab-fuel-warning');
-    const fuelActions = document.getElementById('gab-fuel-actions');
+      // Fuel section
+      const fuelSection = document.getElementById('gab-fuel-section');
+      const manualLabel = document.getElementById('gab-manual-label');
+      const fuelWarning = document.getElementById('gab-fuel-warning');
+      const fuelActions = document.getElementById('gab-fuel-actions');
 
-    if (active.fuel_type && active.fuel_type !== 'manual') {
-      fuelSection.style.display = 'block';
-      manualLabel.style.display = 'none';
+      if (active.fuel_type && active.fuel_type !== 'manual') {
+        if (fuelSection) fuelSection.style.display = 'block';
+        if (manualLabel) manualLabel.style.display = 'none';
 
-      const unit = active.fuel_type === 'electric' ? 'kWh' : 'L';
-      const fuelLabel = active.fuel_type === 'electric' ? '🔋 Pin' : '⛽ Xăng';
-      document.getElementById('gab-fuel-label').textContent = fuelLabel;
+        const unit = active.fuel_type === 'electric' ? 'kWh' : 'L';
+        const fuelLabel = active.fuel_type === 'electric' ? '🔋 Pin' : '⛽ Xăng';
+        const gabFuelLabel = document.getElementById('gab-fuel-label');
+        if (gabFuelLabel) gabFuelLabel.textContent = fuelLabel;
 
-      const fuelPct = active.fuel_pct || 0;
-      const fuelCol = fuelPct > 50 ? 'var(--green)' : fuelPct > 20 ? 'var(--yellow)' : 'var(--red)';
-      document.getElementById('gab-fuel').textContent = `${active.fuel_level || 0}/${active.max_fuel || 0} ${unit}`;
-      const fuelBar = document.getElementById('gab-fuel-bar');
-      fuelBar.style.width = fuelPct + '%';
-      fuelBar.style.background = fuelCol;
+        const fuelPct = active.fuel_pct || 0;
+        const fuelCol = fuelPct > 50 ? 'var(--green)' : fuelPct > 20 ? 'var(--yellow)' : 'var(--red)';
+        const gabFuel = document.getElementById('gab-fuel');
+        if (gabFuel) gabFuel.textContent = `${active.fuel_level || 0}/${active.max_fuel || 0} ${unit}`;
+        const fuelBar = document.getElementById('gab-fuel-bar');
+        if (fuelBar) { fuelBar.style.width = fuelPct + '%'; fuelBar.style.background = fuelCol; }
 
-      // Fuel warning & quick-refuel buttons
-      const vehicleId = active.item_id;
-      const isElectric = active.fuel_type === 'electric';
+        // Fuel warning & quick-refuel buttons
+        const vehicleId = active.item_id;
+        const isElectric = active.fuel_type === 'electric';
 
-      if (fuelPct <= 10) {
-        fuelWarning.style.display = 'block';
-        fuelWarning.textContent = '🪫 ' + (isElectric ? 'Pin sắp hết! Hãy sạc ngay.' : 'Xăng sắp hết! Hãy đổ xăng ngay.');
-      } else if (fuelPct <= 30) {
-        fuelWarning.style.display = 'block';
-        fuelWarning.textContent = '⚠️ Nhiên liệu sắp hết (' + fuelPct + '%)';
-        fuelWarning.style.color = 'var(--yellow)';
-      } else {
-        fuelWarning.style.display = 'none';
-      }
+        if (fuelPct <= 10) {
+          if (fuelWarning) { fuelWarning.style.display = 'block'; fuelWarning.textContent = '🪫 ' + (isElectric ? 'Pin sắp hết! Hãy sạc ngay.' : 'Xăng sắp hết! Hãy đổ xăng ngay.'); }
+        } else if (fuelPct <= 30) {
+          if (fuelWarning) { fuelWarning.style.display = 'block'; fuelWarning.textContent = '⚠️ Nhiên liệu sắp hết (' + fuelPct + '%)'; fuelWarning.style.color = 'var(--yellow)'; }
+        } else {
+          if (fuelWarning) fuelWarning.style.display = 'none';
+        }
 
-      // Quick refuel/recharge buttons on active banner
-      let actionsHtml = '';
-      if (fuelPct < 100) {
-        if (isElectric) {
-          if (active.is_charging) {
-            const cm = Math.max(0, Math.floor((active.charge_remaining || 0) / 60));
-            actionsHtml = `<span style="font-size:10px;color:var(--accent2);padding:3px 6px">⚡ Đang sạc (~${cm}p)</span>`;
+        // Quick refuel/recharge buttons on active banner
+        let actionsHtml = '';
+        if (fuelPct < 100) {
+          if (isElectric) {
+            if (active.is_charging) {
+              const cm = Math.max(0, Math.floor((active.charge_remaining || 0) / 60));
+              actionsHtml = `<span style="font-size:10px;color:var(--accent2);padding:3px 6px">⚡ Đang sạc (~${cm}p)</span>`;
+            } else {
+              actionsHtml = `<button class="btn btn-ghost" style="font-size:10px;padding:3px 8px" onclick="rechargeVehicle('${vehicleId}')">🔌 Sạc điện ngay</button>`;
+            }
           } else {
-            actionsHtml = `<button class="btn btn-ghost" style="font-size:10px;padding:3px 8px" onclick="rechargeVehicle('${vehicleId}')">🔌 Sạc điện ngay</button>`;
+            actionsHtml = `<button class="btn btn-ghost" style="font-size:10px;padding:3px 8px" onclick="refuelVehicle('${vehicleId}')">⛽ Đổ xăng ngay</button>`;
           }
         } else {
-          actionsHtml = `<button class="btn btn-ghost" style="font-size:10px;padding:3px 8px" onclick="refuelVehicle('${vehicleId}')">⛽ Đổ xăng ngay</button>`;
+          actionsHtml = '<span style="font-size:10px;color:var(--green)">✅ Đầy nhiên liệu</span>';
         }
+        if (fuelActions) { fuelActions.innerHTML = actionsHtml; fuelActions.style.display = 'flex'; }
       } else {
-        actionsHtml = '<span style="font-size:10px;color:var(--green)">✅ Đầy nhiên liệu</span>';
+        if (fuelSection) fuelSection.style.display = 'none';
+        if (manualLabel) manualLabel.style.display = 'block';
       }
-      fuelActions.innerHTML = actionsHtml;
-      fuelActions.style.display = 'flex';
+
+      // ── KM traveled (v1.1.5b) ──
+      const kmSection = document.getElementById('gab-km-section');
+      const km = active.km_traveled || 0;
+      const totalCards = active.total_cards_driven || 0;
+      const gabKm = document.getElementById('gab-km');
+      if (gabKm) gabKm.textContent = km.toFixed(1) + ' km';
+      const gabCards = document.getElementById('gab-cards-driven');
+      if (gabCards) gabCards.textContent = totalCards.toLocaleString();
+      if (kmSection) kmSection.style.display = 'flex';
+
+      // ── Energy save (v1.1.5b) ──
+      const esSection = document.getElementById('gab-energy-save-section');
+      const esPct = active.energy_save_percent || 0;
+      if (esPct > 0) {
+        const gabEs = document.getElementById('gab-energy-save');
+        if (gabEs) gabEs.textContent = (esPct * 100).toFixed(1) + '%';
+        if (esSection) esSection.style.display = 'block';
+      } else {
+        if (esSection) esSection.style.display = 'none';
+      }
+
     } else {
-      fuelSection.style.display = 'none';
-      manualLabel.style.display = 'block';
+
+      if (banner) banner.style.display = 'none';
+
     }
 
-    // ── KM traveled (v1.1.5b) ──
-    const kmSection = document.getElementById('gab-km-section');
-    const km = active.km_traveled || 0;
-    const totalCards = active.total_cards_driven || 0;
-    document.getElementById('gab-km').textContent = km.toFixed(1) + ' km';
-    document.getElementById('gab-cards-driven').textContent = totalCards.toLocaleString();
-    kmSection.style.display = 'flex';
+    // ── Apply filters & render ──
+    applyGarageFilter();
 
-    // ── Energy save (v1.1.5b) ──
-    const esSection = document.getElementById('gab-energy-save-section');
-    const esPct = active.energy_save_percent || 0;
-    if (esPct > 0) {
-      document.getElementById('gab-energy-save').textContent = (esPct * 100).toFixed(1) + '%';
-      esSection.style.display = 'block';
-    } else {
-      esSection.style.display = 'none';
+  } catch (err) {
+    console.error('[Garage] loadGarage error:', err);
+    if (typeof toast === 'function') {
+      toast('err', 'Garage error: ' + (err.message || err));
     }
-
-  } else {
-
-    banner.style.display = 'none';
-
   }
-
-  // ── Apply filters & render ──
-  applyGarageFilter();
 
 }
 
@@ -910,6 +924,152 @@ async function quickMaintenanceVehicle(vehicleId) {
 let boostTickerInterval = null;
 
 
+// ─── Advanced Filter Toggle ─────────────────────────────
+
+function toggleGarageAdvFilter() {
+  const adv = document.getElementById('garage-adv-filters');
+  const btn = document.getElementById('garage-adv-toggle');
+  const isHidden = adv.style.display === 'none' || adv.style.display === '';
+  adv.style.display = isHidden ? 'flex' : 'none';
+  btn.textContent = isHidden ? '✕ Ẩn nâng cao' : '⚙️ Nâng cao';
+}
+
+
+// ─── Comparison System ─────────────────────────────
+
+let _garageCompareList = [];
+
+function toggleGarageCompare(vehicleId) {
+  const idx = _garageCompareList.indexOf(vehicleId);
+  if (idx >= 0) {
+    _garageCompareList.splice(idx, 1);
+  } else {
+    if (_garageCompareList.length >= 4) {
+      toast('err', '❌ Chỉ có thể so sánh tối đa 4 xe cùng lúc');
+      return;
+    }
+    _garageCompareList.push(vehicleId);
+  }
+  updateGarageCompareBtn();
+  applyGarageFilter();
+}
+
+function updateGarageCompareBtn() {
+  const btn = document.getElementById('garage-compare-btn');
+  if (!btn) return;
+  const count = _garageCompareList.length;
+  const cntEl = document.getElementById('garage-compare-count');
+  if (cntEl) cntEl.textContent = count;
+  btn.style.display = count > 0 ? 'inline-block' : 'none';
+}
+
+function openGarageCompare() {
+  const modal = document.getElementById('modal-garage-compare');
+  const content = document.getElementById('gc-content');
+
+  const vehicles = _garageCompareList
+    .map(id => _garageAllVehicles.find(v => v.item_id === id))
+    .filter(Boolean);
+
+  if (vehicles.length < 2) {
+    content.innerHTML = '<div class="empty"><div class="ei">⚠️</div><p>Cần ít nhất 2 xe để so sánh.</p></div>';
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    return;
+  }
+
+  const vgIcons = {'Ô tô':'🚗','Xe máy':'🏍️','Xe máy điện':'🛵','Xe điện':'⚡','Xe đạp':'🚲'};
+
+  const fields = [
+    { label: '🔖 Nhóm',        get: (v) => vgIcons[v.vehicle_group] || '🚗' },
+    { label: '🏷️ Hãng',        get: (v) => v.brand || '—' },
+    { label: '🌍 Xuất xứ',     get: (v) => v.origin || '—' },
+    { label: '⭐ Sao',         get: (v) => v.stars ? '⭐'.repeat(v.stars) : '—' },
+    { label: '💰 Giá mua',     get: (v) => fmt(v.price || 0) },
+    { label: '⛽ Nhiên liệu',  get: (v) => {
+        const ft = v.fuel_type || 'gasoline';
+        return ft === 'electric' ? '🔋 Điện' : ft === 'manual' ? '🚲 Tay' : '⛽ Xăng';
+      }},
+    { label: '🔩 Độ bền',      get: (v) => `${v.durability || 0} / ${v.max_durability || 0} (${v.durability_pct || 0}%)` },
+    { label: '🛢️ Nhiên liệu',  get: (v) => {
+        if (v.fuel_type === 'manual') return '♾️ Không tốn';
+        const unit = v.fuel_type === 'electric' ? 'kWh' : 'L';
+        return `${(v.fuel_level||0).toFixed(1)} / ${v.max_fuel||0} ${unit} (${v.fuel_pct||0}%)`;
+      }},
+    { label: '⚡ Sạc',         get: (v) => v.is_charging ? '✅ Đang sạc' : v.charge_time_hours ? `${v.charge_time_hours}h` : '—' },
+    { label: '📊 Trạng thái',  get: (v) => {
+        if (v.is_active) return '✅ Đang lái';
+        if (v.in_repair) return '🔧 Đang sửa';
+        if (v.breakdown_repair) return '💥 Sự cố';
+        if (v.maintenance_due) return '⚠️ Cần bảo dưỡng';
+        if (!v.is_active && (v.durability||0) > 0) return '🟢 Sẵn sàng';
+        return '🔴 Không dùng được';
+      }},
+    { label: '💰 Giá bán (ước)', get: (v) => fmt(v.sell_estimate || 0) },
+  ];
+
+  let html = `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr>`;
+  html += `<th style="text-align:left;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);font-weight:700;min-width:80px">Thông số</th>`;
+  vehicles.forEach(v => {
+    const imgTag = v.image_url
+      ? `<img src="${v.image_url}" style="width:40px;height:40px;border-radius:6px;object-fit:cover;display:block;margin:0 auto 4px">`
+      : `<div style="font-size:24px;text-align:center">${v.emoji||vgIcons[v.vehicle_group]||'🚗'}</div>`;
+    const bgColor = v.is_active ? 'rgba(16,185,129,.08)' : 'var(--surface2)';
+    html += `<th style="text-align:center;padding:8px 10px;background:${bgColor};border:1px solid var(--border);font-weight:700;min-width:130px">
+      ${imgTag}
+      <div style="font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px" title="${v.name}">${v.name}</div>
+    </th>`;
+  });
+  html += `</tr></thead><tbody>`;
+
+  fields.forEach(f => {
+    html += `<tr><td style="padding:6px 10px;border:1px solid var(--border);font-weight:600;color:var(--muted2);background:var(--surface2)">${f.label}</td>`;
+    vehicles.forEach(v => {
+      html += `<td style="padding:6px 10px;border:1px solid var(--border);text-align:center">${f.get(v)}</td>`;
+    });
+    html += `</tr>`;
+  });
+
+  html += `<tr><td style="padding:6px 10px;border:1px solid var(--border);font-weight:600;color:var(--muted2);background:var(--surface2)">✨ Hiệu ứng</td>`;
+  vehicles.forEach(v => {
+    const effects = v.effect_list || [];
+    let effectsHtml = effects.length
+      ? effects.map(e => `<div style="font-size:11px;margin:2px 0">${e.icon||'•'} ${e.name||''} ${e.value ? `<span style="color:var(--accent2)">${e.value}</span>` : ''}</div>`).join('')
+      : '<span style="color:var(--muted2)">Không có</span>';
+    html += `<td style="padding:6px 10px;border:1px solid var(--border);text-align:left;font-size:11px">${effectsHtml}</td>`;
+  });
+  html += `</tr>`;
+
+  html += `<tr><td style="padding:6px 10px;border:1px solid var(--border);font-weight:600;color:var(--muted2);background:var(--surface2)">🔧 Thao tác</td>`;
+  vehicles.forEach(v => {
+    html += `<td style="padding:6px 10px;border:1px solid var(--border);text-align:center">
+      <button class="btn btn-ghost" style="font-size:10px;padding:3px 8px" onclick="closeGarageCompare();openGarageDetail('${v.item_id}')">📋 Chi tiết</button>
+    </td>`;
+  });
+  html += `</tr></tbody></table></div>`;
+
+  html += `<div style="display:flex;gap:8px;justify-content:center;margin-top:16px">
+    <button class="btn btn-ghost" style="font-size:12px;padding:6px 16px" onclick="closeGarageCompare()">✕ Đóng</button>
+    <button class="btn btn-ghost" style="font-size:12px;padding:6px 16px;color:var(--red)" onclick="clearGarageCompare()">🗑️ Xoá tất cả</button>
+  </div>`;
+
+  content.innerHTML = html;
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeGarageCompare() {
+  document.getElementById('modal-garage-compare').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function clearGarageCompare() {
+  _garageCompareList = [];
+  updateGarageCompareBtn();
+  applyGarageFilter();
+  closeGarageCompare();
+}
+
 
 async function refreshBoostStrip() {
 
@@ -930,207 +1090,6 @@ async function refreshBoostStrip() {
     return;
 
   }
-  
-  // ─── Advanced Filter Toggle ─────────────────────────────
-  
-  function toggleGarageAdvFilter() {
-    const adv = document.getElementById('garage-adv-filters');
-    const btn = document.getElementById('garage-adv-toggle');
-    const isHidden = adv.style.display === 'none' || adv.style.display === '';
-    adv.style.display = isHidden ? 'flex' : 'none';
-    btn.textContent = isHidden ? '✕ Ẩn nâng cao' : '⚙️ Nâng cao';
-  }
-  
-  
-  // ─── Comparison System ─────────────────────────────
-  
-  let _garageCompareList = [];
-  
-  function toggleGarageCompare(vehicleId) {
-    const idx = _garageCompareList.indexOf(vehicleId);
-    if (idx >= 0) {
-      _garageCompareList.splice(idx, 1);
-    } else {
-      if (_garageCompareList.length >= 4) {
-        toast('err', '❌ Chỉ có thể so sánh tối đa 4 xe cùng lúc');
-        return;
-      }
-      _garageCompareList.push(vehicleId);
-    }
-    updateGarageCompareBtn();
-    // Re-render grid to update checkbox states
-    applyGarageFilter();
-  }
-  
-  function updateGarageCompareBtn() {
-    const btn = document.getElementById('garage-compare-btn');
-    const count = _garageCompareList.length;
-    document.getElementById('garage-compare-count').textContent = count;
-    btn.style.display = count > 0 ? 'inline-block' : 'none';
-  }
-  
-  function openGarageCompare() {
-    const modal = document.getElementById('modal-garage-compare');
-    const content = document.getElementById('gc-content');
-  
-    // Get selected vehicles
-    const vehicles = _garageCompareList
-      .map(id => _garageAllVehicles.find(v => v.item_id === id))
-      .filter(Boolean);
-  
-    if (vehicles.length < 2) {
-      content.innerHTML = '<div class="empty"><div class="ei">⚠️</div><p>Cần ít nhất 2 xe để so sánh.</p></div>';
-      modal.classList.add('open');
-      document.body.style.overflow = 'hidden';
-      return;
-    }
-  
-    const vgIcons = {'Ô tô':'🚗','Xe máy':'🏍️','Xe máy điện':'🛵','Xe điện':'⚡','Xe đạp':'🚲'};
-  
-    // Build comparison table rows
-    const fields = [
-      {
-        label: '🔖 Nhóm',
-        get: (v) => vgIcons[v.vehicle_group] || '🚗',
-      },
-      {
-        label: '🏷️ Hãng',
-        get: (v) => v.brand || '—',
-      },
-      {
-        label: '🌍 Xuất xứ',
-        get: (v) => v.origin || '—',
-      },
-      {
-        label: '⭐ Sao',
-        get: (v) => v.stars ? '⭐'.repeat(v.stars) : '—',
-      },
-      {
-        label: '💰 Giá mua',
-        get: (v) => fmt(v.price || 0),
-      },
-      {
-        label: '⛽ Nhiên liệu',
-        get: (v) => {
-          const ft = v.fuel_type || 'gasoline';
-          return ft === 'electric' ? '🔋 Điện' : ft === 'manual' ? '🚲 Tay' : '⛽ Xăng';
-        },
-      },
-      {
-        label: '🔩 Độ bền',
-        get: (v) => `${v.durability || 0} / ${v.max_durability || 0} (${v.durability_pct || 0}%)`,
-      },
-      {
-        label: '🛢️ Nhiên liệu',
-        get: (v) => {
-          if (v.fuel_type === 'manual') return '♾️ Không tốn';
-          const unit = v.fuel_type === 'electric' ? 'kWh' : 'L';
-          return `${(v.fuel_level||0).toFixed(1)} / ${v.max_fuel||0} ${unit} (${v.fuel_pct||0}%)`;
-        },
-      },
-      {
-        label: '⚡ Sạc',
-        get: (v) => v.is_charging ? '✅ Đang sạc' : v.charge_time_hours ? `${v.charge_time_hours}h` : '—',
-      },
-      {
-        label: '📊 Trạng thái',
-        get: (v) => {
-          if (v.is_active) return '✅ Đang lái';
-          if (v.in_repair) return '🔧 Đang sửa';
-          if (v.breakdown_repair) return '💥 Sự cố';
-          if (v.maintenance_due) return '⚠️ Cần bảo dưỡng';
-          if (!v.is_active && (v.durability||0) > 0) return '🟢 Sẵn sàng';
-          return '🔴 Không dùng được';
-        },
-      },
-      {
-        label: '💰 Giá bán (ước)',
-        get: (v) => fmt(v.sell_estimate || 0),
-      },
-    ];
-  
-    let html = `
-      <div style="overflow-x:auto">
-        <table style="width:100%;border-collapse:collapse;font-size:12px">
-          <thead>
-            <tr>`;
-  
-    // Header row - vehicle names
-    html += `<th style="text-align:left;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);font-weight:700;min-width:80px">Thông số</th>`;
-    vehicles.forEach(v => {
-      const imgTag = v.image_url
-        ? `<img src="${v.image_url}" style="width:40px;height:40px;border-radius:6px;object-fit:cover;display:block;margin:0 auto 4px">`
-        : `<div style="font-size:24px;text-align:center">${v.emoji||vgIcons[v.vehicle_group]||'🚗'}</div>`;
-      const bgColor = v.is_active ? 'rgba(16,185,129,.08)' : 'var(--surface2)';
-      html += `<th style="text-align:center;padding:8px 10px;background:${bgColor};border:1px solid var(--border);font-weight:700;min-width:130px">
-        ${imgTag}
-        <div style="font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px" title="${v.name}">${v.name}</div>
-      </th>`;
-    });
-  
-    html += `</tr></thead><tbody>`;
-  
-    // Data rows
-    fields.forEach(f => {
-      html += `<tr>
-        <td style="padding:6px 10px;border:1px solid var(--border);font-weight:600;color:var(--muted2);background:var(--surface2)">${f.label}</td>`;
-      vehicles.forEach(v => {
-        // Highlight best value for price, durability, fuel
-        let cellStyle = '';
-        html += `<td style="padding:6px 10px;border:1px solid var(--border);text-align:center${cellStyle}">${f.get(v)}</td>`;
-      });
-      html += `</tr>`;
-    });
-  
-    // Effects row
-    html += `<tr>
-      <td style="padding:6px 10px;border:1px solid var(--border);font-weight:600;color:var(--muted2);background:var(--surface2)">✨ Hiệu ứng</td>`;
-    vehicles.forEach(v => {
-      const effects = v.effect_list || [];
-      let effectsHtml = effects.length
-        ? effects.map(e => `<div style="font-size:11px;margin:2px 0">${e.icon||'•'} ${e.name||''} ${e.value ? `<span style="color:var(--accent2)">${e.value}</span>` : ''}</div>`).join('')
-        : '<span style="color:var(--muted2)">Không có</span>';
-      html += `<td style="padding:6px 10px;border:1px solid var(--border);text-align:left;font-size:11px">${effectsHtml}</td>`;
-    });
-    html += `</tr>`;
-  
-    // Footer actions
-    html += `<tr>
-      <td style="padding:6px 10px;border:1px solid var(--border);font-weight:600;color:var(--muted2);background:var(--surface2)">🔧 Thao tác</td>`;
-    vehicles.forEach(v => {
-      html += `<td style="padding:6px 10px;border:1px solid var(--border);text-align:center">
-        <button class="btn btn-ghost" style="font-size:10px;padding:3px 8px" onclick="closeGarageCompare();openGarageDetail('${v.item_id}')">📋 Chi tiết</button>
-      </td>`;
-    });
-    html += `</tr>`;
-  
-    html += `</tbody></table></div>`;
-  
-    // Action bar below table
-    html += `
-      <div style="display:flex;gap:8px;justify-content:center;margin-top:16px">
-        <button class="btn btn-ghost" style="font-size:12px;padding:6px 16px" onclick="closeGarageCompare()">✕ Đóng</button>
-        <button class="btn btn-ghost" style="font-size:12px;padding:6px 16px;color:var(--red)" onclick="clearGarageCompare()">🗑️ Xoá tất cả</button>
-      </div>`;
-  
-    content.innerHTML = html;
-    modal.classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-  
-  function closeGarageCompare() {
-    document.getElementById('modal-garage-compare').classList.remove('open');
-    document.body.style.overflow = '';
-  }
-  
-  function clearGarageCompare() {
-    _garageCompareList = [];
-    updateGarageCompareBtn();
-    applyGarageFilter();
-    closeGarageCompare();
-  }
-
-
 
   strip.style.display = 'block';
 

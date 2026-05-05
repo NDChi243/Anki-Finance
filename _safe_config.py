@@ -12,6 +12,7 @@ Tối ưu hiệu suất:
 
 from aqt import mw
 import time
+import copy
 
 from .logger import get_logger
 
@@ -173,7 +174,10 @@ def cfg_dict(key: str, default: dict | None = None) -> dict:
             if key == "anki_tycoon_vehicle_data":
                 garage_size = len(cached.get("garage", {}))
                 logger.debug("cfg_dict(%s): HIT cache — garage có %d xe", key, garage_size)
-            return dict(cached)
+            # ⚠️ Dùng deepcopy để tránh shared mutable state giữa cache và caller.
+            # Nếu dùng dict(cached) (shallow copy), các dict con (garage, maintenance_due, ...)
+            # vẫn là cùng object với cache → mọi thay đổi từ caller sẽ làm corrupt cache.
+            return copy.deepcopy(cached)
         # Cache bị lỗi kiểu dữ liệu (corrupted) — bỏ qua
         logger.warning("cfg_dict(%s): cache corrupted (type=%s), bỏ qua", key, type(cached).__name__)
         _cache_invalidate(key)
@@ -188,7 +192,8 @@ def cfg_dict(key: str, default: dict | None = None) -> dict:
             garage_size = len(result.get("garage", {}))
             logger.debug("cfg_dict(%s): MISS cache — đọc từ Anki config, garage có %d xe, v=%s", key, garage_size, type(v).__name__)
         _cache_set(key, result)
-        return result
+        # ⚠️ Deepcopy để caller không làm corrupt cache khi modify result
+        return copy.deepcopy(result)
     except Exception as e:
         logger.warning("cfg_dict(%s): %s", key, e)
         return dict(default)
