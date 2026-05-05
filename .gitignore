@@ -31,3 +31,21 @@ anki_finance/
 # Admin Panel (chạy local test, không push lên repo chính)
 admin_panel/
 run_admin_panel.py
+gui/JS/tycoon-learning.js
+.gitignore
+.claude/CLAUDE.md
+CLAUDE.md
+.claude/commands/README.md
+.claude/commands/add-new-feature.md
+.gitignore
+.claude/commands/debug-guide.md
+.gitignore
+.claude/commands/feature-request-template.md
+.gitignore
+.claude/commands/bug-report-template.md
+.claude/rules/01-core-rules.md
+.claude/skills/add-config-key.md
+.claude/commands/prompt-guide.md
+.claude/rules/02-feature-rules.md
+.claude/skills/add-shop-item.md
+.claude/skills/add-js-tab.md

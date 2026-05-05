@@ -267,19 +267,12 @@ class TycoonBridge(QObject):
                         "error": f"🎒 Kho đầy! ({slots['used']}/{slots['max']} slot). Mua nhà lớn hơn hoặc trang bị item tăng sức chứa để mở thêm slot!",
                     }, ensure_ascii=False)
 
-            # Giới hạn 1 vật phẩm tài chính đang sử dụng
+            # Vật phẩm tài chính chỉ mua được bằng KN, không dùng tiền mặt
             if cat == "finance":
-                inv = get_inventory()
-                items_map_local = get_items_map()
-                finance_count = sum(
-                    1 for iid in inv
-                    if _get_item_category(iid, items_map_local.get(iid, {})) == "finance"
-                )
-                if finance_count >= 1:
-                    return json.dumps({
-                        "ok": False,
-                        "error": "⚠️ Chỉ được sử dụng 1 vật phẩm tài chính cùng lúc! Bán cái cũ trong kho trước khi mua cái mới.",
-                    }, ensure_ascii=False)
+                return json.dumps({
+                    "ok": False,
+                    "error": "🧠 Vật phẩm tài chính chỉ mua được bằng Điểm Kiến Thức (KN)! Dùng nút 🧠 trong cửa hàng.",
+                }, ensure_ascii=False)
 
         new_bal = balance - price
         set_balance_and_log(new_bal, "purchase", -price, f"Mua: {item['name']}")
@@ -479,19 +472,12 @@ class TycoonBridge(QObject):
                         "error": f"🎒 Kho đầy! ({slots['used']}/{slots['max']} slot). Mua nhà lớn hơn hoặc trang bị item tăng sức chứa để mở thêm slot!",
                     }, ensure_ascii=False)
 
-            # Giới hạn 1 vật phẩm tài chính đang sử dụng
+            # Vật phẩm tài chính chỉ mua được bằng KN, không dùng tiền mặt
             if cat == "finance":
-                inv = get_inventory()
-                items_map_local = get_items_map()
-                finance_count = sum(
-                    1 for iid in inv
-                    if _get_item_category(iid, items_map_local.get(iid, {})) == "finance"
-                )
-                if finance_count >= 1:
-                    return json.dumps({
-                        "ok": False,
-                        "error": "⚠️ Chỉ được sử dụng 1 vật phẩm tài chính cùng lúc! Bán cái cũ trong kho trước khi mua cái mới.",
-                    }, ensure_ascii=False)
+                return json.dumps({
+                    "ok": False,
+                    "error": "🧠 Vật phẩm tài chính chỉ mua được bằng Điểm Kiến Thức (KN)! Dùng nút 🧠 trong cửa hàng.",
+                }, ensure_ascii=False)
 
         # ── Xử lý thanh toán ─────────────────────────────────────
         from ..credit_banking import process_shop_payment
@@ -1154,37 +1140,22 @@ class TycoonBridge(QObject):
         return json.dumps(res, ensure_ascii=False)
 
     @pyqtSlot(str, result=str)
-    def sellFinanceItem(self, item_id: str):
-        """Bán vật phẩm tài chính khỏi kho (hoàn 30% giá trị)."""
+    def buyFinanceItemWithKN(self, item_id: str):
+        """Mua vật phẩm tài chính bằng điểm KN."""
         try:
-            from ..inventory import has_item, remove_from_inventory
-            from ..item_effects import unregister_passive_effect
-            from ..transactions import add_transaction
-            items_map_local = get_items_map()
-            item = items_map_local.get(item_id)
-            if not item:
-                return json.dumps({"ok": False, "error": "Không tìm thấy vật phẩm."}, ensure_ascii=False)
-            if not has_item(item_id):
-                return json.dumps({"ok": False, "error": "Vật phẩm không có trong kho."}, ensure_ascii=False)
-            cat = _get_item_category(item_id, item)
-            if cat != "finance":
-                return json.dumps({"ok": False, "error": "Chỉ có thể bán vật phẩm tài chính."}, ensure_ascii=False)
-            # Hoàn 30% giá trị
-            price = item.get("price", 0)
-            refund = int(price * 0.30)
-            remove_from_inventory(item_id)
-            try:
-                unregister_passive_effect(item_id)
-            except Exception:
-                pass
-            bal = get_balance()
-            set_balance_and_log(bal + refund, "sell_finance_item", refund, f"Bán: {item['name']} (30%)")
-            try:
-                add_transaction("sell_finance_item", refund, f"Bán vật phẩm tài chính: {item['name']}")
-            except Exception:
-                pass
-            self.balanceChanged.emit(get_balance())
-            return json.dumps({"ok": True, "refund": refund, "item_name": item["name"]}, ensure_ascii=False)
+            from ..kn_perks import buy_finance_item_with_kn
+            result = buy_finance_item_with_kn(item_id)
+            return json.dumps(result, ensure_ascii=False)
+        except Exception as e:
+            return json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False)
+
+    @pyqtSlot(str, result=str)
+    def sellFinanceItem(self, item_id: str):
+        """Bán vật phẩm tài chính khỏi kho (hoàn 50% KN đã bỏ ra)."""
+        try:
+            from ..kn_perks import sell_finance_item_for_kn
+            result = sell_finance_item_for_kn(item_id)
+            return json.dumps(result, ensure_ascii=False)
         except Exception as e:
             return json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False)
 

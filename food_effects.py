@@ -111,7 +111,7 @@ def _get_current_time_slot() -> tuple:
 
 
 def _get_item_category(item_id: str, item_data: dict = None) -> str:
-    """Xác định category của item: 'food', 'drink', 'study' hoặc 'other'."""
+    """Xác định category của item: 'food', 'drink', 'study', 'finance' hoặc 'other'."""
     cat = (item_data or {}).get("category", "")
     if "Đồ uống" in cat or item_id in DRINK_ITEM_IDS:
         return "drink"
@@ -119,6 +119,8 @@ def _get_item_category(item_id: str, item_data: dict = None) -> str:
         return "food"
     if "Vật phẩm học tập" in cat:
         return "study"
+    if "Vật phẩm tài chính" in cat:
+        return "finance"
     return "other"
 
 

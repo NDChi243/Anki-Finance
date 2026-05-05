@@ -26,7 +26,6 @@ const LOADERS = {
 function go(page) {
 
   if (page !== 'stocks' && typeof stopSessionCountdown === 'function') stopSessionCountdown();
-  if (page !== 'garage' && typeof stopGarageBoostTicker === 'function') stopGarageBoostTicker();
   if (page !== 'learning' && typeof stopQuizCountdown === 'function') stopQuizCountdown();
 
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));

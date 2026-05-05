@@ -6407,6 +6407,7 @@
     "description": "Sổ tiết kiệm số cho phép thu lãi tức thì mỗi 24h — lõi build ngân hàng cơ bản",
     "category": "🏦 Vật phẩm tài chính",
     "price": 50000000,
+    "kn_cost": 500,
     "emoji": "📒",
     "stars": 3,
     "effect_list": [
@@ -6430,6 +6431,7 @@
     "description": "Thẻ tín dụng giới hạn cao — tăng thanh khoản, thu lãi tiết kiệm mỗi 12h, +8% lãi suất",
     "category": "🏦 Vật phẩm tài chính",
     "price": 240000000,
+    "kn_cost": 1500,
     "emoji": "💳",
     "stars": 4,
     "effect_list": [
@@ -6453,6 +6455,7 @@
     "description": "Chứng chỉ tài chính danh giá — mở khóa build ngân hàng cao cấp: tăng tốc độ lãi, rút lãi mỗi 6h, +10% lãi suất",
     "category": "🏦 Vật phẩm tài chính",
     "price": 200000000,
+    "kn_cost": 1200,
     "emoji": "🎓",
     "stars": 5,
     "effect_list": [
@@ -6482,6 +6485,7 @@
     "description": "Chứng chỉ vàng vật chất — bảo toàn tài sản, thu lãi tiết kiệm mỗi 2h • Kỹ năng: thu lãi tức thì (hồi 2h), +12% lãi suất",
     "category": "🏦 Vật phẩm tài chính",
     "price": 1200000000,
+    "kn_cost": 5000,
     "emoji": "🥇",
     "stars": 5,
     "effect_list": [
@@ -6511,6 +6515,7 @@
     "description": "Giấy phép thành lập ngân hàng thương mại — quyền năng tài chính tối thượng! • Thu lãi mỗi 1h, +30% tốc độ lãi, +20% lãi suất",
     "category": "🏦 Vật phẩm tài chính",
     "price": 3500000000000,
+    "kn_cost": 15000,
     "emoji": "🏛️",
     "stars": 5,
     "effect_list": [
@@ -6540,6 +6545,7 @@
     "description": "Quỹ chỉ số VN30 — đầu tư thụ động vào 30 blue-chip hàng đầu sàn HSX, giảm phí giao dịch CK + tăng thu nhập thụ động",
     "category": "🏦 Vật phẩm tài chính",
     "price": 480000000,
+    "kn_cost": 2000,
     "emoji": "📊",
     "stars": 4,
     "effect_list": [
@@ -6563,6 +6569,7 @@
     "description": "Trái phiếu kho bạc nhà nước — giảm thuế thu nhập + tăng lãi suất tiết kiệm, kênh đầu tư an toàn tuyệt đối",
     "category": "🏦 Vật phẩm tài chính",
     "price": 150000000,
+    "kn_cost": 800,
     "emoji": "📜",
     "stars": 3,
     "effect_list": [
@@ -6586,6 +6593,7 @@
     "description": "Phái sinh vàng — lướt sóng rủi ro cao, lời to nhưng cũng dễ khủng hoảng. • Giảm cooldown CK mạnh nhưng tăng rủi ro khủng hoảng",
     "category": "🏦 Vật phẩm tài chính",
     "price": 750000000,
+    "kn_cost": 3000,
     "emoji": "⚡",
     "stars": 5,
     "effect_list": [
@@ -6615,6 +6623,7 @@
     "description": "Quỹ hưu trí cá nhân — đóng góp tự động mỗi ngày, nhận thưởng daily tăng vọt + tăng thu nhập thụ động bền vững",
     "category": "🏦 Vật phẩm tài chính",
     "price": 900000000,
+    "kn_cost": 4000,
     "emoji": "🏖️",
     "stars": 4,
     "effect_list": [

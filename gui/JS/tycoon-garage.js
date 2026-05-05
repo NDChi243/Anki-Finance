@@ -1164,7 +1164,9 @@ async function refreshBoostStrip() {
 
   render();
 
-  if (boostTickerInterval) clearInterval(boostTickerInterval);
+  if (boostTickerInterval) {
+    clearInterval(boostTickerInterval);
+  }
 
   boostTickerInterval = setInterval(render, 1000);
 

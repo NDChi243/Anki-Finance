@@ -864,6 +864,14 @@ def get_quiz_set(topic: str | None = None) -> list:
     Lưu vào config để duy trì trạng thái qua các lần load lại.
     Trả về list dict có key: q, options (đã trộn), explanation, topic, index (vị trí gốc).
     """
+    # Kiểm tra daily limit — nếu đã hết, trả về set rỗng (frontend sẽ hiển thị locked)
+    limit_info = _check_daily_limit()
+    if not limit_info["allowed"]:
+        logger.debug("get_quiz_set: DAILY LIMIT REACHED — returning empty locked set")
+        cfg_set(_KEY_QUIZ_SET_DATA, [])
+        cfg_set(_KEY_QUIZ_SET_INDEX, 0)
+        return []
+
     pool = [q for q in QUIZ_POOL if topic is None or q.get("topic") == topic]
     if not pool:
         # Fallback: nếu không có câu nào cho topic, lấy toàn bộ pool
@@ -895,7 +903,13 @@ def get_quiz_set(topic: str | None = None) -> list:
 
 
 def get_current_quiz_set() -> list:
-    """Trả về bộ câu hỏi hiện tại, hoặc tạo mới nếu chưa có."""
+    """Trả về bộ câu hỏi hiện tại, hoặc tạo mới nếu chưa có.
+    Nếu đã hết daily limit, trả về [] để frontend hiển thị locked."""
+    # Kiểm tra daily limit — nếu hết, trả về rỗng
+    limit_info = _check_daily_limit()
+    if not limit_info["allowed"]:
+        logger.debug("get_current_quiz_set: DAILY LIMIT REACHED — returning empty")
+        return []
     data = cfg_list(_KEY_QUIZ_SET_DATA, [])
     if not data:
         return get_quiz_set()
@@ -921,6 +935,7 @@ def _check_daily_limit() -> dict:
         daily_count = cfg_int(_KEY_DAILY_COUNT, 0)
 
     allowed = daily_count < QUIZ_DAILY_LIMIT
+    logger.debug("_check_daily_limit: today=%s, daily_count=%d, allowed=%s", today, daily_count, allowed)
     return {
         "allowed": allowed,
         "count": daily_count,
@@ -943,7 +958,10 @@ def record_quiz_answer(q_index: int, selected: int) -> dict:
     """
     # Kiểm tra daily limit trước
     limit_info = _check_daily_limit()
+    logger.debug("record_quiz_answer: q_index=%d, selected=%d, allowed=%s, count=%d",
+                 q_index, selected, limit_info["allowed"], limit_info["count"])
     if not limit_info["allowed"]:
+        logger.debug("record_quiz_answer: DAILY LIMIT REACHED — rejecting answer q_index=%d", q_index)
         return {
             "error": "daily_limit_reached",
             "daily_limit": limit_info,

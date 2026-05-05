@@ -283,7 +283,9 @@ async function loadInventory() {
 
     if (isFinance) {
 
-      const refund = Math.round((i.price || 0) * 0.30);
+      const knCost = i.kn_cost || 0;
+
+      const knRefund = Math.round(knCost * 0.5);
 
       financeExtra = `
 
@@ -295,11 +297,13 @@ async function loadInventory() {
 
         </div>
 
+        <div style="font-size:10px;color:var(--accent2);margin-top:3px;text-align:center">🧠 Đã mua bằng ${knCost.toLocaleString('vi-VN')} KN</div>
+
         <button class="btn btn-ghost" style="font-size:10px;padding:3px 10px;margin-top:6px;width:100%;color:var(--red)"
 
-          onclick="sellFinanceItemFromInv('${i.id}','${(i.name||'').replace(/'/g,"\\'")}',${refund})">
+          onclick="sellFinanceItemFromInv('${i.id}','${(i.name||'').replace(/'/g,"\\'")}',${knRefund})">
 
-          🗑️ Bán bỏ (hoàn ${fmt(refund)})
+          🗑️ Bán bỏ (hoàn ${knRefund.toLocaleString('vi-VN')} KN)
 
         </button>`;
 
@@ -352,19 +356,17 @@ async function loadInventory() {
 
 
 
-async function sellFinanceItemFromInv(itemId, itemName, refund) {
+async function sellFinanceItemFromInv(itemId, itemName, knRefund) {
 
-  if (!confirm(`Bán "${itemName}" và nhận lại ${fmt(refund)} VND (30% giá trị)?\n\nVật phẩm sẽ bị xoá khỏi kho.`)) return;
+  if (!confirm(`Bán "${itemName}"?\n\nBạn sẽ nhận lại ${knRefund.toLocaleString('vi-VN')} KN (50% KN đã bỏ ra).\nVật phẩm sẽ bị xoá khỏi kho.`)) return;
 
   const res = JSON.parse(await B.sellFinanceItem(itemId));
 
   if (res.ok) {
 
-    toast('ok', `🏦 Đã bán "${res.item_name}" · Nhận lại ${fmt(res.refund)} VND`);
+    toast('ok', `🧠 Đã bán "${res.item_name}" · Hoàn ${(res.kn_refund||0).toLocaleString('vi-VN')} KN`);
 
     await loadInventory();
-
-    await refreshBalance();
 
   } else {
 

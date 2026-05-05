@@ -18,6 +18,8 @@ let quizSubmitted = false;  // flag to prevent double submit
 
 let quizLoading = false;
 
+let quizLocked = false;     // true khi đã hết daily limit — blur + khóa UI
+
 let quizTopics = null;       // { slug: display_name }
 
 let selectedTopic = '';      // current topic filter
@@ -198,6 +200,10 @@ async function refreshDailyQuizLimit() {
 
         badge.className = 'badge badge-red';
 
+        // Khóa UI — blur + icon khóa
+        quizLocked = true;
+        _applyQuizLock(true);
+
         // Hiển thị countdown đến 7:00 sáng hôm sau
 
         const secs = info.next_reset_seconds || 0;
@@ -223,6 +229,10 @@ async function refreshDailyQuizLimit() {
         }
 
       } else {
+
+        // Mở khóa UI
+        quizLocked = false;
+        _applyQuizLock(false);
 
         badge.className = 'badge badge-green';
 
@@ -297,9 +307,54 @@ function _startQuizCountdown(seconds, badgeEl) {
 }
 
 
+/**
+ * _applyQuizLock — Blur toàn bộ khu vực quiz + hiển thị icon ổ khóa
+ * khi đã hết daily limit. Khi mở khóa (locked=false), xóa overlay.
+ */
+function _applyQuizLock(locked) {
+  const dom = _getQuizDom();
+  const area = dom.area;
+  if (!area) return;
+
+  // Tìm hoặc tạo overlay element
+  let overlay = document.getElementById('quiz-lock-overlay');
+  if (locked) {
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'quiz-lock-overlay';
+      overlay.style.cssText = `
+        position:absolute;top:0;left:0;right:0;bottom:0;
+        backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+        background:rgba(0,0,0,0.35);
+        display:flex;flex-direction:column;align-items:center;justify-content:center;
+        border-radius:12px;z-index:10;
+        font-size:14px;color:#fff;text-align:center;padding:20px;
+      `;
+      overlay.innerHTML = `
+        <div style="font-size:48px;margin-bottom:10px">🔒</div>
+        <div style="font-weight:700;font-size:16px;margin-bottom:4px">Đã hết lượt học hôm nay</div>
+        <div style="font-size:13px;opacity:0.8">Quay lại vào 7:00 sáng mai để tiếp tục!</div>
+      `;
+      area.style.position = 'relative';
+      area.appendChild(overlay);
+    }
+    overlay.style.display = 'flex';
+    // Vô hiệu hóa tương tác với các nút
+    if (dom.prevBtn) dom.prevBtn.disabled = true;
+    if (dom.nextBtn) dom.nextBtn.disabled = true;
+    if (dom.finishBtn) dom.finishBtn.disabled = true;
+    if (dom.newBtn) dom.newBtn.disabled = true;
+  } else {
+    if (overlay) overlay.style.display = 'none';
+    if (dom.prevBtn) dom.prevBtn.disabled = false;
+    if (dom.nextBtn) dom.nextBtn.disabled = false;
+    if (dom.finishBtn) dom.finishBtn.disabled = false;
+    if (dom.newBtn) dom.newBtn.disabled = false;
+  }
+}
+
 
 // ── Load quiz topics into dropdown ─────────────────────────────────
-
 async function loadQuizTopics() {
 
   try {
@@ -362,6 +417,9 @@ async function loadQuizSet() {
 
     quizSubmitted = false;
 
+    // Kiểm tra daily limit — nếu backend trả về set rỗng, khóa UI
+    await refreshDailyQuizLimit();
+
     renderQuiz();
 
   } catch (e) {
@@ -383,6 +441,12 @@ async function loadQuizSet() {
 async function startNewQuiz() {
 
   if (quizLoading) return;
+
+  // 🔒 Không cho tạo bộ mới nếu đã hết daily limit
+  if (quizLocked) {
+    toast('error', '🔒 Đã hết lượt học hôm nay. Quay lại vào 7:00 sáng mai!', 3000);
+    return;
+  }
 
   quizLoading = true;
 
@@ -463,6 +527,22 @@ function renderQuiz() {
 
 
   if (!quizData || !quizData.quiz_set || quizData.quiz_set.length === 0) {
+
+    // Nếu bị locked (hết daily limit), hiển thị area với overlay khóa
+    if (quizLocked) {
+      dom.area.style.display = '';
+      dom.empty.style.display = 'none';
+      dom.qText.textContent = '';
+      dom.options.innerHTML = '';
+      dom.result.style.display = 'none';
+      dom.progress.innerHTML = '';
+      dom.qCounter.textContent = '🔒 Đã khóa';
+      dom.prevBtn.style.display = 'none';
+      dom.nextBtn.style.display = 'none';
+      dom.finishBtn.style.display = 'none';
+      _applyQuizLock(true);
+      return;
+    }
 
     dom.area.style.display = 'none';
 
@@ -644,6 +724,11 @@ function selectQuizOption(oi) {
 
   if (quizSubmitted) return;
 
+  // 🔒 Kiểm tra locked state — không cho chọn nếu đã hết daily limit
+  if (quizLocked) {
+    toast('error', '🔒 Đã hết lượt học hôm nay. Quay lại vào 7:00 sáng mai!', 3000);
+    return;
+  }
 
 
   quizAnswered[idx] = oi;
@@ -676,7 +761,12 @@ function selectQuizOption(oi) {
 
     if (res.error) {
 
-      console.error('submitQuizAnswer backend error', res.error);
+      // Nếu lỗi daily_limit_reached — khóa UI ngay lập tức
+      if (res.error === 'daily_limit_reached') {
+        quizLocked = true;
+        _applyQuizLock(true);
+        refreshDailyQuizLimit();
+      }
 
       toast('error', `❌ Lỗi: ${res.error}`, 3000);
 

@@ -431,6 +431,7 @@ function stopCancelBadgeTicker() {
 function stopGarageBoostTicker() {
 
   if (boostTickerInterval) {
+    clearInterval(boostTickerInterval);
     cancelAnimationFrame(boostTickerInterval);
     boostTickerInterval = null;
   }
@@ -447,11 +448,6 @@ function _startGarageBoostTicker(listEl) {
   stopGarageBoostTicker();
 
   const tick = () => {
-
-    if (!_isGaragePageActive()) {
-      boostTickerInterval = null;
-      return;
-    }
 
     const secondStamp = Math.floor(Date.now() / 1000);
     if (_boostStripLastSecond !== secondStamp) {
@@ -509,11 +505,8 @@ refreshBoostStrip = async function() {
   _renderBoostStrip(list);
   startCancelBadgeTicker();
 
-  if (_isGaragePageActive()) {
-    _startGarageBoostTicker(list);
-  } else {
-    stopGarageBoostTicker();
-  }
+  // Boost ticker luôn chạy trên mọi page để timer đếm ngược liên tục
+  _startGarageBoostTicker(list);
 
 };
 

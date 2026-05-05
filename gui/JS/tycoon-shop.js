@@ -34,6 +34,8 @@ async function loadShop() {
 
   allItems = JSON.parse(raw);
 
+  await _refreshKNForShop();
+
   renderShopCategories();
 
 }
@@ -903,6 +905,10 @@ function _renderShopModalCard(item) {
 
     : '';
 
+  const isFinanceCat = (catKey === 'finance');
+
+  const knCost = item.kn_cost || 0;
+
 
 
   // Open detail modal on most item groups so theme/build info is visible everywhere
@@ -913,7 +919,27 @@ function _renderShopModalCard(item) {
 
 
 
-  return `<div class="item-card card-hover" style="${isRE?'border-color:rgba(6,182,212,.3)':''}${catKey==='study'?';background:var(--surface2)':''}${canDetail?';cursor:pointer':''}"
+  // Build price row and buy button — finance items use KN, all others use VND
+  let priceRow, buyBtn;
+  if (isFinanceCat) {
+    const canAffordKN = (window._currentKN || 0) >= knCost;
+    priceRow = `<div class="item-price" style="color:var(--accent2)">🧠 ${knCost.toLocaleString('vi-VN')} KN</div>`;
+    buyBtn = owned > 0
+      ? `<button class="btn btn-ghost btn-full" style="font-size:11px;opacity:.6" disabled>✅ Đã sở hữu</button>`
+      : canAffordKN
+        ? `<button class="btn btn-primary btn-full" onclick="event.stopPropagation();buyFinanceWithKN('${item.id}')">🧠 Mua bằng KN</button>`
+        : `<button class="btn btn-ghost btn-full" style="opacity:.5" disabled>🔒 Cần ${knCost.toLocaleString('vi-VN')} KN</button>`;
+  } else {
+    priceRow = `<div class="item-price">${fmt(item.price)}</div>`;
+    buyBtn = `<button class="btn ${can?'btn-primary':'btn-credit'} btn-full"
+      onclick="event.stopPropagation();showPaymentModal('${item.id}')">
+      ${can ? (isRE ? '🏠 Mua BĐS' : '🛒 Mua ngay') : '💳 Chọn phương thức thanh toán'}
+    </button>`;
+  }
+
+
+
+  return `<div class="item-card card-hover" style="${isRE?'border-color:rgba(6,182,212,.3)':''}${catKey==='study'?';background:var(--surface2)':''}${isFinanceCat?';border-color:rgba(245,158,11,.3)':''}${canDetail?';cursor:pointer':''}"
 
     ${canDetail ? `onclick="openItemDetail('${item.id}')"` : ''}>
 
@@ -939,15 +965,9 @@ function _renderShopModalCard(item) {
 
     ${reInfo}
 
-    <div class="item-price">${fmt(item.price)}</div>
+    ${priceRow}
 
-    <button class="btn ${can?'btn-primary':'btn-credit'} btn-full"
-
-      onclick="event.stopPropagation();showPaymentModal('${item.id}')">
-
-      ${can ? (isRE ? '🏠 Mua BĐS' : '🛒 Mua ngay') : '💳 Chọn phương thức thanh toán'}
-
-    </button>
+    ${buyBtn}
 
   </div>`;
 
@@ -1241,5 +1261,26 @@ async function buyItem(id, btn) {
 
 }
 
+
+// ── KN-only purchase for Finance items ─────────────────────────
+window._currentKN = 0;
+
+async function _refreshKNForShop() {
+  try {
+    const raw = JSON.parse(await B.getKN());
+    window._currentKN = raw.kn || 0;
+  } catch (_) {}
+}
+
+async function buyFinanceWithKN(itemId) {
+  const res = JSON.parse(await B.buyFinanceItemWithKN(itemId));
+  if (res.ok) {
+    toast('ok', `🧠 Đã mua <strong>${res.item_name}</strong>! (-${res.kn_spent.toLocaleString('vi-VN')} KN · Còn: ${res.kn_remaining.toLocaleString('vi-VN')} KN)`);
+    window._currentKN = res.kn_remaining;
+    await loadShop();
+  } else {
+    toast('err', '❌ ' + (res.error || 'Không thể mua'));
+  }
+}
 
 

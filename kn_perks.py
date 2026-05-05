@@ -167,3 +167,120 @@ def get_kn_perks_summary() -> dict:
         "perks": get_all_perks(),
         "active_bonuses": get_active_bonuses(),
     }
+
+
+def buy_finance_item_with_kn(item_id: str) -> dict:
+    """Mua vật phẩm tài chính bằng điểm KN.
+
+    Returns dict {"ok": bool, ...}
+    """
+    if not col_ready():
+        return {"ok": False, "error": "Chưa sẵn sàng."}
+
+    try:
+        from .shop_data import get_items_map
+        from .inventory import has_item, add_to_inventory, can_add_to_inventory, get_inventory_slots_info, get_inventory, count_item
+        from .item_effects import register_passive_effect, is_passive_item, get_item_effects, ACTIVE_TYPES
+        from .food_effects import _get_item_category
+
+        items_map = get_items_map()
+        item = items_map.get(item_id)
+        if not item:
+            return {"ok": False, "error": "Vật phẩm không tồn tại."}
+
+        cat = _get_item_category(item_id, item)
+        if cat != "finance":
+            return {"ok": False, "error": "Chỉ có thể dùng KN để mua vật phẩm tài chính."}
+
+        kn_cost = item.get("kn_cost", 0)
+        if kn_cost <= 0:
+            return {"ok": False, "error": "Vật phẩm này không có giá KN."}
+
+        # Kiểm tra đủ KN
+        kn = get_kn()
+        if kn < kn_cost:
+            return {"ok": False, "error": f"Không đủ KN. Cần {kn_cost:,} KN, bạn có {kn:,} KN.".replace(",", ".")}
+
+        # Kiểm tra giới hạn 1 finance item cùng lúc
+        inv = get_inventory()
+        finance_count = sum(
+            1 for iid in inv
+            if _get_item_category(iid, items_map.get(iid, {})) == "finance"
+        )
+        if finance_count >= 1:
+            return {"ok": False, "error": "⚠️ Chỉ được dùng 1 vật phẩm tài chính cùng lúc! Bán cái đang có trước khi mua cái mới."}
+
+        # Kiểm tra kho còn chỗ
+        if not can_add_to_inventory():
+            slots = get_inventory_slots_info()
+            return {"ok": False, "error": f"🎒 Kho đầy! ({slots['used']}/{slots['max']} slot)."}
+
+        # Trừ KN
+        add_kn(-kn_cost)
+        # Thêm vào kho
+        add_to_inventory(item_id)
+        # Đăng ký passive effects
+        if is_passive_item(item):
+            register_passive_effect(item_id, item)
+
+        logger.info("🏦 Mua vật phẩm tài chính '%s' bằng %d KN", item["name"], kn_cost)
+
+        return {
+            "ok": True,
+            "item_name": item["name"],
+            "kn_spent": kn_cost,
+            "kn_remaining": get_kn(),
+        }
+    except Exception as e:
+        logger.error("buy_finance_item_with_kn(%s): %s", item_id, e, exc_info=True)
+        return {"ok": False, "error": str(e)}
+
+
+def sell_finance_item_for_kn(item_id: str) -> dict:
+    """Bán vật phẩm tài chính, hoàn lại 50% KN đã bỏ ra.
+
+    Returns dict {"ok": bool, ...}
+    """
+    if not col_ready():
+        return {"ok": False, "error": "Chưa sẵn sàng."}
+
+    try:
+        from .shop_data import get_items_map
+        from .inventory import has_item, remove_from_inventory
+        from .item_effects import unregister_passive_effect
+        from .food_effects import _get_item_category
+
+        items_map = get_items_map()
+        item = items_map.get(item_id)
+        if not item:
+            return {"ok": False, "error": "Vật phẩm không tồn tại."}
+        if not has_item(item_id):
+            return {"ok": False, "error": "Vật phẩm không có trong kho."}
+
+        cat = _get_item_category(item_id, item)
+        if cat != "finance":
+            return {"ok": False, "error": "Chỉ có thể bán vật phẩm tài chính qua hàm này."}
+
+        kn_cost = item.get("kn_cost", 0)
+        kn_refund = int(kn_cost * 0.5)
+
+        remove_from_inventory(item_id)
+        try:
+            unregister_passive_effect(item_id)
+        except Exception:
+            pass
+
+        if kn_refund > 0:
+            add_kn(kn_refund)
+
+        logger.info("🏦 Bán vật phẩm tài chính '%s', hoàn %d KN", item["name"], kn_refund)
+
+        return {
+            "ok": True,
+            "item_name": item["name"],
+            "kn_refund": kn_refund,
+            "kn_remaining": get_kn(),
+        }
+    except Exception as e:
+        logger.error("sell_finance_item_for_kn(%s): %s", item_id, e, exc_info=True)
+        return {"ok": False, "error": str(e)}
