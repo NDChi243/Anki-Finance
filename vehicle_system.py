@@ -1385,8 +1385,9 @@ def sell_vehicle(item_id: str) -> dict:
 
 def get_active_vehicle_effects() -> dict:
     """
-    Trả về các effect TẠM THỜI khi xe đang active (đang lái).
-    Cộng thêm vào passive effects từ item_effects.
+    Trả về các effect khi xe đang active (đang lái):
+    - effect_list từ shop_data (chỉ active khi lái)
+    - Bonus theo nhóm xe (emergency_resistance, v.v.)
     Hiệu quả giảm dần khi độ bền thấp (< 50%).
     """
     effects: dict = {}
@@ -1394,27 +1395,42 @@ def get_active_vehicle_effects() -> dict:
         av = get_active_vehicle()
         if not av:
             return effects
+        item_id   = av.get("item_id", "")
         vg        = av.get("vehicle_group", "").lower()
         fuel_type = av.get("fuel_type", "gasoline")
         dur       = av.get("durability", 0)
         max_dur   = av.get("max_durability", 100)
-        # Hệ số hiệu quả: 100% bền = 1.0, 50% bền = 0.7, 20% bền = 0.4
         eff_factor = round(min(1.0, max(0.3, dur / max_dur if max_dur > 0 else 1.0)), 3)
 
+        # Hiệu ứng từ effect_list của xe (chỉ áp dụng khi đang lái)
+        try:
+            from .shop_data import get_items_map
+            item_data = get_items_map().get(item_id, {})
+            for e in item_data.get("effect_list", []):
+                etype = e.get("type", "")
+                val   = e.get("value")
+                if etype and isinstance(val, (int, float)):
+                    effects[etype] = val
+        except Exception as e2:
+            logger.debug("get_active_vehicle_effects (effect_list): %s", e2)
+
+        # Bonus theo nhóm xe (emergency + health)
         if fuel_type == "manual" or vg == "xe đạp":
-            # Đạp xe: healthy lifestyle → giảm rủi ro tai nạn + tăng sức khỏe
-            effects["emergency_resistance"] = round(0.15 * eff_factor, 3)
-            effects["health_boost"]         = round(0.5  * eff_factor, 2)
+            effects["emergency_resistance"] = round(
+                max(effects.get("emergency_resistance", 0), 0.15 * eff_factor), 3)
+            effects["health_boost"] = round(
+                (effects.get("health_boost", 0)) + 0.5 * eff_factor, 2)
         elif vg in ("xe máy", "xe máy điện"):
-            # Xe máy: linh hoạt, nhưng rủi ro hơn ô tô → chỉ giảm nhẹ
-            effects["emergency_resistance"] = round(0.04 * eff_factor, 3)
+            effects["emergency_resistance"] = round(
+                max(effects.get("emergency_resistance", 0), 0.04 * eff_factor), 3)
         elif vg == "ô tô":
-            # Ô tô: an toàn, thoải mái → giảm rủi ro tai nạn đáng kể
-            effects["emergency_resistance"] = round(0.08 * eff_factor, 3)
+            effects["emergency_resistance"] = round(
+                max(effects.get("emergency_resistance", 0), 0.08 * eff_factor), 3)
         elif vg == "xe điện":
-            # Xe điện: công nghệ cao, an toàn nhất, eco-friendly → bonus kép
-            effects["emergency_resistance"]   = round(0.12 * eff_factor, 3)
-            effects["emergency_cost_reduction"] = round(0.05 * eff_factor, 3)
+            effects["emergency_resistance"] = round(
+                max(effects.get("emergency_resistance", 0), 0.12 * eff_factor), 3)
+            effects["emergency_cost_reduction"] = round(
+                max(effects.get("emergency_cost_reduction", 0), 0.05 * eff_factor), 3)
     except Exception as e:
         logger.debug("get_active_vehicle_effects: %s", e)
     return effects

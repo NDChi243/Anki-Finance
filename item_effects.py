@@ -335,71 +335,46 @@ def repair_crypto_passive_effects():
 def get_all_passive_effects() -> dict:
     """
     Trả về dict gộp tất cả passive effects đang active.
-    {
-        "study_time_reduction": 0.25,
-        "xp_multiplier": 1.5,
-        "inventory_capacity": 20,
-        ...
-    }
 
-    QUY TẮC STACK (v4.5):
-      - Phương tiện (xe hơi, xe máy, xe điện, xe đạp):
-        Các effect thiên về học/speed chỉ lấy chiếc mạnh nhất (max()).
-        Các effect kiểu tài chính/slot vẫn cộng dồn theo luật chung.
-      - Các category khác (hàng hiệu, công nghệ, BĐS, bảo hiểm, tài chính):
-        Cộng dồn như cũ (additive / multiplicative tuỳ loại).
+    QUY TẮC:
+      - Xe (Showroom xe): KHÔNG lấy từ passive store (chỉ active khi đang lái),
+        thay vào đó gọi get_active_vehicle_effects() để lấy hiệu ứng xe đang chạy.
+      - Các category khác: cộng dồn như cũ (additive / multiplicative tuỳ loại).
     """
     passive = _get_passive_raw()
     aggregated = {}
-    # Lưu riêng vehicle effects để xử lý max sau
-    vehicle_agg = {}
 
     for item_id, info in passive.items():
         cat = info.get("category", "")
+        # Xe chỉ active khi đang lái → bỏ qua trong passive store
+        if _is_vehicle_category(cat):
+            continue
         effects = info.get("effects", {})
-        is_vehicle = _is_vehicle_category(cat)
-
         for etype, evalue in effects.items():
             if not isinstance(evalue, (int, float)):
                 continue
-
-            if is_vehicle:
-                # Vehicle: gom riêng, một số effect sẽ lấy max(), số còn lại cộng theo luật chung
-                if etype in vehicle_agg:
-                    vehicle_agg[etype] = max(vehicle_agg[etype], evalue)
-                else:
-                    vehicle_agg[etype] = evalue
-            else:
-                # Non-vehicle: cộng dồn như cũ
-                _merge_effect_value(aggregated, etype, evalue)
-
-    # Hợp nhất vehicle effects vào aggregated.
-    for etype, evalue in vehicle_agg.items():
-        if etype in _VEHICLE_MAX_ONLY_TYPES:
-            if etype in aggregated:
-                ag = aggregated[etype]
-                if isinstance(ag, (int, float)):
-                    # Với hiệu ứng học/tốc độ, chỉ lấy chiếc mạnh nhất.
-                    aggregated[etype] = max(ag, evalue)
-                else:
-                    aggregated[etype] = evalue
-            else:
-                aggregated[etype] = evalue
-        else:
             _merge_effect_value(aggregated, etype, evalue)
 
     for bonus in get_active_set_bonuses():
         for etype, evalue in bonus.get("effects", {}).items():
             _merge_effect_value(aggregated, etype, evalue)
 
-    # ── Tích hợp permanent effects từ achievements ──
+    # ── Hiệu ứng xe đang active (chỉ khi đang lái) ──
+    try:
+        from .vehicle_system import get_active_vehicle_effects
+        for etype, evalue in get_active_vehicle_effects().items():
+            if isinstance(evalue, (int, float)):
+                _merge_effect_value(aggregated, etype, evalue)
+    except Exception as e:
+        logger.debug("get_all_passive_effects: vehicle — %s", e)
+
+    # ── Permanent effects từ achievements ──
     try:
         from .achievements import get_permanent_effects
-        ach_effects = get_permanent_effects()
-        for etype, evalue in ach_effects.items():
+        for etype, evalue in get_permanent_effects().items():
             _merge_effect_value(aggregated, etype, evalue)
     except Exception as e:
-        logger.debug("get_all_passive_effects: achievements effects — %s", e)
+        logger.debug("get_all_passive_effects: achievements — %s", e)
 
     return aggregated
 
@@ -407,10 +382,14 @@ def get_all_passive_effects() -> dict:
 def get_passive_effects_summary() -> list:
     """
     Trả về danh sách passive effects đang active để hiển thị UI.
+    Xe (Showroom xe) bị lọc ra — chỉ hiển thị khi đang lái qua get_active_vehicle_effects().
     """
     passive = _get_passive_raw()
     result = []
     for item_id, info in passive.items():
+        cat = info.get("category", "")
+        if _is_vehicle_category(cat):
+            continue  # xe chỉ active khi đang lái
         for etype, evalue in info.get("effects", {}).items():
             result.append({
                 "item_id": item_id,
@@ -430,6 +409,24 @@ def get_passive_effects_summary() -> list:
                 "value": evalue,
                 "description": format_effect_desc(etype, evalue),
             })
+    # Hiệu ứng xe đang lái
+    try:
+        from .vehicle_system import get_active_vehicle, get_active_vehicle_effects
+        av = get_active_vehicle()
+        if av:
+            av_name  = av.get("name", "Xe đang lái")
+            av_emoji = av.get("emoji", "🚗")
+            for etype, evalue in get_active_vehicle_effects().items():
+                result.append({
+                    "item_id": av.get("item_id", "active_vehicle"),
+                    "name": av_name,
+                    "emoji": av_emoji,
+                    "type": etype,
+                    "value": evalue,
+                    "description": format_effect_desc(etype, evalue),
+                })
+    except Exception as e:
+        logger.debug("get_passive_effects_summary: vehicle — %s", e)
     return result
 
 

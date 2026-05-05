@@ -297,9 +297,10 @@ class TycoonBridge(QObject):
             expire_h = item.get("expire_h", effect.get("expire_h", 24))
             register_food_purchase(item_id, slot_id, expire_h)
 
-        # Nếu là item passive effect → đăng ký ngay (trừ đồ công nghệ - chỉ active khi dùng)
+        # Nếu là item passive effect → đăng ký ngay (trừ đồ công nghệ và xe cộ)
+        # Xe cộ: hiệu ứng chỉ active khi đang lái, không đăng ký passive vĩnh viễn
         is_tech = "Cửa hàng đồ công nghệ" in item.get("category", "")
-        if is_passive_item(item) and not is_tech:
+        if is_passive_item(item) and not is_tech and not is_vehicle:
             register_passive_effect(item_id, item)
 
         # Nếu là xe (có vehicle_group) → đăng ký vào garage
@@ -524,10 +525,11 @@ class TycoonBridge(QObject):
             expire_h = item.get("expire_h", effect.get("expire_h", 24))
             register_food_purchase(item_id, slot_id, expire_h)
 
-        # Passive effects
-        is_tech = "Cửa hàng đồ công nghệ" in item.get("category", "")
+        # Passive effects (xe bị loại ra — hiệu ứng chỉ active khi đang lái)
+        is_tech    = "Cửa hàng đồ công nghệ" in item.get("category", "")
+        _is_vehicle = bool(item.get("vehicle_group"))
         _is_passive = is_passive_item(item)
-        if _is_passive and not is_tech:
+        if _is_passive and not is_tech and not _is_vehicle:
             register_passive_effect(item_id, item)
 
         # Vehicle
