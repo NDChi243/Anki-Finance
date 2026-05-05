@@ -126,8 +126,9 @@ async function loadInventory() {
 
   g.innerHTML = inv.map(i => {
 
-    const isFood  = i.is_food;
-    const isStudy = i.is_study;
+    const isFood    = i.is_food;
+    const isStudy   = i.is_study;
+    const isFinance = (i.category || '').includes('Vật phẩm tài chính');
 
     const eff    = i.effect || {};
 
@@ -278,9 +279,35 @@ async function loadInventory() {
 
     }
 
+    let financeExtra = '';
+
+    if (isFinance) {
+
+      const refund = Math.round((i.price || 0) * 0.30);
+
+      financeExtra = `
+
+        <div style="margin-top:4px;font-size:11px;color:var(--accent2);display:flex;align-items:center;gap:4px">
+
+          <span style="background:rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3);border-radius:4px;padding:1px 6px;font-size:10px">⚡ Đang hoạt động</span>
+
+          <span style="color:var(--muted2)">· Thụ động</span>
+
+        </div>
+
+        <button class="btn btn-ghost" style="font-size:10px;padding:3px 10px;margin-top:6px;width:100%;color:var(--red)"
+
+          onclick="sellFinanceItemFromInv('${i.id}','${(i.name||'').replace(/'/g,"\\'")}',${refund})">
+
+          🗑️ Bán bỏ (hoàn ${fmt(refund)})
+
+        </button>`;
+
+    }
+
     return `
 
-    <div class="inv-card ${isFood ? 'food-card' : ''}">
+    <div class="inv-card ${isFood ? 'food-card' : ''}${isFinance ? ' finance-card' : ''}">
 
       <div class="item-img-wrap" style="width:90px;height:90px">
 
@@ -312,12 +339,38 @@ async function loadInventory() {
 
       ${foodExtra}
 
+      ${financeExtra}
+
     </div>`;
 
   }).join('');
 
   // Start real-time countdown for freshness bars
   _startInventoryCountdown();
+
+}
+
+
+
+async function sellFinanceItemFromInv(itemId, itemName, refund) {
+
+  if (!confirm(`Bán "${itemName}" và nhận lại ${fmt(refund)} VND (30% giá trị)?\n\nVật phẩm sẽ bị xoá khỏi kho.`)) return;
+
+  const res = JSON.parse(await B.sellFinanceItem(itemId));
+
+  if (res.ok) {
+
+    toast('ok', `🏦 Đã bán "${res.item_name}" · Nhận lại ${fmt(res.refund)} VND`);
+
+    await loadInventory();
+
+    await refreshBalance();
+
+  } else {
+
+    toast('err', '❌ ' + (res.error || 'Không thể bán'));
+
+  }
 
 }
 

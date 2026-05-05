@@ -20,6 +20,10 @@ let _cbPayCardId = null;
 
 let _cbUseCardId = null;
 
+let _cbWithdrawCardId = null;
+
+let _cbWithdrawCardData = null;
+
 
 
 // ── Init ──
@@ -122,7 +126,11 @@ function renderCreditScore(cs) {
 
 // ── My Credit Cards ──
 
+let _cbCardsCache = [];
+
 function renderMyCards(cards) {
+
+  _cbCardsCache = cards || [];
 
   const el = document.getElementById('cb-my-cards');
 
@@ -198,11 +206,13 @@ function renderMyCards(cards) {
 
       ${c.rewards_points ? `<div style="margin-top:6px;font-size:11px;color:var(--accent2)">⭐ ${c.rewards_points} điểm thưởng</div>` : ''}
 
+      ${c.ca_total_debt > 0 ? `<div style="margin-top:4px;font-size:11px;color:var(--red)">💸 Dư nợ rút tiền mặt: <strong>${fmt(c.ca_total_debt)}</strong> · Lãi ${c.ca_annual_rate_pct}%/năm</div>` : ''}
+
       <div class="cc-actions">
 
-        <button class="btn btn-primary" style="font-size:11px;padding:5px 12px" onclick="showUseCardModal('${c.id}')">💳 Thanh toán</button>
+        <button class="btn btn-primary" style="font-size:11px;padding:5px 12px" onclick="showWithdrawModal('${c.id}')">💵 Rút tiền</button>
 
-        <button class="btn btn-green" style="font-size:11px;padding:5px 12px" onclick="showPayCardModal('${c.id}')">💵 Trả nợ</button>
+        <button class="btn btn-green" style="font-size:11px;padding:5px 12px" onclick="showPayCardModal('${c.id}')">💳 Trả nợ</button>
 
         <button class="btn btn-ghost" style="font-size:11px;padding:5px 12px" onclick="showCardStatement('${c.id}')">📋 Sao kê</button>
 
@@ -398,53 +408,135 @@ async function confirmPayCard() {
 
 
 
-// ── Use Card Modal ──
+// ── Withdraw Modal (Rút tiền mặt từ thẻ) ──
 
-function showUseCardModal(cardId) {
+function showWithdrawModal(cardId) {
 
-  _cbUseCardId = cardId;
+  _cbWithdrawCardId = cardId;
 
-  document.getElementById('cb-use-card-info').innerHTML = `💳 Thanh toán bằng thẻ <strong>#${cardId}</strong>`;
+  _cbWithdrawCardData = _cbCardsCache.find(c => c.id === cardId) || null;
 
-  document.getElementById('cb-use-amount').value = '';
+  const c = _cbWithdrawCardData;
 
-  document.getElementById('cb-use-merchant').value = '';
+  const limit = c ? c.approved_limit : 0;
 
-  document.getElementById('modal-use-card').classList.add('open');
+  const used = c ? c.used_credit : 0;
+
+  const avail = c ? c.available_credit : 0;
+
+  const maxW = c ? c.max_withdraw : 0;
+
+  const maxPct = c ? c.max_withdraw_pct : 50;
+
+  const feeRate = c ? c.ca_fee_rate_pct : 4;
+
+  const annualRate = c ? c.ca_annual_rate_pct : 40;
+
+  const caDebt = c ? c.ca_total_debt : 0;
+
+
+
+  let infoHtml = `
+
+    <div class="row-sb" style="margin-bottom:4px"><span style="color:var(--muted2)">Thẻ</span><span style="font-weight:700">${c ? (c.emoji + ' ' + c.product_label) : cardId}</span></div>
+
+    <div class="row-sb" style="margin-bottom:4px"><span style="color:var(--muted2)">Hạn mức khả dụng</span><span style="color:var(--green);font-weight:700">${fmt(avail)}</span></div>
+
+    <div class="row-sb" style="margin-bottom:4px"><span style="color:var(--muted2)">Tối đa rút được</span><span style="color:var(--yellow);font-weight:700">${fmt(maxW)} (${maxPct}% hạn mức)</span></div>
+
+    <div class="row-sb" style="margin-bottom:4px"><span style="color:var(--muted2)">Phí rút ngay</span><span style="font-weight:700">${feeRate}% số tiền rút</span></div>
+
+    <div class="row-sb"><span style="color:var(--muted2)">Lãi suất/năm</span><span style="color:var(--red);font-weight:700">${annualRate}%/năm (tính từ ngay lúc rút)</span></div>
+
+    ${caDebt > 0 ? `<div class="row-sb" style="margin-top:4px"><span style="color:var(--muted2)">Dư nợ rút tiền mặt hiện tại</span><span style="color:var(--red);font-weight:700">${fmt(caDebt)}</span></div>` : ''}
+
+  `;
+
+  document.getElementById('cb-withdraw-card-info').innerHTML = infoHtml;
+
+  document.getElementById('cb-withdraw-amount').value = '';
+
+  document.getElementById('cb-withdraw-preview').style.display = 'none';
+
+  document.getElementById('modal-withdraw-card').classList.add('open');
 
 }
 
 
 
-function closeUseCardModal() {
+function closeWithdrawModal() {
 
-  document.getElementById('modal-use-card').classList.remove('open');
+  document.getElementById('modal-withdraw-card').classList.remove('open');
 
-  _cbUseCardId = null;
+  _cbWithdrawCardId = null;
+
+  _cbWithdrawCardData = null;
 
 }
 
 
 
-async function confirmUseCard() {
+function updateWithdrawPreview() {
 
-  const amount = parseInt(document.getElementById('cb-use-amount').value) || 0;
+  const amount = parseInt(document.getElementById('cb-withdraw-amount').value) || 0;
 
-  const merchant = document.getElementById('cb-use-merchant').value || 'Unknown';
+  const preview = document.getElementById('cb-withdraw-preview');
 
-  const category = document.getElementById('cb-use-category').value || 'other';
+  if (!amount || amount <= 0 || !_cbWithdrawCardData) { preview.style.display = 'none'; return; }
+
+  const c = _cbWithdrawCardData;
+
+  const feeRate = (c.ca_fee_rate_pct || 4) / 100;
+
+  const annualRate = (c.ca_annual_rate_pct || 40) / 100;
+
+  const dailyRate = annualRate / 365;
+
+  const fee = Math.max(100000, Math.round(amount * feeRate));
+
+  const daily30 = Math.round((amount + fee) * dailyRate * 30);
+
+  preview.style.display = 'block';
+
+  preview.innerHTML = `
+
+    <div class="row-sb" style="margin-bottom:4px"><span style="color:var(--muted2)">Số tiền rút</span><span style="font-weight:700;color:var(--green)">${fmt(amount)}</span></div>
+
+    <div class="row-sb" style="margin-bottom:4px"><span style="color:var(--muted2)">Phí rút (${c.ca_fee_rate_pct}%)</span><span style="color:var(--red);font-weight:700">-${fmt(fee)}</span></div>
+
+    <div class="row-sb" style="margin-bottom:4px"><span style="color:var(--muted2)">Nhận vào ví</span><span style="font-weight:800;color:var(--green);font-size:15px">${fmt(amount)}</span></div>
+
+    <div class="row-sb" style="margin-bottom:4px"><span style="color:var(--muted2)">Nợ phát sinh (gốc+phí)</span><span style="color:var(--yellow);font-weight:700">${fmt(amount + fee)}</span></div>
+
+    <div class="row-sb"><span style="color:var(--muted2)">Lãi ước tính sau 30 ngày</span><span style="color:var(--red);font-weight:700">~${fmt(daily30)}</span></div>
+
+  `;
+
+}
+
+
+
+async function confirmWithdraw() {
+
+  const amount = parseInt(document.getElementById('cb-withdraw-amount').value) || 0;
 
   if (amount <= 0) { toast('err', '❌ Nhập số tiền hợp lệ!'); return; }
 
+  const btn = document.getElementById('btn-confirm-withdraw');
+
+  btn.disabled = true;
+
+  btn.textContent = '⏳…';
+
   try {
 
-    const raw = JSON.parse(await B.useCreditCard(_cbUseCardId, amount, merchant, category));
+    const raw = JSON.parse(await B.cashAdvance(_cbWithdrawCardId, amount));
 
     if (raw.ok) {
 
-      toast('ok', `💳 Đã thanh toán ${fmt(amount)} bằng thẻ!`);
+      toast('ok', `💵 Đã rút ${fmt(raw.amount)} · Phí: ${fmt(raw.fee)} · Lãi ${raw.annual_rate_pct}%/năm`);
 
-      closeUseCardModal();
+      closeWithdrawModal();
 
       await loadCreditBanking();
 
@@ -452,11 +544,13 @@ async function confirmUseCard() {
 
     } else {
 
-      toast('err', '❌ ' + (raw.error || 'Giao dịch thất bại'));
+      toast('err', '❌ ' + (raw.error || 'Rút tiền thất bại'));
 
     }
 
   } catch(e) { toast('err', '❌ Lỗi: ' + e.message); }
+
+  finally { btn.disabled = false; btn.textContent = '💵 Xác nhận rút tiền'; }
 
 }
 

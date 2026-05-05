@@ -716,6 +716,10 @@ def apply_credit_card(product_code: str, requested_limit: int = None) -> dict:
     if any(c.get("product_code") == product_code for c in existing):
         return {"ok": False, "error": "Bạn đã có thẻ này rồi."}
 
+    # Block nếu có quá nhiều khoản rút tiền mặt đang chạy
+    if get_active_cash_advance_count() >= _CA_BLOCK_COUNT:
+        return {"ok": False, "error": f"Bạn đang có {get_active_cash_advance_count()} khoản rút tiền mặt chưa trả. Trả bớt nợ thẻ trước khi mở thêm thẻ mới."}
+
     # Tính hạn mức dựa trên credit score + thu nhập
     credit_info = get_credit_score_info()
     score = credit_info["score"]
@@ -791,15 +795,26 @@ def get_my_credit_cards() -> list:
         # Tính sao kê
         payment_info = _calc_card_payment_info(card)
 
+        product_code = card["product_code"]
+        max_withdraw_pct = _CA_MAX_PCT.get(product_code, 0.50)
+        ca_annual_rate = _CA_ANNUAL_RATE.get(product_code, 0.40)
+        ca_fee_rate = product.get("cash_advance_fee", 0.04)
+        credit_limit = card["approved_limit"]
+        used = card.get("used_credit", 0)
+        max_withdraw = min(int(credit_limit * max_withdraw_pct), credit_limit - used)
+        # Tổng dư nợ rút tiền mặt đang chạy
+        ca_total = sum(a.get("amount", 0) + a.get("accrued_interest", 0) for a in card.get("cash_advances", []))
+        ca_count = len([a for a in card.get("cash_advances", []) if a.get("amount", 0) > 0])
+
         result.append({
             "id": card["id"],
-            "product_code": card["product_code"],
+            "product_code": product_code,
             "product_label": card["product_label"],
             "emoji": product.get("emoji", "💳"),
-            "approved_limit": card["approved_limit"],
-            "used_credit": card.get("used_credit", 0),
-            "available_credit": card["approved_limit"] - card.get("used_credit", 0),
-            "utilization_pct": round(card.get("used_credit", 0) / max(1, card["approved_limit"]) * 100, 1),
+            "approved_limit": credit_limit,
+            "used_credit": used,
+            "available_credit": credit_limit - used,
+            "utilization_pct": round(used / max(1, credit_limit) * 100, 1),
             "interest_rate_pct": card.get("interest_rate", 0.025) * 100,
             "interest_rate_monthly_pct": card.get("interest_rate", 0.025) * 100,
             "grace_days": card.get("grace_days", 45),
@@ -809,6 +824,13 @@ def get_my_credit_cards() -> list:
             "annual_fee_amount": card.get("annual_fee", product.get("annual_fee", 0)),
             "transaction_count": len(card.get("transactions", [])),
             "perks": product.get("perks", []),
+            # Cash advance info
+            "max_withdraw_pct": round(max_withdraw_pct * 100, 0),
+            "max_withdraw": max_withdraw,
+            "ca_fee_rate_pct": round(ca_fee_rate * 100, 1),
+            "ca_annual_rate_pct": round(ca_annual_rate * 100, 0),
+            "ca_total_debt": int(ca_total),
+            "ca_count": ca_count,
             **payment_info,
         })
     return result
@@ -1272,6 +1294,10 @@ def apply_for_loan(
         debt_ratio = amount / max(1, income)
         if debt_ratio > MAX_DEBT_TO_EQUITY:
             return {"ok": False, "error": f"Dư nợ vượt quá {MAX_DEBT_TO_EQUITY*100:.0f}% thu nhập xác thực.".replace(",", ".")}
+
+    # Block nếu có quá nhiều khoản rút tiền mặt đang chạy
+    if get_active_cash_advance_count() >= _CA_BLOCK_COUNT:
+        return {"ok": False, "error": f"Bạn đang có quá nhiều khoản rút tiền mặt chưa trả. Thanh toán bớt dư nợ thẻ tín dụng trước khi vay thêm."}
 
     # Credit score check
     credit_info = get_credit_score_info()
@@ -2406,6 +2432,185 @@ def process_shop_payment(price: int, cash_amount: int = 0,
 
 
 # ═══════════════════════════════════════════════════════════════
+# 9b. CASH ADVANCE — RÚT TIỀN MẶT TỪ THẺ TÍN DỤNG
+# ═══════════════════════════════════════════════════════════════
+
+# Giới hạn rút tối đa (% hạn mức) theo hạng thẻ
+_CA_MAX_PCT = {
+    "cc_standard": 0.50,
+    "cc_gold":     0.55,
+    "cc_platinum": 0.60,
+    "cc_vip":      0.70,
+    "cc_black":    0.80,
+}
+
+# Lãi suất/năm cho khoản rút tiền mặt (cao hơn lãi thẻ thông thường)
+_CA_ANNUAL_RATE = {
+    "cc_standard": 0.40,
+    "cc_gold":     0.36,
+    "cc_platinum": 0.30,
+    "cc_vip":      0.25,
+    "cc_black":    0.20,
+}
+
+# Giới hạn số khoản rút đang chạy trước khi block vay/mở thẻ mới
+_CA_BLOCK_COUNT = 3
+
+
+def get_active_cash_advance_count() -> int:
+    """Đếm tổng số khoản rút tiền mặt còn dư nợ trên tất cả thẻ."""
+    cards = _get_cards_data()
+    total = 0
+    for card in cards:
+        for adv in card.get("cash_advances", []):
+            if adv.get("amount", 0) > 0:
+                total += 1
+    return total
+
+
+def cash_advance(card_id: str, amount: int) -> dict:
+    """Rút tiền mặt từ thẻ tín dụng (cash advance)."""
+    from .balance import get_balance, set_balance
+    from .transactions import add_transaction
+
+    cards = _get_cards_data()
+    card = next((c for c in cards if c["id"] == card_id), None)
+    if not card:
+        return {"ok": False, "error": "Không tìm thấy thẻ."}
+    if card.get("status") != "active":
+        return {"ok": False, "error": "Thẻ đang bị khóa."}
+
+    product_code = card.get("product_code", "cc_standard")
+    product = CREDIT_CARD_PRODUCTS.get(product_code, CREDIT_CARD_PRODUCTS["cc_standard"])
+
+    credit_limit = card.get("approved_limit", 0)
+    used_credit = card.get("used_credit", 0)
+    available = credit_limit - used_credit
+
+    # Giới hạn rút: 50-80% hạn mức (tuỳ hạng thẻ), không vượt số dư khả dụng
+    max_pct = _CA_MAX_PCT.get(product_code, 0.50)
+    max_withdraw = min(int(credit_limit * max_pct), available)
+
+    if amount <= 0:
+        return {"ok": False, "error": "Số tiền không hợp lệ."}
+    if amount > max_withdraw:
+        pct_label = int(max_pct * 100)
+        return {"ok": False, "error": f"Số tiền rút tối đa là {max_withdraw:,}₫ ({pct_label}% hạn mức).".replace(",", ".")}
+
+    # Phí rút: 1-4% tuỳ hạng thẻ, tối thiểu 100.000₫
+    fee_rate = product.get("cash_advance_fee", 0.04)
+    fee = max(100_000, int(amount * fee_rate))
+
+    # Kiểm tra available sau khi tính phí
+    if amount + fee > available:
+        return {"ok": False, "error": "Không đủ hạn mức khả dụng (bao gồm phí rút)."}
+
+    # Lãi suất năm cho khoản rút
+    annual_rate = _CA_ANNUAL_RATE.get(product_code, 0.40)
+    daily_rate = annual_rate / 365.0
+
+    # Trừ phí + ghi nợ ngay lập tức
+    card["used_credit"] = used_credit + amount + fee
+
+    # Ghi lịch sử cash advance để tính lãi hàng ngày
+    advances = card.get("cash_advances", [])
+    advances.append({
+        "id": str(uuid.uuid4())[:8],
+        "amount": amount,
+        "fee": fee,
+        "date": _today_str(),
+        "timestamp": _now(),
+        "annual_rate": annual_rate,
+        "daily_rate": daily_rate,
+        "accrued_interest": 0,
+        "last_accrual": _now(),
+    })
+    card["cash_advances"] = advances
+
+    # Ghi giao dịch vào sao kê thẻ
+    txns = card.get("transactions", [])
+    txns.append({
+        "date": _today_str(),
+        "timestamp": _now(),
+        "amount": amount + fee,
+        "merchant": "Rút tiền mặt",
+        "category": "cash_advance",
+        "type": "cash_advance",
+    })
+    card["transactions"] = txns[-200:]
+
+    _save_cards_data(cards)
+
+    # Cộng tiền vào ví (chỉ số tiền rút, không bao gồm phí đã tính vào nợ)
+    set_balance(get_balance() + amount)
+
+    try:
+        add_transaction("cash_advance", amount, f"Rút tiền mặt thẻ {card.get('product_label', '')}")
+        add_transaction("cash_advance_fee", -fee, f"Phí rút tiền thẻ {card.get('product_label', '')}")
+    except Exception:
+        pass
+
+    # Điểm tín dụng giảm theo tỷ lệ rút / hạn mức
+    advance_ratio = amount / max(1, credit_limit)
+    score_penalty = -max(5, min(40, int(advance_ratio * 70)))
+    update_credit_history(
+        "cash_advance",
+        f"Rút tiền mặt {amount:,}₫ phí {fee:,}₫ lãi {annual_rate*100:.0f}%/năm".replace(",", "."),
+        score_penalty,
+    )
+
+    return {
+        "ok": True,
+        "amount": amount,
+        "fee": fee,
+        "fee_rate_pct": round(fee_rate * 100, 1),
+        "annual_rate_pct": round(annual_rate * 100, 0),
+        "daily_rate_pct": round(daily_rate * 100, 4),
+        "net_received": amount,
+        "used_credit": card["used_credit"],
+        "available_credit": credit_limit - card["used_credit"],
+        "score_penalty": score_penalty,
+        "product_label": card.get("product_label", ""),
+    }
+
+
+def _accrue_cash_advance_interest() -> dict:
+    """Tính và cộng lãi hàng ngày cho các khoản rút tiền mặt còn dư nợ."""
+    cards = _get_cards_data()
+    now = _now()
+    changed = False
+    total_interest = 0
+
+    for card in cards:
+        advances = card.get("cash_advances", [])
+        if not advances:
+            continue
+        for adv in advances:
+            principal = adv.get("amount", 0)
+            if principal <= 0:
+                continue
+            last = adv.get("last_accrual", now)
+            days_elapsed = (now - last) / 86400.0
+            if days_elapsed < 1.0:
+                continue
+            days = int(days_elapsed)
+            # Lãi kép: tính trên gốc + lãi đã cộng
+            base = principal + adv.get("accrued_interest", 0)
+            interest = int(base * adv.get("daily_rate", 0.001096) * days)
+            if interest > 0:
+                adv["accrued_interest"] = adv.get("accrued_interest", 0) + interest
+                adv["last_accrual"] = last + days * 86400.0
+                card["used_credit"] = card.get("used_credit", 0) + interest
+                total_interest += interest
+                changed = True
+
+    if changed:
+        _save_cards_data(cards)
+
+    return {"total_interest_accrued": total_interest}
+
+
+# ═══════════════════════════════════════════════════════════════
 # 10. DAILY/PERIODIC PROCESSING — XỬ LÝ ĐỊNH KỲ
 # ═══════════════════════════════════════════════════════════════
 
@@ -2417,6 +2622,7 @@ def process_daily_banking() -> dict:
     - Xử lý quá hạn khoản vay
     - Thu phí thường niên
     - Tính điểm loyalty
+    - Tính lãi rút tiền mặt
     """
     results = {}
 
@@ -2434,5 +2640,8 @@ def process_daily_banking() -> dict:
 
     # 5. Tự động chứng minh thu nhập
     results["income_verify"] = verify_income()
+
+    # 6. Tính lãi khoản rút tiền mặt hàng ngày
+    results["cash_advance_interest"] = _accrue_cash_advance_interest()
 
     return results

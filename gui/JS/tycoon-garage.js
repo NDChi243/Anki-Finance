@@ -432,8 +432,7 @@ function renderGarageGrid(vehicles) {
 
     return `
       <div class="card" style="padding:12px;display:flex;flex-direction:column;gap:2px${isActive?' border:1px solid var(--green)':''}">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-        <div style="display:flex;align-items:center;gap:6px;flex:1">
+        <div style="display:flex;align-items:center;gap:6px">
           <div class="item-img-wrap" style="width:48px;height:48px;min-width:48px">
             ${v.image_url
               ? `<img class="item-img" style="width:48px;height:48px" src="${v.image_url}" alt="${v.name}">`
@@ -443,9 +442,8 @@ function renderGarageGrid(vehicles) {
           <div style="flex:1;min-width:0">
             <div style="font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${v.name}</div>
             <div style="font-size:11px;color:var(--muted2)">${vg} &nbsp;•&nbsp; <span style="color:var(--yellow)">${fmt(v.price)}</span></div>
+            <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:2px">${statusBadge}${compareToggle}</div>
           </div>
-          ${statusBadge}
-          ${compareToggle}
         </div>
         ${dupBar}
         ${fuelBar}
