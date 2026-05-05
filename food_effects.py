@@ -244,14 +244,14 @@ def check_daily_limit(item_id: str, item_data: dict = None) -> dict:
                 "count": weekly_count,
                 "error": f"⚠️ Bạn đã mua đủ {WEEKLY_STUDY_LIMIT} vật phẩm học tập trong tuần này. Tuần sau quay lại nhé!"
             }
-        # Kiểm tra tổng giá trị: tối đa 1 triệu/tuần
+        # Kiểm tra tổng giá trị: tối đa 3 triệu/tuần
         if weekly_total + price > STUDY_MAX_VALUE:
             remaining = STUDY_MAX_VALUE - weekly_total
             return {
                 "ok": False,
                 "limit": STUDY_MAX_VALUE,
                 "count": weekly_total,
-                "error": f"⚠️ Đã đạt giới hạn 1 triệu VND cho vật phẩm học tập trong tuần! Còn có thể mua thêm {remaining:,} VND.".replace(",", "."),
+                "error": f"⚠️ Đã đạt giới hạn 3 triệu VND cho vật phẩm học tập trong tuần! Còn có thể mua thêm {remaining:,} VND.".replace(",", "."),
             }
         return {"ok": True, "limit": WEEKLY_STUDY_LIMIT, "count": weekly_count}
 
