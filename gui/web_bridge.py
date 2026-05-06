@@ -213,6 +213,14 @@ class TycoonBridge(QObject):
     @pyqtSlot(result=str)
     def getShopItems(self):
         items = _enrich_items(load_shop_items())
+        # Lọc item theo game mode — ẩn advanced items trong Simple Mode
+        try:
+            from .. import _is_simple_mode
+            if _is_simple_mode():
+                from ..config import ADVANCED_CATEGORIES
+                items = [it for it in items if it.get("category", "") not in ADVANCED_CATEGORIES]
+        except Exception:
+            pass
         return json.dumps(items, ensure_ascii=False)
 
     @pyqtSlot(str, result=str)
@@ -225,6 +233,19 @@ class TycoonBridge(QObject):
             return json.dumps({"ok": False, "error": "Sản phẩm không tồn tại."})
         logger.debug("buyItem(%s): vehicle_group='%s', category='%s', price=%d",
                      item_id, item.get("vehicle_group"), item.get("category", ""), item.get("price", 0))
+
+        # ── Mode gate: ngăn Simple mode mua advanced items ──
+        try:
+            from .. import _is_simple_mode
+            if _is_simple_mode():
+                from ..config import ADVANCED_CATEGORIES
+                if item.get("category", "") in ADVANCED_CATEGORIES:
+                    return json.dumps({
+                        "ok": False,
+                        "error": "🔒 Vật phẩm này chỉ khả dụng ở chế độ Full Mode. Vào Settings để nâng cấp chế độ chơi."
+                    }, ensure_ascii=False)
+        except Exception:
+            pass
 
         # ── Kiểm tra daily purchase limit ──
         limit_check = check_daily_limit(item_id, item)
@@ -366,13 +387,15 @@ class TycoonBridge(QObject):
                     _eff["_all_effects"] = _active_effs
                 activate_boost(item_id, _eff, _slot_id)
 
-        # Thuế tiêu thụ đặc biệt (SCT)
+        # Thuế tiêu thụ đặc biệt (SCT) — chỉ áp dụng ở Full Mode
         sct_amount = 0
         try:
-            from ..tax_system import collect_sct, get_sct_for_item
-            sct_info = get_sct_for_item(item)
-            if sct_info["has_sct"]:
-                sct_amount = collect_sct(item)
+            from .. import _is_simple_mode
+            if not _is_simple_mode():
+                from ..tax_system import collect_sct, get_sct_for_item
+                sct_info = get_sct_for_item(item)
+                if sct_info["has_sct"]:
+                    sct_amount = collect_sct(item)
         except Exception as e:
             logger.debug("purchaseItem (SCT): %s", e)
 
@@ -429,6 +452,19 @@ class TycoonBridge(QObject):
         item = items_map.get(item_id)
         if not item:
             return json.dumps({"ok": False, "error": "Sản phẩm không tồn tại."})
+
+        # ── Mode gate: ngăn Simple mode mua advanced items ──
+        try:
+            from .. import _is_simple_mode
+            if _is_simple_mode():
+                from ..config import ADVANCED_CATEGORIES
+                if item.get("category", "") in ADVANCED_CATEGORIES:
+                    return json.dumps({
+                        "ok": False,
+                        "error": "🔒 Vật phẩm này chỉ khả dụng ở chế độ Full Mode. Vào Settings để nâng cấp chế độ chơi."
+                    }, ensure_ascii=False)
+        except Exception:
+            pass
 
         # ── Kiểm tra daily purchase limit ──
         limit_check = check_daily_limit(item_id, item)
@@ -614,13 +650,15 @@ class TycoonBridge(QObject):
                     _eff["_all_effects"] = _active_effs
                 activate_boost(item_id, _eff, _slot_id)
 
-        # SCT tax
+        # SCT tax — chỉ áp dụng ở Full Mode
         sct_amount = 0
         try:
-            from ..tax_system import collect_sct, get_sct_for_item
-            sct_info = get_sct_for_item(item)
-            if sct_info["has_sct"]:
-                sct_amount = collect_sct(item)
+            from .. import _is_simple_mode
+            if not _is_simple_mode():
+                from ..tax_system import collect_sct, get_sct_for_item
+                sct_info = get_sct_for_item(item)
+                if sct_info["has_sct"]:
+                    sct_amount = collect_sct(item)
         except Exception as e:
             logger.debug("processPayment (SCT): %s", e)
 

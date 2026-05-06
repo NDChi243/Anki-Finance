@@ -207,8 +207,16 @@ def add_reward(ease: int) -> dict:
             if econ_available:
                 cap_mult, _ = get_daily_cap_multiplier()
                 final_reward = int(final_reward * cap_mult)
-                # Wealth tax
-                final_reward, wealth_tax_amount, wealth_tax_rate = apply_wealth_tax_on_reward(final_reward)
+                # Wealth tax — chỉ áp dụng ở Full Mode
+                try:
+                    from . import _is_simple_mode
+                    _simple = _is_simple_mode()
+                except Exception:
+                    _simple = False
+                if not _simple:
+                    final_reward, wealth_tax_amount, wealth_tax_rate = apply_wealth_tax_on_reward(final_reward)
+                else:
+                    wealth_tax_amount = 0
             else:
                 wealth_tax_amount = 0
 
@@ -236,19 +244,33 @@ def add_reward(ease: int) -> dict:
             if econ_available:
                 cap_mult, _ = get_daily_cap_multiplier()
                 final_reward = int(final_reward * cap_mult)
-                # Wealth tax
-                final_reward, wealth_tax_amount, wealth_tax_rate = apply_wealth_tax_on_reward(final_reward)
+                # Wealth tax — chỉ áp dụng ở Full Mode
+                try:
+                    from . import _is_simple_mode
+                    _simple = _is_simple_mode()
+                except Exception:
+                    _simple = False
+                if not _simple:
+                    final_reward, wealth_tax_amount, wealth_tax_rate = apply_wealth_tax_on_reward(final_reward)
+                else:
+                    wealth_tax_amount = 0
             else:
                 wealth_tax_amount = 0
 
             final_reward = _apply_loan_repay(final_reward)
 
-            # ── Phí phục hồi kiến thức Again ──
+            # ── Phí phục hồi kiến thức Again — chỉ Full Mode ──
             again_fee = 0
             if econ_available and final_reward > 0:
-                again_fee = get_again_recovery_fee()
-                again_fee = min(again_fee, final_reward)
-                final_reward -= again_fee
+                try:
+                    from . import _is_simple_mode
+                    _simple = _is_simple_mode()
+                except Exception:
+                    _simple = False
+                if not _simple:
+                    again_fee = get_again_recovery_fee()
+                    again_fee = min(again_fee, final_reward)
+                    final_reward -= again_fee
             else:
                 again_fee = 0
 
@@ -291,8 +313,16 @@ def add_reward(ease: int) -> dict:
             cap_mult, cap_info = get_daily_cap_multiplier()
             daily_cap_info = cap_info
             final_reward = int(final_reward * cap_mult)
-            # ── Wealth tax ──
-            final_reward, wealth_tax_amount, wealth_tax_rate = apply_wealth_tax_on_reward(final_reward)
+            # ── Wealth tax — chỉ áp dụng ở Full Mode ──
+            try:
+                from . import _is_simple_mode
+                _simple = _is_simple_mode()
+            except Exception:
+                _simple = False
+            if not _simple:
+                final_reward, wealth_tax_amount, wealth_tax_rate = apply_wealth_tax_on_reward(final_reward)
+            else:
+                wealth_tax_amount = 0
         else:
             wealth_tax_amount = 0
 

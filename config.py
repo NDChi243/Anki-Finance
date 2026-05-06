@@ -23,6 +23,18 @@ ADVANCED_TABS = {
     "stocks", "digital", "learning",
 }
 
+# Category shop items chỉ hiển thị / cho phép mua trong Full Mode
+ADVANCED_CATEGORIES = {
+    "🚗 Showroom xe",
+    "💻 Cửa hàng đồ công nghệ",
+    "💎 Cửa hàng hàng hiệu",
+    "🏠 Thị trường bất động sản",
+    "🪙 Sàn Crypto",
+    "🛡️ Bảo hiểm",
+    "🏦 Vật phẩm tài chính",
+    "🎓 Vật phẩm học tập",
+}
+
 REWARD_MAP = {
     1: 500,     # Again — phí phục hồi kiến thức
     2: 15000,   # Hard — khuyến khích đối mặt kiến thức khó
