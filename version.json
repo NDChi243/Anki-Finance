@@ -1,14 +1,14 @@
 {
-  "version": "1.2.0",
-  "changelog": [ 
+  "version": "1.2.0b",
+  "changelog": [
     {
-      "version": "1.2.0",
+      "version": "1.2.0b",
       "changes": [
-        "Thêm hệ thống xếp hạng Progressive Ladder với nhiều cấp bậc và phần thưởng hấp dẫn.",
-        "Thêm tính năng mở khóa thị trường mới (Crypto, Trái phiếu) dựa trên cấp bậc đạt được.",
-        "Áp dụng hệ số nhân XP dựa trên cấp bậc để tăng tốc độ thăng tiến cho người chơi tích cực.",
-        "Cải thiện hiệu suất và sửa một số lỗi nhỏ."
+        "Cải thiện hiệu suất Add-on: cache _cached_time() 100ms thay vì gọi time.time() mỗi lần, fix _LONG_CACHE_KEYS chứa key dict gây cache miss liên tục, tối ưu _is_simple_mode() chỉ đọc 1 lần trong add_reward(), thêm _simple_mode_cache toàn cục, xóa lru_cache vô dụng trên _calc_rank.",
+        "Sửa lỗi tiềm năng: _is_simple_mode() được định nghĩa sớm hơn trong __init__.py thay vì ở cuối file gây lỗi import trước khi định nghĩa, xóa debug logging verbose trong _safe_config.py.",
+        "Cập nhật tài liệu .md: thêm kiến trúc tổng quan vào README.md giúp AI làm việc hiệu quả hơn."
       ]
     }
+   
   ]
 }

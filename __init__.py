@@ -47,6 +47,26 @@ def _log_error(context: str):
     """Ghi log lỗi ra console Anki để dễ debug (tương thích ngược)."""
     logger.error("[%s] %s", context, traceback.format_exc())
 
+# ── Cache _is_simple_mode trong 1 lần gọi (tránh gọi nhiều lần trong hot path) ──
+_simple_mode_cache: bool | None = None
+
+def _is_simple_mode() -> bool:
+    """Kiểm tra xem game mode có đang là Simple không.
+    Kết quả được cache trong suốt vòng đời process (vì mode không thay đổi khi đang chạy).
+    """
+    global _simple_mode_cache
+    if _simple_mode_cache is not None:
+        return _simple_mode_cache
+    try:
+        from ._safe_config import cfg_str
+        from .config import CONFIG_KEY_GAME_MODE, DEFAULT_GAME_MODE
+        mode = cfg_str(CONFIG_KEY_GAME_MODE, DEFAULT_GAME_MODE)
+        _simple_mode_cache = (mode == "simple")
+        return _simple_mode_cache
+    except Exception:
+        _simple_mode_cache = False
+        return False
+
 # ── Hook: thưởng/phạt tiền sau mỗi lần ôn thẻ ───────────────────
 def on_review_done(reviewer, card, ease):
     # Batch tất cả cfg_set() → 1 lần ghi Anki config duy nhất
@@ -290,13 +310,9 @@ def _update_gamification(ease: int, result: dict):
             except Exception as e:
                 logger.warning("rank_xp_mult: %s", e)
             # ── Simple Mode: giảm 50% EXP ──
-            try:
-                from . import _is_simple_mode
-                if _is_simple_mode():
-                    from .config import SIMPLE_MODE_MULTIPLIER
-                    xp = max(1, int(xp * SIMPLE_MODE_MULTIPLIER))
-            except Exception:
-                pass
+            if _is_simple_mode():
+                from .config import SIMPLE_MODE_MULTIPLIER
+                xp = max(1, int(xp * SIMPLE_MODE_MULTIPLIER))
             add_xp(xp)
             _rank_check_counter += 1
             if _rank_check_counter >= 20 or _last_rank_cache is None:
@@ -371,13 +387,9 @@ def _award_random_kn(ease: int):
             return
         amount = random.randint(5, 10)
         # ── Simple Mode: giảm 50% KN ──
-        try:
-            from . import _is_simple_mode
-            if _is_simple_mode():
-                from .config import SIMPLE_MODE_MULTIPLIER
-                amount = max(1, int(amount * SIMPLE_MODE_MULTIPLIER))
-        except Exception:
-            pass
+        if _is_simple_mode():
+            from .config import SIMPLE_MODE_MULTIPLIER
+            amount = max(1, int(amount * SIMPLE_MODE_MULTIPLIER))
         from .rank_system import add_kn
         add_kn(amount)
         # Hiển thị notification nhẹ trên reviewer
@@ -685,17 +697,6 @@ def _on_profile_loaded():
 
         # ── Economy Controls: thu phí đỗ xe garage hàng ngày ──
         _collect_garage_fees()
-
-
-def _is_simple_mode() -> bool:
-    """Kiểm tra xem game mode có đang là Simple không."""
-    try:
-        from ._safe_config import cfg_str
-        from .config import CONFIG_KEY_GAME_MODE, DEFAULT_GAME_MODE
-        mode = cfg_str(CONFIG_KEY_GAME_MODE, DEFAULT_GAME_MODE)
-        return mode == "simple"
-    except Exception:
-        return False
 
 
 def _update_stock_prices():

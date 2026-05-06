@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
-from functools import lru_cache
 """
 rank_system.py — Hệ thống cấp bậc Anki Finance Tycoon.
 
@@ -221,7 +220,6 @@ def add_kn(amount: int) -> None:
 
 
 # ── Rank logic ────────────────────────────────────────────────────
-
 def _calc_rank(xp: int, balance: int, kn: int = 0) -> dict:
     """Tính rank hiện tại dựa trên xp + balance + kn."""
     current = RANKS[0]
@@ -233,7 +231,6 @@ def _calc_rank(xp: int, balance: int, kn: int = 0) -> dict:
             break
     return current
 
-_calc_rank = lru_cache(maxsize=512)(_calc_rank)
 
 def _next_rank(current_id: str) -> dict | None:
     idx = _RANK_INDEX.get(current_id)

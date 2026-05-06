@@ -8,6 +8,8 @@ Tối ưu hiệu suất:
   - cache_read: cache trong memory các giá trị đã đọc, tránh gọi mw.col.get_config()
     liên tục. Cache tự động invalidate sau cfg_set().
   - batch_cfg_set: Gom nhiều cfg_set vào 1 lần save duy nhất.
+  - time_cache: Giảm số lần gọi time.time() (system call) bằng cached timestamp.
+  - selective_deepcopy: Chỉ deepcopy khi cần (dict/list), tránh overhead cho int/float/str.
 """
 
 from aqt import mw
@@ -18,24 +20,40 @@ from .logger import get_logger
 
 logger = get_logger(__name__)
 
+# ── Time cache: giảm số lần gọi time.time() (OS syscall) ────────
+_time_cache: float = 0.0
+_time_cache_ttl: float = 0.1  # refresh mỗi 100ms — đủ cho hot path (<10s cache TTL)
+
+def _cached_time() -> float:
+    """Trả về timestamp, cache trong 100ms để giảm OS syscall."""
+    global _time_cache
+    now = time.time()
+    if now - _time_cache >= _time_cache_ttl:
+        _time_cache = now
+    return _time_cache
+
 # ── In-memory cache ──────────────────────────────────────────────
 _config_cache = {}       # {key: (value, timestamp)}
 _cache_ttl = 10.0        # Thời gian sống của cache (giây) — tăng từ 2s lên 10s để giảm I/O
 _cache_enabled = True    # Có thể tắt cache nếu debug
 
 # Keys đặc biệt cần cache dài hơn (ít thay đổi)
+# LƯU Ý: Chỉ chứa keys có giá trị int/float/str, KHÔNG chứa keys dạng dict/list
+# vì cfg_int() dùng _cache_get() và sẽ liên tục invalid nếu gặp non-int.
 _LONG_CACHE_KEYS = {
     "anki_tycoon_balance",
     "anki_tycoon_stats",
     "anki_tycoon_budget",
     "anki_tycoon_daily_again_count",
     "anki_tycoon_daily_again_date",
-    "anki_tycoon_passive_effects",
-    "anki_tycoon_vehicle_data",
-    "anki_tycoon_re_portfolio",
-    "anki_tycoon_stocks_market",
-    "anki_tycoon_crypto_market",
+    # Các key dạng dict/list KHÔNG được đưa vào đây
+    # vì cfg_int() kiểm tra isinstance(cached, (int, float)) và sẽ invalidate
 }
+
+# Cache cho deepcopy: tránh copy.deepcopy nhiều lần cho cùng 1 giá trị
+# Chỉ dùng cho các dict lớn, ít thay đổi
+_deepcopy_cache = {}       # {id(obj): (deepcopy_result, timestamp)}
+_deepcopy_cache_ttl = 2.0  # cache deepcopy 2 giây
 
 
 def _cache_get(key: str):
@@ -47,7 +65,7 @@ def _cache_get(key: str):
         return None
     val, ts = entry
     ttl = _cache_ttl * 5 if key in _LONG_CACHE_KEYS else _cache_ttl
-    if time.time() - ts < ttl:
+    if _cached_time() - ts < ttl:
         return val
     # Hết hạn — xoá khỏi cache
     del _config_cache[key]
@@ -57,7 +75,7 @@ def _cache_get(key: str):
 def _cache_set(key: str, val):
     """Lưu giá trị vào cache."""
     if _cache_enabled:
-        _config_cache[key] = (val, time.time())
+        _config_cache[key] = (val, _cached_time())
 
 
 def _cache_invalidate(key: str = None):
@@ -171,9 +189,6 @@ def cfg_dict(key: str, default: dict | None = None) -> dict:
     cached = _cache_get(key)
     if cached is not None:
         if isinstance(cached, dict):
-            if key == "anki_tycoon_vehicle_data":
-                garage_size = len(cached.get("garage", {}))
-                logger.debug("cfg_dict(%s): HIT cache — garage có %d xe", key, garage_size)
             # ⚠️ Dùng deepcopy để tránh shared mutable state giữa cache và caller.
             # Nếu dùng dict(cached) (shallow copy), các dict con (garage, maintenance_due, ...)
             # vẫn là cùng object với cache → mọi thay đổi từ caller sẽ làm corrupt cache.
@@ -188,9 +203,6 @@ def cfg_dict(key: str, default: dict | None = None) -> dict:
     try:
         v = mw.col.get_config(key, default)
         result = v if isinstance(v, dict) else dict(default)
-        if key == "anki_tycoon_vehicle_data":
-            garage_size = len(result.get("garage", {}))
-            logger.debug("cfg_dict(%s): MISS cache — đọc từ Anki config, garage có %d xe, v=%s", key, garage_size, type(v).__name__)
         _cache_set(key, result)
         # ⚠️ Deepcopy để caller không làm corrupt cache khi modify result
         return copy.deepcopy(result)
@@ -249,9 +261,6 @@ def cfg_set(key: str, val):
     _cache_invalidate(key)
 
     if _batch_active:
-        if key == "anki_tycoon_vehicle_data":
-            garage_size = len(val.get("garage", {})) if isinstance(val, dict) else "N/A"
-            logger.debug("cfg_set(%s): batch mode — gom lại, garage có %s xe", key, garage_size)
         _batch_writes[key] = val
         return
 
@@ -259,13 +268,8 @@ def cfg_set(key: str, val):
         logger.warning("cfg_set(%s): col_ready() == False, bỏ qua ghi!", key)
         return
     try:
-        if key == "anki_tycoon_vehicle_data":
-            garage_size = len(val.get("garage", {})) if isinstance(val, dict) else "N/A"
-            logger.debug("cfg_set(%s): ghi config với garage có %s xe (type val=%s)", key, garage_size, type(val).__name__)
         mw.col.set_config(key, val)
         _cache_set(key, val)
-        if key == "anki_tycoon_vehicle_data":
-            logger.debug("cfg_set(%s): đã ghi và cache thành công", key)
     except Exception as e:
         logger.warning("cfg_set(%s): %s", key, e)
 

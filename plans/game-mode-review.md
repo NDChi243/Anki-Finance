@@ -205,11 +205,11 @@ Không gây lỗi nhưng gây waste CPU và network.
 
 ### Khuyến nghị hành động
 
-#### Nên làm ngay (Critical):
-1. **Filter shop items theo mode** — Thêm field `mode: "full"` vào các item advanced, filter trong `getShopItems()` khi `_is_simple_mode()`
-2. **Gate SCT theo mode** — Chỉ collect SCT khi `not _is_simple_mode()`
-3. **Gate wealth tax + again recovery fee** — Chỉ áp dụng economy controls advanced trong Full Mode
+#### ✅ Đã fix trong v1.2.0b:
+1. **Filter shop items theo mode** — `getShopItems()` và `buyItem()` trong [`gui/web_bridge.py`](gui/web_bridge.py:217) đã filter theo `ADVANCED_CATEGORIES` khi `_is_simple_mode()`.
+2. **Gate wealth tax + again recovery fee** — [`balance.py:add_reward()`](balance.py:139) dùng `_simple` flag, chỉ apply economy controls trong Full Mode.
 
-#### Nên cân nhắc (Design):
+#### Còn lại:
+3. **Gate SCT theo mode** — Chỉ collect SCT khi `not _is_simple_mode()` (hiện tại SCT chỉ áp dụng cho advanced categories đã bị block, nên impact thấp)
 4. **Đơn giản hoá Simple Mode** — Cân nhắc bỏ Energy System, Living Costs, Inactivity Penalty, Tax (basic) khỏi Simple Mode để đúng tinh thần "simple"
 5. **Review lại shop item ownership** — Nếu Simple player có advanced items từ trước khi chuyển mode, cần xử lý migration

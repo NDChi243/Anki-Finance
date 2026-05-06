@@ -145,6 +145,14 @@ def add_reward(ease: int) -> dict:
 
     reset_monthly_if_needed()
 
+    # ── Xác định Simple Mode 1 lần duy nhất ──
+    _simple = False
+    try:
+        from . import _is_simple_mode
+        _simple = _is_simple_mode()
+    except Exception:
+        pass
+
     # ── Load passive effects (xp_multiplier từ xe/luxury/tech/BĐS) ──
     try:
         from .item_effects import get_all_passive_effects
@@ -172,14 +180,9 @@ def add_reward(ease: int) -> dict:
         rank_reward_mult = 1.0
 
     # ── Tiêu hao năng lượng + áp dụng stamina_regen ──
-    # Simple Mode: bỏ qua hoàn toàn Energy System (không tiêu hao NL)
-    try:
-        from . import _is_simple_mode
-        if _is_simple_mode():
-            energy_mult = 1.0
-        else:
-            energy_mult = _consume_energy_and_stamina()
-    except Exception:
+    if _simple:
+        energy_mult = 1.0
+    else:
         energy_mult = _consume_energy_and_stamina()
 
     # ── Load các hàm kiểm soát kinh tế ──
@@ -188,8 +191,6 @@ def add_reward(ease: int) -> dict:
             get_daily_cap_multiplier,
             apply_wealth_tax_on_reward,
             get_again_recovery_fee,
-            increment_daily_cards_count,
-            increment_total_system_cards,
         )
         econ_available = True
     except Exception as e:
@@ -224,11 +225,6 @@ def add_reward(ease: int) -> dict:
                 cap_mult, _ = get_daily_cap_multiplier()
                 final_reward = int(final_reward * cap_mult)
                 # Wealth tax — chỉ áp dụng ở Full Mode
-                try:
-                    from . import _is_simple_mode
-                    _simple = _is_simple_mode()
-                except Exception:
-                    _simple = False
                 if not _simple:
                     final_reward, wealth_tax_amount, wealth_tax_rate = apply_wealth_tax_on_reward(final_reward)
                 else:
@@ -237,11 +233,6 @@ def add_reward(ease: int) -> dict:
                 wealth_tax_amount = 0
 
             # ── Simple Mode: bỏ qua trả nợ, bỏ qua thuế TNCN, giảm 50% reward ──
-            try:
-                from . import _is_simple_mode
-                _simple = _is_simple_mode()
-            except Exception:
-                _simple = False
             if not _simple:
                 final_reward = _apply_loan_repay(final_reward)
                 net_income, pit_withheld = _apply_pit_withholding(final_reward)
@@ -274,11 +265,6 @@ def add_reward(ease: int) -> dict:
                 cap_mult, _ = get_daily_cap_multiplier()
                 final_reward = int(final_reward * cap_mult)
                 # Wealth tax — chỉ áp dụng ở Full Mode
-                try:
-                    from . import _is_simple_mode
-                    _simple = _is_simple_mode()
-                except Exception:
-                    _simple = False
                 if not _simple:
                     final_reward, wealth_tax_amount, wealth_tax_rate = apply_wealth_tax_on_reward(final_reward)
                 else:
@@ -287,11 +273,6 @@ def add_reward(ease: int) -> dict:
                 wealth_tax_amount = 0
 
             # ── Simple Mode: bỏ qua trả nợ ──
-            try:
-                from . import _is_simple_mode
-                _simple = _is_simple_mode()
-            except Exception:
-                _simple = False
             if not _simple:
                 final_reward = _apply_loan_repay(final_reward)
             else:
@@ -354,11 +335,6 @@ def add_reward(ease: int) -> dict:
             daily_cap_info = cap_info
             final_reward = int(final_reward * cap_mult)
             # ── Wealth tax — chỉ áp dụng ở Full Mode ──
-            try:
-                from . import _is_simple_mode
-                _simple = _is_simple_mode()
-            except Exception:
-                _simple = False
             if not _simple:
                 final_reward, wealth_tax_amount, wealth_tax_rate = apply_wealth_tax_on_reward(final_reward)
             else:
@@ -367,11 +343,6 @@ def add_reward(ease: int) -> dict:
             wealth_tax_amount = 0
 
         # ── Simple Mode: bỏ qua trả nợ, bỏ qua thuế TNCN, giảm 50% reward ──
-        try:
-            from . import _is_simple_mode
-            _simple = _is_simple_mode()
-        except Exception:
-            _simple = False
         if not _simple:
             final_reward = _apply_loan_repay(final_reward)
             net_income, pit_withheld = _apply_pit_withholding(final_reward)
