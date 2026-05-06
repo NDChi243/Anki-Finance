@@ -386,6 +386,13 @@ class TycoonBridge(QObject):
         except Exception as e:
             logger.debug("buyItem: record_purchase — %s", e)
 
+        # Achievement trigger: item_purchased
+        try:
+            from ..achievements import check_and_unlock
+            check_and_unlock("item_purchased", item_id)
+        except Exception as e:
+            logger.debug("buyItem: check_and_unlock(item_purchased) — %s", e)
+
         logger.debug("buyItem(%s): hoàn tất — new_balance=%d", item_id, new_balance)
         return json.dumps({
             "ok":             True,
@@ -619,6 +626,13 @@ class TycoonBridge(QObject):
 
         new_balance = get_balance()
         self.balanceChanged.emit(new_balance)
+
+        # Achievement trigger: item_purchased
+        try:
+            from ..achievements import check_and_unlock
+            check_and_unlock("item_purchased", item_id)
+        except Exception as e:
+            logger.debug("processShopPayment: check_and_unlock(item_purchased) — %s", e)
 
         logger.debug("processShopPayment(%s): hoàn tất — new_balance=%d", item_id, new_balance)
         return json.dumps({

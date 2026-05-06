@@ -204,7 +204,7 @@ def _check_completion(q: dict):
     target = q.get("target", 1)
     qtype  = q.get("type", "")
 
-    if qtype == "no_again_under":
+    if qtype in ("no_again_under", "again_ratio"):
         # Hoàn thành nếu prog (= số again) <= target
         q["done"] = prog <= target
     elif qtype == "no_purchase":
@@ -322,6 +322,8 @@ def _recompute_aggregate_quests(s: dict, total_cards: int, again_count: int):
     # hero_day: cards + streak >= 3 + earn >= 200K
     if s.get("streak", 0) >= 3 and s.get("earn_money", 0) >= 200_000:
         update_quest_progress("hero_day", total_cards, set_absolute=True)
+    else:
+        update_quest_progress("hero_day", 0, set_absolute=True)
 
 
 def record_card_review(ease: int, total_cards_today: int,
