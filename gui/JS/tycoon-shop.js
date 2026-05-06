@@ -6,23 +6,28 @@
 
 
 
+/**
+ * Danh mục cửa hàng.
+ * - mode='both': hiển thị ở cả Simple và Full
+ * - mode='full': chỉ hiển thị ở chế độ Full (xe cộ, công nghệ, hàng hiệu, bất động sản)
+ */
 const SHOP_CATEGORIES = [
 
-  {key:'food',    label:'🍽️ Ẩm thực',                desc:'Consumable cho phiên học ngắn hạn: ăn uống, hồi tài nguyên, tăng reward, giữ nhịp học', color:'#f97316'},
+  {key:'food',    label:'🍽️ Ẩm thực',                desc:'Consumable cho phiên học ngắn hạn: ăn uống, hồi tài nguyên, tăng reward, giữ nhịp học', color:'#f97316',  mode:'both'},
 
-  {key:'car',     label:'🚗 Showroom xe',              desc:'Tài sản di chuyển và lifestyle asset: buff gián tiếp, thiên về chất sống và hiệu suất', color:'#3b82f6'},
+  {key:'car',     label:'🚗 Showroom xe',              desc:'Tài sản di chuyển và lifestyle asset: buff gián tiếp, thiên về chất sống và hiệu suất', color:'#3b82f6',  mode:'full'},
 
-  {key:'tech',    label:'💻 Cửa hàng đồ công nghệ',    desc:'Productivity gear và scheduler build dài hạn: review nhiều hơn, cooldown thấp hơn', color:'#8b5cf6'},
+  {key:'tech',    label:'💻 Cửa hàng đồ công nghệ',    desc:'Productivity gear và scheduler build dài hạn: review nhiều hơn, cooldown thấp hơn', color:'#8b5cf6',  mode:'full'},
 
-  {key:'luxury',  label:'💎 Cửa hàng hàng hiệu',       desc:'Prestige asset và đồ sở hữu cao cấp: thiên về passive value, danh tiếng và lối chơi sở hữu', color:'#eab308'},
+  {key:'luxury',  label:'💎 Cửa hàng hàng hiệu',       desc:'Prestige asset và đồ sở hữu cao cấp: thiên về passive value, danh tiếng và lối chơi sở hữu', color:'#eab308',  mode:'full'},
 
-  {key:'re',      label:'🏠 Thị trường bất động sản',  desc:'Tài sản tạo dòng tiền thụ động và tích lũy giá trị theo thời gian', color:'#06b6d4'},
+  {key:'re',      label:'🏠 Thị trường bất động sản',  desc:'Tài sản tạo dòng tiền thụ động và tích lũy giá trị theo thời gian', color:'#06b6d4',  mode:'full'},
 
-  {key:'finance', label:'🏦 Vật phẩm tài chính',       desc:'Core bank/invest tools: lãi suất, tốc độ tích lũy, thanh khoản và combo ngân hàng', color:'#f59e0b'},
+  {key:'finance', label:'🏦 Vật phẩm tài chính',       desc:'Core bank/invest tools: lãi suất, tốc độ tích lũy, thanh khoản và combo ngân hàng', color:'#f59e0b',  mode:'both'},
 
-  {key:'study',   label:'🎓 Vật phẩm học tập',         desc:'Tác động trực tiếp lên review, interval, ease và phần thưởng học thẻ', color:'#ec4899'},
+  {key:'study',   label:'🎓 Vật phẩm học tập',         desc:'Tác động trực tiếp lên review, interval, ease và phần thưởng học thẻ', color:'#ec4899',  mode:'both'},
 
-  {key:'ins',     label:'🛡️ Bảo hiểm',                 desc:'Lớp phòng thủ tài chính: giảm rủi ro, giữ tài sản và hạn chế thiệt hại khi có biến cố', color:'#14b8a6'},
+  {key:'ins',     label:'🛡️ Bảo hiểm',                 desc:'Lớp phòng thủ tài chính: giảm rủi ro, giữ tài sản và hạn chế thiệt hại khi có biến cố', color:'#14b8a6',  mode:'both'},
 
 ];
 
@@ -46,7 +51,15 @@ function renderShopCategories() {
 
   const el = document.getElementById('shop-categories');
 
-  el.innerHTML = SHOP_CATEGORIES.map(c => {
+  const mode = (window.gameMode || 'full'); // fallback full
+
+  // Lọc danh mục theo game mode: mode='full' chỉ hiện full/both, mode='simple' chỉ hiện both
+  const visible = SHOP_CATEGORIES.filter(c => {
+    if (mode === 'simple') return c.mode === 'both';
+    return true; // full mode → hiện tất cả
+  });
+
+  el.innerHTML = visible.map(c => {
 
     let countLabel;
 
@@ -101,6 +114,13 @@ function openShopModal(catKey) {
   const cat = SHOP_CATEGORIES.find(c => c.key === catKey);
 
   if (!cat) return;
+
+  // Chặn nếu danh mục này không khả dụng trong game mode hiện tại
+  const mode = (window.gameMode || 'full');
+  if (mode === 'simple' && cat.mode === 'full') {
+    toast('err', '❌ Danh mục này không khả dụng ở chế độ Simple.');
+    return;
+  }
 
   const modalThemeDesc = {
 

@@ -145,9 +145,10 @@ KEYS_TO_CLEAR = [
     "anki_tycoon_food_freshness",
     # ── Goals ────────────────────────────────────────────────
     "anki_tycoon_goal",
-    # ── Streak / Rank / Quest ────────────────────────────────
+    # ── Streak / Rank / Quest / KN ──────────────────────────
     "anki_tycoon_xp",
     "anki_tycoon_kn_points",
+    "anki_tycoon_kn_perks_unlocked",
     "anki_tycoon_rank",
     "anki_tycoon_xp_earned_simple",
     "anki_tycoon_xp_earned_full",
