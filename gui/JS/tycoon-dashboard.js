@@ -4,8 +4,21 @@
 
 async function loadDashboard() {
 
+  console.log('[Dashboard] loadDashboard() started');
   // Combined API: 1 call instead of many smaller calls.
-  const raw = JSON.parse(await B.getDashboardData());
+  let raw;
+  try {
+    const response = await B.getDashboardData();
+    console.log('[Dashboard] bridge response received, type:', typeof response, 'length:', String(response).length);
+    raw = JSON.parse(response);
+    console.log('[Dashboard] parsed OK, raw.ok =', raw.ok);
+    if (raw.error) console.error('[Dashboard] backend error:', raw.error);
+  } catch (parseErr) {
+    console.error('[Dashboard] CRASH — JSON.parse or bridge call failed:', parseErr);
+    console.error('[Dashboard] raw response:', String(response || '(empty)').substring(0, 500));
+    toast('err', '❌ Lỗi tải dashboard: ' + parseErr.message);
+    return;
+  }
   if (!raw.ok) { toast('err', '❌ Lỗi tải dashboard'); return; }
 
   const { balance, stats: s, streak, rank, quests, goal, again, bank } = raw;

@@ -454,6 +454,14 @@ def buy_crypto(symbol: str, amount_vnd: int) -> dict:
     if not col_ready():
         return {"ok": False, "error": "Chưa sẵn sàng."}
 
+    # ── Progressive Ladder: gate ──
+    try:
+        from .rank_system import _unlock_gate
+        if not _unlock_gate("crypto"):
+            return {"ok": False, "error": "🔒 Thị trường Crypto chưa mở khóa. Yêu cầu đạt rank Trader Chuyên nghiệp trở lên."}
+    except Exception:
+        pass
+
     symbol = symbol.upper()
     market = _get_market()
     if not market:

@@ -634,10 +634,12 @@ def activate_boost(item_id: str, effect: dict, slot_id: str) -> dict:
         etype = eff.get("type", "")
         val   = eff.get("value", 0) or 0
         if etype == "energy_burst":
-            # Hồi năng lượng tức thì khi dùng item
+            # Hồi năng lượng tức thì khi dùng item (chỉ Full Mode)
             try:
-                from .energy_system import restore_energy
-                restore_energy(int(val))
+                from . import _is_simple_mode
+                if not _is_simple_mode():
+                    from .energy_system import restore_energy
+                    restore_energy(int(val))
             except Exception as e:
                 logger.warning("activate_boost: energy_burst restore_energy — %s", e)
         elif etype == "effect_extend":

@@ -163,8 +163,24 @@ def add_reward(ease: int) -> dict:
         logger.warning("add_reward: kn_perks reward_mult — %s", e)
         kn_reward_mult = 1.0
 
+    # ── Progressive Ladder: rank reward multiplier ──
+    try:
+        from .rank_system import get_highest_reward_mult
+        rank_reward_mult = get_highest_reward_mult()
+    except Exception as e:
+        logger.warning("add_reward: rank_reward_mult — %s", e)
+        rank_reward_mult = 1.0
+
     # ── Tiêu hao năng lượng + áp dụng stamina_regen ──
-    energy_mult = _consume_energy_and_stamina()
+    # Simple Mode: bỏ qua hoàn toàn Energy System (không tiêu hao NL)
+    try:
+        from . import _is_simple_mode
+        if _is_simple_mode():
+            energy_mult = 1.0
+        else:
+            energy_mult = _consume_energy_and_stamina()
+    except Exception:
+        energy_mult = _consume_energy_and_stamina()
 
     # ── Load các hàm kiểm soát kinh tế ──
     try:
@@ -200,7 +216,7 @@ def add_reward(ease: int) -> dict:
         if has_shield:
             # Có khiên: vẫn thưởng nhẹ, không phạt
             reward = REWARD_MAP.get(1, 500)
-            final_reward = int(reward * boost_info["multiplier"] * passive_xp_mult * energy_mult * kn_reward_mult) + int(boost_info["bonus"])
+            final_reward = int(reward * boost_info["multiplier"] * passive_xp_mult * energy_mult * kn_reward_mult * rank_reward_mult) + int(boost_info["bonus"])
             final_reward = _apply_reward_penalty(final_reward, boost_info)
 
             # ── Daily cap multiplier ──
@@ -220,8 +236,21 @@ def add_reward(ease: int) -> dict:
             else:
                 wealth_tax_amount = 0
 
-            final_reward = _apply_loan_repay(final_reward)
-            net_income, pit_withheld = _apply_pit_withholding(final_reward)
+            # ── Simple Mode: bỏ qua trả nợ, bỏ qua thuế TNCN, giảm 50% reward ──
+            try:
+                from . import _is_simple_mode
+                _simple = _is_simple_mode()
+            except Exception:
+                _simple = False
+            if not _simple:
+                final_reward = _apply_loan_repay(final_reward)
+                net_income, pit_withheld = _apply_pit_withholding(final_reward)
+            else:
+                pit_withheld = 0
+                from .config import SIMPLE_MODE_MULTIPLIER
+                final_reward = max(1, int(final_reward * SIMPLE_MODE_MULTIPLIER))
+                net_income = final_reward
+
             new_bal = get_balance() + net_income
             set_balance_and_log(new_bal, "reward", final_reward, "Học tập — Again (🛡️ khiên)")
             _update_stats(ease, final_reward)
@@ -237,7 +266,7 @@ def add_reward(ease: int) -> dict:
         result = record_again()
         if result.get("rewarded"):
             reward = REWARD_MAP.get(1, 0)
-            final_reward = int(reward * boost_info["multiplier"] * passive_xp_mult * energy_mult * kn_reward_mult) + int(boost_info["bonus"])
+            final_reward = int(reward * boost_info["multiplier"] * passive_xp_mult * energy_mult * kn_reward_mult * rank_reward_mult) + int(boost_info["bonus"])
             final_reward = _apply_reward_penalty(final_reward, boost_info)
 
             # ── Daily cap multiplier ──
@@ -257,16 +286,20 @@ def add_reward(ease: int) -> dict:
             else:
                 wealth_tax_amount = 0
 
-            final_reward = _apply_loan_repay(final_reward)
+            # ── Simple Mode: bỏ qua trả nợ ──
+            try:
+                from . import _is_simple_mode
+                _simple = _is_simple_mode()
+            except Exception:
+                _simple = False
+            if not _simple:
+                final_reward = _apply_loan_repay(final_reward)
+            else:
+                pit_withheld = 0
 
             # ── Phí phục hồi kiến thức Again — chỉ Full Mode ──
             again_fee = 0
             if econ_available and final_reward > 0:
-                try:
-                    from . import _is_simple_mode
-                    _simple = _is_simple_mode()
-                except Exception:
-                    _simple = False
                 if not _simple:
                     again_fee = get_again_recovery_fee()
                     again_fee = min(again_fee, final_reward)
@@ -274,7 +307,14 @@ def add_reward(ease: int) -> dict:
             else:
                 again_fee = 0
 
-            net_income, pit_withheld = _apply_pit_withholding(final_reward)
+            if not _simple:
+                net_income, pit_withheld = _apply_pit_withholding(final_reward)
+            else:
+                # ── Simple Mode: giảm 50% reward ──
+                from .config import SIMPLE_MODE_MULTIPLIER
+                final_reward = max(1, int(final_reward * SIMPLE_MODE_MULTIPLIER))
+                net_income = final_reward
+
             new_bal = get_balance() + net_income
             set_balance_and_log(new_bal, "reward", final_reward, "Học tập — Again")
             _update_stats(ease, final_reward)
@@ -303,7 +343,7 @@ def add_reward(ease: int) -> dict:
         _apply_food_penalties(boost_info)
 
         # Áp dụng CẢ active boost + passive xp_multiplier + energy_multiplier
-        final_reward = int(reward * boost_info["multiplier"] * passive_xp_mult * energy_mult * kn_reward_mult) + int(boost_info["bonus"])
+        final_reward = int(reward * boost_info["multiplier"] * passive_xp_mult * energy_mult * kn_reward_mult * rank_reward_mult) + int(boost_info["bonus"])
         # Áp dụng reward_penalty (giảm % tiền thưởng từ food trade-off)
         final_reward = _apply_reward_penalty(final_reward, boost_info)
 
@@ -326,8 +366,21 @@ def add_reward(ease: int) -> dict:
         else:
             wealth_tax_amount = 0
 
-        final_reward = _apply_loan_repay(final_reward)
-        net_income, pit_withheld = _apply_pit_withholding(final_reward)
+        # ── Simple Mode: bỏ qua trả nợ, bỏ qua thuế TNCN, giảm 50% reward ──
+        try:
+            from . import _is_simple_mode
+            _simple = _is_simple_mode()
+        except Exception:
+            _simple = False
+        if not _simple:
+            final_reward = _apply_loan_repay(final_reward)
+            net_income, pit_withheld = _apply_pit_withholding(final_reward)
+        else:
+            pit_withheld = 0
+            from .config import SIMPLE_MODE_MULTIPLIER
+            final_reward = max(1, int(final_reward * SIMPLE_MODE_MULTIPLIER))
+            net_income = final_reward
+
         new_bal = get_balance() + net_income
 
         parts = []

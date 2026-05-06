@@ -336,6 +336,15 @@ def add_property(item_id: str, item_data: dict) -> dict:
     """Thêm BĐS vào portfolio khi mua từ shop."""
     if not col_ready():
         return {"ok": False}
+
+    # ── Progressive Ladder: gate ──
+    try:
+        from .rank_system import _unlock_gate
+        if not _unlock_gate("real_estate"):
+            return {"ok": False, "error": "🔒 Thị trường Bất động sản chưa mở khóa. Yêu cầu đạt rank Founder trở lên."}
+    except Exception:
+        pass
+
     import uuid as _uuid
     slot_id   = f"re_{item_id}_{str(_uuid.uuid4())[:6]}"
     fair_rent = item_data.get("fair_rent", item_data.get("price", 0) // 200)

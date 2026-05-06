@@ -8,6 +8,7 @@ PERF: Cache shop items trong memory để tránh đọc file JSON nhiều lần.
 
 import json
 import time
+import traceback
 from aqt.qt import QObject, pyqtSlot, pyqtSignal
 
 from ..logger import get_logger
@@ -208,6 +209,8 @@ class TycoonBridge(QObject):
                 "stock_dividends": stock_dividends,
             }, ensure_ascii=False)
         except Exception as e:
+            logger.error("❌ getDashboardData CRASH: %s", e)
+            logger.error("Traceback:\n%s", traceback.format_exc())
             return json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False)
 
     @pyqtSlot(result=str)

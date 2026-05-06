@@ -85,8 +85,9 @@ def on_review_done(reviewer, card, ease):
             except Exception as e:
                 logger.warning("bond_record_review: %s", e)
 
-        # Hồi năng lượng từ food boost (energy_regen)
-        _apply_energy_regen(result)
+        # Hồi năng lượng từ food boost (energy_regen) — chỉ Full Mode
+        if not _is_simple:
+            _apply_energy_regen(result)
         # Áp dụng hiệu ứng học tập thực tế lên interval của thẻ
         _apply_study_effects(card, ease, result)
         # Achievement trigger
@@ -280,6 +281,22 @@ def _update_gamification(ease: int, result: dict):
                     xp = max(1, int(xp * kn_xp_mult))
             except Exception as e:
                 logger.warning("kn_perks xp_mult: %s", e)
+            # ── Progressive Ladder: rank XP multiplier ──
+            try:
+                from .rank_system import get_highest_xp_mult
+                rank_xp_mult = get_highest_xp_mult()
+                if rank_xp_mult > 0:
+                    xp = max(1, int(xp * rank_xp_mult))
+            except Exception as e:
+                logger.warning("rank_xp_mult: %s", e)
+            # ── Simple Mode: giảm 50% EXP ──
+            try:
+                from . import _is_simple_mode
+                if _is_simple_mode():
+                    from .config import SIMPLE_MODE_MULTIPLIER
+                    xp = max(1, int(xp * SIMPLE_MODE_MULTIPLIER))
+            except Exception:
+                pass
             add_xp(xp)
             _rank_check_counter += 1
             if _rank_check_counter >= 20 or _last_rank_cache is None:
@@ -353,6 +370,14 @@ def _award_random_kn(ease: int):
         if random.random() > 0.10:
             return
         amount = random.randint(5, 10)
+        # ── Simple Mode: giảm 50% KN ──
+        try:
+            from . import _is_simple_mode
+            if _is_simple_mode():
+                from .config import SIMPLE_MODE_MULTIPLIER
+                amount = max(1, int(amount * SIMPLE_MODE_MULTIPLIER))
+        except Exception:
+            pass
         from .rank_system import add_kn
         add_kn(amount)
         # Hiển thị notification nhẹ trên reviewer
@@ -602,16 +627,16 @@ def _on_profile_loaded():
 
     _ensure_new_player()
     _inject_topbar()
-    _collect_daily_tax()
-    _collect_daily_living_costs()
-    _accrue_loan_interest()
     _seed_knowledge()
 
     # ── Kiểm tra game mode ──────────────────────────────────────────
-    # Nếu là Simple Mode, bỏ qua tất cả tính năng advanced
+    # Simple Mode: bỏ qua Living Costs, Inactivity Penalty, Tax, Loan Interest
     _is_simple = _is_simple_mode()
 
     if not _is_simple:
+        _collect_daily_tax()
+        _collect_daily_living_costs()
+        _accrue_loan_interest()
         _auto_collect_rent()
         _update_stock_prices()
         _update_crypto_prices()
@@ -619,11 +644,8 @@ def _on_profile_loaded():
         _check_emergency_event()
         _process_daily_credit_banking()
         _auto_collect_bond_coupon()
+        _check_inactivity_penalty()
 
-    # Inactivity penalty là core feature (ảnh hưởng balance) → luôn chạy
-    _check_inactivity_penalty()
-
-    if not _is_simple:
         # ── v1.1.3: Sửa passive effects cho crypto items đã mua trước khi có fix ──
         try:
             from .item_effects import repair_crypto_passive_effects

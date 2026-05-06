@@ -1525,6 +1525,14 @@ def buy_stock(symbol: str, shares: int) -> dict:
         print("[CK DEBUG] col_ready() == False")
         return {"ok": False, "error": "Collection chưa sẵn sàng."}
 
+    # ── Progressive Ladder: gate ──
+    try:
+        from .rank_system import _unlock_gate
+        if not _unlock_gate("stock_market"):
+            return {"ok": False, "error": "🔒 Thị trường chứng khoán chưa mở khóa. Yêu cầu đạt rank Nhà Đầu tư Cá nhân trở lên."}
+    except Exception:
+        pass
+
     if shares <= 0:
         print(f"[CK DEBUG] shares <= 0: {shares}")
         return {"ok": False, "error": "Số lượng không hợp lệ."}

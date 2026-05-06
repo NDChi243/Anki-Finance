@@ -570,6 +570,14 @@ def buy_bond(bond_id: str, quantity: int) -> dict:
     Returns:
         dict với kết quả giao dịch
     """
+    # ── Progressive Ladder: gate ──
+    try:
+        from .rank_system import _unlock_gate
+        if not _unlock_gate("bond"):
+            return {"ok": False, "error": "🔒 Thị trường Trái phiếu chưa mở khóa. Yêu cầu đạt rank CEO trở lên."}
+    except Exception:
+        pass
+
     _seed_market_if_empty()
     
     bond_def = _BONDS_MAP.get(bond_id)

@@ -35,6 +35,10 @@ ADVANCED_CATEGORIES = {
     "🎓 Vật phẩm học tập",
 }
 
+# Hệ số nhân reward/EXP/KN trong Simple Mode
+# Bù cho việc bỏ Energy System, Living Costs, Inactivity Penalty, Tax (basic)
+SIMPLE_MODE_MULTIPLIER = 0.5
+
 REWARD_MAP = {
     1: 500,     # Again — phí phục hồi kiến thức
     2: 15000,   # Hard — khuyến khích đối mặt kiến thức khó

@@ -50,6 +50,16 @@ function go(page) {
   if (targetNav)  targetNav.classList.add('active');
 
   // ── Load page ──────────────────────────────
-  LOADERS[page]?.();
+  try {
+    const loaderResult = LOADERS[page]?.();
+    // Nếu loader là async function, bắt unhandled rejection
+    if (loaderResult && typeof loaderResult.catch === 'function') {
+      loaderResult.catch(err => {
+        console.error('[Router] go(' + page + ') unhandled error:', err);
+      });
+    }
+  } catch (err) {
+    console.error('[Router] go(' + page + ') synchronous error:', err);
+  }
 
 }

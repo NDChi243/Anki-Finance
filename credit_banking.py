@@ -701,6 +701,14 @@ def get_credit_card_products() -> list:
 
 def apply_credit_card(product_code: str, requested_limit: int = None) -> dict:
     """Đăng ký mở thẻ tín dụng."""
+    # ── Progressive Ladder: gate ──
+    try:
+        from .rank_system import _unlock_gate
+        if not _unlock_gate("credit_banking"):
+            return {"ok": False, "error": "🔒 Dịch vụ Ngân hàng nâng cao chưa mở khóa. Yêu cầu đạt rank Quản lý Quỹ Đầu tư trở lên."}
+    except Exception:
+        pass
+
     if product_code not in CREDIT_CARD_PRODUCTS:
         return {"ok": False, "error": "Sản phẩm thẻ không hợp lệ."}
 
@@ -1245,6 +1253,14 @@ def apply_for_loan(
     use_floating_rate: bool = False,
 ) -> dict:
     """Đăng ký vay ngân hàng."""
+    # ── Progressive Ladder: gate ──
+    try:
+        from .rank_system import _unlock_gate
+        if not _unlock_gate("credit_banking"):
+            return {"ok": False, "error": "🔒 Dịch vụ Ngân hàng nâng cao chưa mở khóa. Yêu cầu đạt rank Quản lý Quỹ Đầu tư trở lên."}
+    except Exception:
+        pass
+
     from .balance import get_balance, set_balance
     from .transactions import add_transaction
 

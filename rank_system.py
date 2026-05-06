@@ -20,7 +20,7 @@ Lưu ý: Người chơi được cấp 10M VND + nhà trọ ban đầu,
     backward-compat với credit_banking, achievements, và config đã lưu.
 """
 
-from ._safe_config import col_ready, cfg_dict, cfg_set, cfg_int
+from ._safe_config import col_ready, cfg_dict, cfg_set, cfg_int, cfg_str
 
 _KEY_XP   = "anki_tycoon_xp"
 _KEY_KN   = "anki_tycoon_kn_points"
@@ -34,6 +34,10 @@ _KEY_XP_EARNED_FULL   = "anki_tycoon_xp_earned_full"
 _KEY_RANK_HISTORY     = "anki_tycoon_rank_history"
 # Mốc XP earned (per mode) tại lần snapshot rank gần nhất → để tính delta
 _KEY_RANK_HIST_CURSOR = "anki_tycoon_rank_history_cursor"
+
+# ── Highest rank (Progressive Ladder) ─────────────────────────────────
+# Rank cao nhất đã từng đạt — không bao giờ hạ, dùng để tính multiplier.
+_KEY_HIGHEST_RANK = "anki_tycoon_highest_rank"
 
 # ── Bảng rank ─────────────────────────────────────────────────────
 # (id, label, xp_required, balance_required, kn_required, emoji, color_hex, group)
@@ -84,7 +88,81 @@ RANKS = [
 _RANK_IDS = [r["id"] for r in RANKS]
 _RANK_INDEX = {rank_id: idx for idx, rank_id in enumerate(_RANK_IDS)}
 
+# ── Progressive Ladder: Rank Multipliers ───────────────────────────
+# Multiplier cho reward (tiền) dựa trên highest rank đã đạt.
+# Rank càng cao, reward/giao dịch càng lớn.
+RANK_REWARD_MULTS = {
+    "sv1": 1.0, "sv2": 1.0, "sv3": 1.0,
+    "nlc1": 1.1, "nlc2": 1.2, "nlc3": 1.3,
+    "tt1": 1.5, "tt2": 1.8, "tt3": 2.0,
+    "dn1": 2.5, "dn2": 3.0, "dn3": 3.5, "dn4": 4.0,
+    "tp1": 5.0, "tp2": 6.0, "tp3": 8.0,
+    "typh1": 10.0, "typh2": 12.0, "typh3": 15.0,
+    "mstc1": 18.0, "mstc2": 22.0, "mstc3": 28.0,
+    "hl1": 35.0,
+}
+
+# Multiplier cho XP dựa trên highest rank đã đạt.
+RANK_XP_MULTS = {
+    "sv1": 1.0, "sv2": 1.0, "sv3": 1.0,
+    "nlc1": 1.1, "nlc2": 1.2, "nlc3": 1.3,
+    "tt1": 1.5, "tt2": 1.8, "tt3": 2.0,
+    "dn1": 2.5, "dn2": 3.0, "dn3": 3.5, "dn4": 4.0,
+    "tp1": 5.0, "tp2": 6.0, "tp3": 8.0,
+    "typh1": 10.0, "typh2": 12.0, "typh3": 15.0,
+    "mstc1": 18.0, "mstc2": 22.0, "mstc3": 28.0,
+    "hl1": 35.0,
+}
+
+# Feature unlock threshold indexes (dùng cho _unlock_gate).
+# Feature chỉ available khi highest_rank_index >= threshold.
+_FEATURE_GATES = {
+    "stock_market":     _RANK_INDEX.get("tt1", 6),   # Nhà Đầu tư Cá nhân
+    "crypto":           _RANK_INDEX.get("tt2", 7),   # Trader Chuyên nghiệp
+    "real_estate":      _RANK_INDEX.get("dn1", 9),   # Founder
+    "bond":             _RANK_INDEX.get("dn2", 10),  # CEO
+    "credit_banking":   _RANK_INDEX.get("dn3", 11),  # Quản lý Quỹ Đầu tư
+    "tech_lab":         _RANK_INDEX.get("nlc2", 4),  # Chuyên viên Tài chính
+}
+
 XP_PER_EASE = {1: 2, 2: 8, 3: 15, 4: 25}
+
+
+# ── Progressive Ladder: Highest Rank & Multiplier API ─────────────
+
+def _get_highest_rank() -> str:
+    """Trả về rank ID cao nhất đã từng đạt (mặc định 'sv1')."""
+    return cfg_str(_KEY_HIGHEST_RANK, "sv1")
+
+def _update_highest_rank(current_id: str) -> None:
+    """So sánh rank hiện tại với highest rank đã lưu, cập nhật nếu cao hơn."""
+    highest = _get_highest_rank()
+    idx_cur = _RANK_INDEX.get(current_id, 0)
+    idx_high = _RANK_INDEX.get(highest, 0)
+    if idx_cur > idx_high:
+        cfg_set(_KEY_HIGHEST_RANK, current_id)
+
+def get_highest_reward_mult() -> float:
+    """Trả về reward multiplier dựa trên highest rank đã đạt."""
+    return RANK_REWARD_MULTS.get(_get_highest_rank(), 1.0)
+
+def get_highest_xp_mult() -> float:
+    """Trả về XP multiplier dựa trên highest rank đã đạt."""
+    return RANK_XP_MULTS.get(_get_highest_rank(), 1.0)
+
+def get_highest_rank_index() -> int:
+    """Trả về index (0-22) của highest rank đã đạt."""
+    return _RANK_INDEX.get(_get_highest_rank(), 0)
+
+def _unlock_gate(feature: str) -> bool:
+    """
+    Kiểm tra xem 1 feature đã mở khóa chưa dựa trên highest rank.
+    Trả về True nếu highest_rank_index >= threshold của feature đó.
+    """
+    threshold = _FEATURE_GATES.get(feature)
+    if threshold is None:
+        return True  # feature không defined → auto unlock
+    return get_highest_rank_index() >= threshold
 
 
 # ── XP API ────────────────────────────────────────────────────────
@@ -178,6 +256,8 @@ def get_rank_status(balance: int | None = None) -> dict:
     xp      = get_xp()
     kn      = get_kn()
     current = _calc_rank(xp, balance, kn)
+    # Progressive Ladder: cập nhật highest rank sau mỗi lần tính rank
+    _update_highest_rank(current["id"])
     nxt     = _next_rank(current["id"])
 
     # Progress tới rank tiếp theo
