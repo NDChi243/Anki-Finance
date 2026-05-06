@@ -20,6 +20,7 @@ from ..transactions import get_transactions, clear_transactions
 from ..finance import (
     get_budget, set_budget, get_monthly_spending,
     get_monthly_income, get_budget_status, reset_monthly_if_needed,
+    get_money_jars, save_money_jar, delete_money_jar,
 )
 from ..bank import (
     get_savings, calculate_interest,
@@ -686,6 +687,40 @@ class TycoonBridge(QObject):
     def setBudget(self, amount: int):
         set_budget(amount)
         return True
+
+    # ── Money Jars ─────────────────────────────────────────────────
+    @pyqtSlot(result=str)
+    def getMoneyJars(self):
+        try:
+            from ..balance import get_balance
+            from ..economy_controls import get_total_net_worth
+            jars      = get_money_jars()
+            balance   = get_balance()
+            net_worth = get_total_net_worth()
+            return json.dumps({"ok": True, "jars": jars,
+                               "balance": balance, "net_worth": net_worth})
+        except Exception as e:
+            logger.error("getMoneyJars: %s", e, exc_info=True)
+            return json.dumps({"ok": False, "error": str(e), "jars": []})
+
+    @pyqtSlot(str, result=str)
+    def saveMoneyJar(self, jar_json: str):
+        try:
+            jar_data = json.loads(jar_json)
+            res = save_money_jar(jar_data)
+            return json.dumps(res)
+        except Exception as e:
+            logger.error("saveMoneyJar: %s", e, exc_info=True)
+            return json.dumps({"ok": False, "error": str(e)})
+
+    @pyqtSlot(str, result=str)
+    def deleteMoneyJar(self, jar_id: str):
+        try:
+            res = delete_money_jar(jar_id)
+            return json.dumps(res)
+        except Exception as e:
+            logger.error("deleteMoneyJar: %s", e, exc_info=True)
+            return json.dumps({"ok": False, "error": str(e)})
 
     # ── Bank: Không kỳ hạn ────────────────────────────────────────
     @pyqtSlot(result=str)

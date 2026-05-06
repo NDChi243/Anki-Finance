@@ -919,9 +919,6 @@ async function quickMaintenanceVehicle(vehicleId) {
 }
 
 
-let boostTickerInterval = null;
-
-
 // ─── Advanced Filter Toggle ─────────────────────────────
 
 function toggleGarageAdvFilter() {

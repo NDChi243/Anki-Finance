@@ -55,6 +55,17 @@ SPENDING_TYPES = {
     "vehicle_repair", "vehicle_maintenance", "vehicle_fuel",
     "garage_slot", "tech_repair", "tech_maintenance",
     "vehicle_buy",
+    # Economy
+    "garage_fee",
+    # Bond & Real estate investment
+    "invest", "re_upgrade", "rights_issue",
+    # Consumable items
+    "consumable",
+    # Credit banking
+    "credit_card_payment", "credit_card_fee", "credit_card_penalty",
+    "loan_penalty", "loan_insurance",
+    # Again recovery
+    "again_recovery_fee",
 }
 
 # Danh sách type là income (kiếm tiền)
@@ -66,6 +77,12 @@ INCOME_TYPES = {
     "pit_refund",
     # Vehicle & Tech sales
     "vehicle_sell", "tech_sell",
+    # Bond income
+    "invest_income", "coupon", "maturity",
+    # Stock income
+    "dividend",
+    # Real estate sale
+    "re_sale",
 }
 
 

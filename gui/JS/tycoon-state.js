@@ -1,32 +1,56 @@
 // ════════════════════════════════════════════
-
-//  STATE
-
+//  STATE — Centralized State Manager
+//  Tất cả global state gom vào TycoonState
 // ════════════════════════════════════════════
 
-let B = null;          // bridge
+window.TycoonState = {
+  // Bridge (set by tycoon-init.js after QWebChannel setup)
+  B: null,
 
-let allItems = [];     // shop items
+  // Shop
+  allItems: [],
 
-let curBal = 0;
+  // Balance
+  curBal: 0,
+  curSavings: 0,
 
-let curSavings = 0;
+  // Residence
+  residenceData: null,
+  availableResidences: [],
+  selectedResidenceId: '',
+  selectedResidencePreview: null,
 
-let residenceData = null;
+  // Loans
+  loanStatusData: null,
 
-let availableResidences = [];
+  // Tax
+  taxFullData: null,
 
-let selectedResidenceId = '';
+  // Constants
+  RESET_MIN_BALANCE: 50000,
 
-let selectedResidencePreview = null;
+  // ── Balance helpers ─────────────────────
+  setBal(v) { this.curBal = v; },
+  setSavings(v) { this.curSavings = v; },
 
-let loanStatusData = null;
+  // ── Bridge check ────────────────────────
+  isBridgeReady() { return this.B !== null; }
+};
 
-let taxFullData = null;
-
-const RESET_MIN_BALANCE = 50000;
-
-
+// ── Backward compatibility aliases ──────────
+// Các tab files cũ vẫn dùng biến global.
+// Sau khi refactor từng file, xóa alias tương ứng.
+window.B          = TycoonState.B;
+window.allItems   = TycoonState.allItems;
+window.curBal     = TycoonState.curBal;
+window.curSavings = TycoonState.curSavings;
+window.residenceData        = TycoonState.residenceData;
+window.availableResidences  = TycoonState.availableResidences;
+window.selectedResidenceId  = TycoonState.selectedResidenceId;
+window.selectedResidencePreview = TycoonState.selectedResidencePreview;
+window.loanStatusData       = TycoonState.loanStatusData;
+window.taxFullData          = TycoonState.taxFullData;
+window.RESET_MIN_BALANCE    = TycoonState.RESET_MIN_BALANCE;
 
 // ── Debounce utility ──────────────────────────
 
@@ -43,8 +67,6 @@ function debounce(fn, ms = 300) {
   };
 
 }
-
-
 
 // ── Throttle utility ──────────────────────────
 
@@ -67,6 +89,4 @@ function throttle(fn, ms = 100) {
   };
 
 }
-
-
 

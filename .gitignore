@@ -49,3 +49,5 @@ CLAUDE.md
 .claude/rules/02-feature-rules.md
 .claude/skills/add-shop-item.md
 .claude/skills/add-js-tab.md
+.claude/rules/03-safe-coding.md
+plans/js-refactor-plan.md

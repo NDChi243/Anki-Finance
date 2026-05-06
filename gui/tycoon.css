@@ -549,6 +549,11 @@ hr{border:none;border-top:1px solid var(--border);margin:16px 0}
 .fin-stat-card .fsc-val{font-size:20px;font-weight:900;letter-spacing:-.5px;margin-bottom:3px}
 .fin-stat-card .fsc-lbl{font-size:11px;color:var(--muted2);font-weight:600;text-transform:uppercase;letter-spacing:.3px}
 .fin-stat-card .fsc-sub{font-size:10px;color:var(--muted);margin-top:2px}
+.money-jar-card{background:var(--surface2);border-radius:10px;padding:12px;margin-bottom:10px;transition:border-color .2s}
+.money-jar-card:last-child{margin-bottom:0}
+.jar-color-dot{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .15s,border-color .15s}
+.jar-color-dot:hover{transform:scale(1.15)}
+.jar-color-dot.active{border-color:white;transform:scale(1.2)}
 .fin-cashflow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}
 .fin-cashflow > *{scroll-snap-align:start;min-width:140px}
 .fin-cf-card{background:var(--surface2);border-radius:10px;padding:12px;text-align:center;border:1px solid var(--border)}

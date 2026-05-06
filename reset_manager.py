@@ -74,7 +74,7 @@ def _set_empty_by_key(key: str):
                                 "streak_today_cards", "streak_today_date",
                                 "send_more_log", "quests", "pit_log",
                                 "land_tax_log", "living_cost_log", "loan_log",
-                                "reset_log")):
+                                "reset_log", "money_jars")):
         mw.col.set_config(key, [])
     # String-type keys (dates, etc.)
     elif any(s in key for s in ("date", "timestamp", "last_update",
@@ -128,6 +128,7 @@ KEYS_TO_CLEAR = [
     "anki_tycoon_monthly_spending",
     "anki_tycoon_monthly_income",
     "anki_tycoon_last_month_reset",
+    "anki_tycoon_money_jars",
     # ── Bank ─────────────────────────────────────────────────
     "anki_tycoon_demand_savings",
     "anki_tycoon_term_deposits",

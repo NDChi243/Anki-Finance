@@ -281,6 +281,9 @@ async function loadFinance() {
   // ── Render economy controls ──
   renderEconomyControls(economyRaw);
 
+  // ── Render Money Jars ──
+  await loadMoneyJars();
+
   // ── Render transactions & tax ──
   renderTxns(txns);
 
@@ -460,14 +463,13 @@ function renderTxns(txns, filter='all', search='') {
 
   if (filter && filter !== 'all') {
 
-    if (filter === 'reward') list = list.filter(t => t.type === 'reward' || t.type === 'interest');
-
+    if (filter.startsWith('jar_')) {
+      const jarId = filter.substring(4);
+      list = list.filter(t => (t.metadata && t.metadata.jar_id === jarId) || t.jar_id === jarId);
+    } else if (filter === 'reward') list = list.filter(t => t.type === 'reward' || t.type === 'interest');
     else if (filter === 'tax') list = list.filter(t => (t.type || '').includes('tax') || t.type === 'land_tax');
-
     else if (filter === 'loan') list = list.filter(t => ['loan', 'loan_interest', 'loan_repay'].includes(t.type));
-
     else if (filter === 'living_cost') list = list.filter(t => t.type === 'living_cost');
-
     else list = list.filter(t => t.type === filter);
 
   }
@@ -502,6 +504,16 @@ function renderTxns(txns, filter='all', search='') {
 
     const pillText= TXN_LABELS[t.type] || t.type;
 
+    // Show jar badge if transaction has jar_id
+    const txnJarId = (t.metadata && t.metadata.jar_id) || t.jar_id;
+    let jarBadge = '';
+    if (txnJarId && _jarData && _jarData.jars) {
+      const jar = _jarData.jars.find(j => j.id === txnJarId);
+      if (jar) {
+        jarBadge = `<span style="font-size:10px;color:${jar.color || '#10b981'};margin-left:4px">${jar.emoji || '📦'}</span>`;
+      }
+    }
+
     return `
 
     <div class="txn-item" onclick="openTxnDetail(${i})">
@@ -510,7 +522,7 @@ function renderTxns(txns, filter='all', search='') {
 
       <div class="txn-body">
 
-        <div class="txn-desc">${t.description || '—'}</div>
+        <div class="txn-desc">${t.description || '—'}${jarBadge}</div>
 
         <div class="txn-date">${t.date || ''}</div>
 
@@ -604,14 +616,13 @@ function openTxnDetail(idx) {
 
   if (filter && filter !== 'all') {
 
-    if (filter === 'reward') list = list.filter(t => t.type === 'reward' || t.type === 'interest');
-
+    if (filter.startsWith('jar_')) {
+      const jarId = filter.substring(4);
+      list = list.filter(t => (t.metadata && t.metadata.jar_id === jarId) || t.jar_id === jarId);
+    } else if (filter === 'reward') list = list.filter(t => t.type === 'reward' || t.type === 'interest');
     else if (filter === 'tax') list = list.filter(t => (t.type || '').includes('tax') || t.type === 'land_tax');
-
     else if (filter === 'loan') list = list.filter(t => ['loan', 'loan_interest', 'loan_repay'].includes(t.type));
-
     else if (filter === 'living_cost') list = list.filter(t => t.type === 'living_cost');
-
     else list = list.filter(t => t.type === filter);
 
   }
@@ -631,6 +642,16 @@ function openTxnDetail(idx) {
   const isMinus = TXN_MINUS.has(t.type);
 
   const color   = TXN_COLORS[t.type] || 'var(--text)';
+
+  // Find jar info
+  const jarId = t.metadata && t.metadata.jar_id;
+  let jarInfo = '';
+  if (jarId && _jarData && _jarData.jars) {
+    const jar = _jarData.jars.find(j => j.id === jarId);
+    if (jar) {
+      jarInfo = `<div style="font-size:11px;color:var(--muted2);margin-top:6px;text-align:center">📦 Hộp: ${jar.emoji || '💰'} ${jar.name}</div>`;
+    }
+  }
 
   document.getElementById('txn-detail-title').textContent = TXN_ICONS[t.type] + ' ' + (TXN_LABELS[t.type] || 'Giao dịch');
 
@@ -669,6 +690,8 @@ function openTxnDetail(idx) {
     </div>
 
     ${t.timestamp ? `<div style="font-size:11px;color:var(--muted);text-align:center">${new Date(t.timestamp).toLocaleString('vi-VN')}</div>` : ''}
+
+    ${jarInfo}
 
   `;
 
@@ -1629,3 +1652,255 @@ async function claimBondCoupons() {
 
 
 
+// ════════════════════════════════════════════
+//  MONEY JARS — Hộp đựng tiền
+// ════════════════════════════════════════════
+
+let _jarData = null; // { jars, balance, net_worth }
+let _editingJarId = null;
+
+const JAR_COLORS = ['#10b981','#3b82f6','#f59e0b','#ef4444','#8b5cf6','#ec4899'];
+const JAR_PRESETS = [
+  { name:'Quỹ khẩn cấp', emoji:'🛡️', note:'3-6 tháng chi phí sinh hoạt', target_type:'pct', target_pct:20 },
+  { name:'Tiết kiệm', emoji:'🏦', note:'Gửi tiết kiệm dài hạn', target_type:'pct', target_pct:20 },
+  { name:'Đầu tư', emoji:'📈', note:'Cổ phiếu, crypto, BĐS', target_type:'pct', target_pct:10 },
+  { name:'Chi tiêu tự do', emoji:'🎉', note:'Mua sắm, giải trí', target_type:'pct', target_pct:30 },
+  { name:'Học tập', emoji:'🎓', note:'Sách, khóa học, vật phẩm', target_type:'pct', target_pct:10 },
+  { name:'Mục tiêu lớn', emoji:'🏆', note:'Xe, nhà, du lịch', target_type:'fixed', target_amount:0 },
+];
+
+async function loadMoneyJars() {
+  try {
+    const raw = await B.getMoneyJars();
+    _jarData = JSON.parse(raw);
+    renderMoneyJars();
+    _populateJarFilter();
+  } catch (e) {
+    console.error('loadMoneyJars:', e);
+  }
+}
+
+function _jarTarget(jar) {
+  if (!_jarData) return 0;
+  if (jar.target_type === 'pct') {
+    return Math.round((_jarData.net_worth || _jarData.balance || 0) * (jar.target_pct || 0) / 100);
+  }
+  return jar.target_amount || 0;
+}
+
+function renderMoneyJars() {
+  const container = document.getElementById('money-jars-list');
+  if (!container) return;
+  const jars = (_jarData && _jarData.jars) || [];
+
+  if (!jars.length) {
+    container.innerHTML = `<div style="text-align:center;padding:20px 0;color:var(--muted2)">
+      <div style="font-size:32px;margin-bottom:8px">📦</div>
+      <div style="font-size:13px">Chưa có hộp nào. Tạo hộp đầu tiên!</div>
+    </div>`;
+    return;
+  }
+
+  const balance = (_jarData && _jarData.balance) || 0;
+  const totalAllocPct = jars.filter(j => j.target_type === 'pct').reduce((a, j) => a + (j.target_pct || 0), 0);
+  const totalAllocFixed = jars.filter(j => j.target_type === 'fixed').reduce((a, j) => a + (j.target_amount || 0), 0);
+
+  container.innerHTML = jars.map(jar => {
+    const target = _jarTarget(jar);
+    const pct    = target > 0 ? Math.min(Math.round(balance / jars.length / target * 100), 100) : 0;
+    const color  = jar.color || '#10b981';
+    const barW   = target > 0 ? Math.min(Math.round(balance / jars.length / target * 100), 100) : 0;
+    const pctLabel = jar.target_type === 'pct' ? `${jar.target_pct}% tổng tài sản` : `Mục tiêu cố định`;
+    return `
+    <div class="money-jar-card" style="border-left:4px solid ${color};cursor:pointer" onclick="filterTxnsByJar('${jar.id}','${jar.name.replace(/'/g, "\\'")}','${jar.emoji || '💰'}')">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:28px;line-height:1">${jar.emoji || '💰'}</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <strong style="font-size:13px">${jar.name}</strong>
+            <div style="display:flex;gap:6px">
+              <button class="btn btn-ghost" style="font-size:10px;padding:3px 8px" onclick="event.stopPropagation();openJarModal('${jar.id}')">✏️</button>
+              <button class="btn btn-red" style="font-size:10px;padding:3px 8px" onclick="event.stopPropagation();confirmDeleteJar('${jar.id}','${jar.name}')">🗑️</button>
+            </div>
+          </div>
+          ${jar.note ? `<div style="font-size:11px;color:var(--muted2);margin-top:2px">${jar.note}</div>` : ''}
+          <div style="font-size:11px;color:var(--muted2);margin-top:4px">${pctLabel}: <strong style="color:${color}">${fmt(target)}</strong></div>
+        </div>
+      </div>
+      <div style="margin-top:8px">
+        <div class="progress-wrap"><div class="progress-bar" style="width:${barW}%;background:${color}"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted2);margin-top:3px">
+          <span>Mục tiêu: ${fmt(target)}</span>
+          ${target > 0 ? `<span style="color:${color}">${barW}%</span>` : '<span>—</span>'}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Allocation summary
+  const sumEl = document.getElementById('jar-allocation-summary');
+  if (sumEl) {
+    const pctJars = jars.filter(j => j.target_type === 'pct');
+    const fixedJars = jars.filter(j => j.target_type === 'fixed');
+    const totalPct = pctJars.reduce((a, j) => a + (j.target_pct || 0), 0);
+    const color = totalPct > 100 ? 'var(--red)' : totalPct === 100 ? 'var(--green)' : 'var(--yellow)';
+    sumEl.innerHTML = `<span style="color:${color}">${totalPct}%</span> phân bổ theo % • ${fixedJars.length} hộp cố định`;
+  }
+}
+
+// ── Jar filter helpers ─────────────────────────
+function _populateJarFilter() {
+  const sel = document.getElementById('txn-filter');
+  if (!sel) return;
+  // Remove existing jar options (keep original ones)
+  const existing = sel.querySelectorAll('.jar-filter-opt');
+  existing.forEach(o => o.remove());
+
+  const jars = (_jarData && _jarData.jars) || [];
+  if (!jars.length) return;
+
+  // Insert jar group header + options before "all"
+  const allOpt = sel.querySelector('option[value="all"]');
+  if (!allOpt) return;
+
+  // Insert a separator
+  const sep = document.createElement('option');
+  sep.disabled = true;
+  sep.className = 'jar-filter-opt';
+  sep.textContent = '─ Hộp chi tiêu ─';
+  sep.style.fontSize = '11px';
+  sep.style.color = 'var(--muted2)';
+  sel.insertBefore(sep, allOpt.nextSibling);
+
+  for (const jar of jars) {
+    const opt = document.createElement('option');
+    opt.value = 'jar_' + jar.id;
+    opt.className = 'jar-filter-opt';
+    opt.textContent = (jar.emoji || '📦') + ' ' + jar.name;
+    sel.insertBefore(opt, sep.nextSibling);
+  }
+}
+
+function filterTxnsByJar(jarId, jarName, jarEmoji) {
+  // Switch to transactions panel
+  const tabBtn = [...document.querySelectorAll('.fin-tab')]
+    .find(b => (b.getAttribute('onclick') || '').includes("'txns'"));
+  switchFinTab('txns', tabBtn);
+
+  // Set filter to this jar
+  const sel = document.getElementById('txn-filter');
+  if (sel) {
+    sel.value = 'jar_' + jarId;
+  }
+
+  // Render with jar filter
+  const search = document.getElementById('txn-search').value;
+  renderTxns(_finTxns, 'jar_' + jarId, search);
+
+  // Show a toast
+  const count = _finTxns.filter(t => (t.metadata && t.metadata.jar_id === jarId) || (t.jar_id === jarId)).length;
+  toast('info', `${jarEmoji || '📦'} "${jarName}": ${count} giao dịch`);
+}
+
+// ── Jar modal ─────────────────────────────────
+function openJarModal(jarId) {
+  _editingJarId = jarId || null;
+  const jars  = (_jarData && _jarData.jars) || [];
+  const jar   = jarId ? jars.find(j => j.id === jarId) : null;
+
+  document.getElementById('jar-modal-title').textContent = jar ? '✏️ Sửa hộp' : '➕ Tạo hộp mới';
+  document.getElementById('jar-name-inp').value          = jar ? jar.name       : '';
+  document.getElementById('jar-emoji-inp').value         = jar ? jar.emoji      : '💰';
+  document.getElementById('jar-note-inp').value          = jar ? jar.note       : '';
+  document.getElementById('jar-type-sel').value          = jar ? jar.target_type : 'fixed';
+  document.getElementById('jar-amount-inp').value        = jar ? jar.target_amount : '';
+  document.getElementById('jar-pct-inp').value           = jar ? jar.target_pct   : '';
+
+  // Hiện/ẩn field theo type
+  _toggleJarTypeFields();
+
+  // Color picker
+  const colorWrap = document.getElementById('jar-color-pick');
+  if (colorWrap) {
+    colorWrap.innerHTML = JAR_COLORS.map(c =>
+      `<div class="jar-color-dot${jar && jar.color === c ? ' active' : ''}" style="background:${c}" onclick="selectJarColor('${c}',this)"></div>`
+    ).join('');
+  }
+
+  document.getElementById('modal-jar').classList.add('open');
+}
+
+function _toggleJarTypeFields() {
+  const t = document.getElementById('jar-type-sel').value;
+  document.getElementById('jar-field-amount').style.display = t === 'fixed' ? '' : 'none';
+  document.getElementById('jar-field-pct').style.display    = t === 'pct'   ? '' : 'none';
+}
+
+function selectJarColor(color, el) {
+  document.querySelectorAll('.jar-color-dot').forEach(d => d.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function applyJarPreset(idx) {
+  const p = JAR_PRESETS[idx];
+  if (!p) return;
+  // Mở modal trước nếu chưa mở
+  if (!document.getElementById('modal-jar').classList.contains('open')) {
+    openJarModal(null);
+  }
+  document.getElementById('jar-name-inp').value  = p.name;
+  document.getElementById('jar-emoji-inp').value = p.emoji;
+  document.getElementById('jar-note-inp').value  = p.note;
+  document.getElementById('jar-type-sel').value  = p.target_type;
+  document.getElementById('jar-pct-inp').value   = p.target_pct || '';
+  document.getElementById('jar-amount-inp').value= p.target_amount || '';
+  _toggleJarTypeFields();
+}
+
+function closeJarModal() {
+  document.getElementById('modal-jar').classList.remove('open');
+}
+
+async function saveJar() {
+  const name = document.getElementById('jar-name-inp').value.trim();
+  if (!name) { toast('err', 'Vui lòng nhập tên hộp'); return; }
+
+  const targetType   = document.getElementById('jar-type-sel').value;
+  const targetAmount = parseInt(document.getElementById('jar-amount-inp').value) || 0;
+  const targetPct    = parseFloat(document.getElementById('jar-pct-inp').value)  || 0;
+
+  if (targetType === 'fixed' && targetAmount <= 0) { toast('err', 'Nhập số tiền mục tiêu'); return; }
+  if (targetType === 'pct'   && (targetPct <= 0 || targetPct > 100)) { toast('err', 'Nhập % hợp lệ (1–100)'); return; }
+
+  const activeColor = document.querySelector('.jar-color-dot.active');
+  const color = activeColor ? activeColor.style.background : JAR_COLORS[0];
+
+  const jarData = {
+    ...(  _editingJarId ? { id: _editingJarId } : {}),
+    name, emoji: document.getElementById('jar-emoji-inp').value || '💰',
+    note: document.getElementById('jar-note-inp').value.trim(),
+    target_type: targetType, target_amount: targetAmount, target_pct: targetPct, color,
+  };
+
+  const raw = await B.saveMoneyJar(JSON.stringify(jarData));
+  const res = JSON.parse(raw);
+  if (res.ok) {
+    toast('ok', _editingJarId ? '✅ Đã cập nhật hộp!' : '✅ Đã tạo hộp mới!');
+    closeJarModal();
+    await loadMoneyJars();
+  } else {
+    toast('err', res.error || 'Lưu thất bại');
+  }
+}
+
+async function confirmDeleteJar(jarId, name) {
+  if (!confirm(`Xoá hộp "${name}"?`)) return;
+  const raw = await B.deleteMoneyJar(jarId);
+  const res = JSON.parse(raw);
+  if (res.ok) {
+    toast('ok', '🗑️ Đã xoá hộp!');
+    await loadMoneyJars();
+  } else {
+    toast('err', res.error || 'Xoá thất bại');
+  }
+}
