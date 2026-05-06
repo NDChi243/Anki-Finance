@@ -1,0 +1,22 @@
+/* ═══════════════════════════════════════
+   Utility Classes
+   ═══════════════════════════════════════ */
+/* Số tiền / chỉ số dùng tabular-nums (không nhảy width) */
+.num-mono{font-variant-numeric:tabular-nums;font-feature-settings:"tnum","cv11";letter-spacing:-.2px}
+.num-tab{font-variant-numeric:tabular-nums}
+.gradient-text{background:linear-gradient(135deg,#7c3aed,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.gradient-text-profit{background:linear-gradient(135deg,#10b981,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.gradient-text-gold{background:linear-gradient(135deg,#f59e0b,#fbbf24,#fde68a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* Layout helpers */
+.grid-auto{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--min,200px),1fr));gap:14px}
+.row{display:flex;align-items:center;gap:10px}
+.row-sb{display:flex;align-items:center;justify-content:space-between;gap:10px}
+label{font-size:12px;color:var(--muted2);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+
+/* Scroll-reveal animation */
+.reveal{opacity:0;transform:translateY(8px);animation:revealIn .45s var(--ease-out) forwards}
+.reveal.delay-1{animation-delay:.06s}
+.reveal.delay-2{animation-delay:.12s}
+.reveal.delay-3{animation-delay:.18s}
+@keyframes revealIn{to{opacity:1;transform:none}}

@@ -26,6 +26,15 @@ _KEY_XP   = "anki_tycoon_xp"
 _KEY_KN   = "anki_tycoon_kn_points"
 _KEY_RANK = "anki_tycoon_rank"
 
+# Tracking lượng XP người chơi đã kiếm được khi ở từng mode (lũy kế).
+# Dùng để tính tỷ lệ % Simple/Full đóng góp vào mỗi rank đã đạt.
+_KEY_XP_EARNED_SIMPLE = "anki_tycoon_xp_earned_simple"
+_KEY_XP_EARNED_FULL   = "anki_tycoon_xp_earned_full"
+# Snapshot tại mỗi lần lên rank: {rank_id: {simple_xp, full_xp, achieved_at}}
+_KEY_RANK_HISTORY     = "anki_tycoon_rank_history"
+# Mốc XP earned (per mode) tại lần snapshot rank gần nhất → để tính delta
+_KEY_RANK_HIST_CURSOR = "anki_tycoon_rank_history_cursor"
+
 # ── Bảng rank ─────────────────────────────────────────────────────
 # (id, label, xp_required, balance_required, kn_required, emoji, color_hex, group)
 # Rebalance v1.2: thresholds rank cao (typh/mstc/hl) giảm ~10-15%
@@ -83,9 +92,24 @@ XP_PER_EASE = {1: 2, 2: 8, 3: 15, 4: 25}
 def get_xp() -> int:
     return cfg_int(_KEY_XP, 0)
 
+def _get_current_mode() -> str:
+    try:
+        from ._safe_config import cfg_str
+        from .config import CONFIG_KEY_GAME_MODE, DEFAULT_GAME_MODE
+        return cfg_str(CONFIG_KEY_GAME_MODE, DEFAULT_GAME_MODE)
+    except Exception:
+        return "full"
+
 def add_xp(amount: int) -> None:
     if not col_ready(): return
-    cfg_set(_KEY_XP, get_xp() + int(amount))
+    amt = int(amount)
+    cfg_set(_KEY_XP, get_xp() + amt)
+    if amt > 0:
+        # Track XP đóng góp theo mode hiện tại
+        if _get_current_mode() == "simple":
+            cfg_set(_KEY_XP_EARNED_SIMPLE, cfg_int(_KEY_XP_EARNED_SIMPLE, 0) + amt)
+        else:
+            cfg_set(_KEY_XP_EARNED_FULL, cfg_int(_KEY_XP_EARNED_FULL, 0) + amt)
 
 def get_xp_for_ease(ease: int) -> int:
     return XP_PER_EASE.get(ease, 0)
@@ -142,7 +166,7 @@ def _next_rank(current_id: str) -> dict | None:
 def get_rank_status(balance: int | None = None) -> dict:
     """
     Trả về toàn bộ thông tin rank hiện tại + progress lên rank tiếp theo.
-    Bao gồm cả điểm Kiến Thức (KN).
+    Bao gồm cả điểm Kiến Thức (KN) và tỷ lệ % Simple/Full đóng góp.
     """
     if not col_ready():
         return _empty_status()
@@ -173,6 +197,13 @@ def get_rank_status(balance: int | None = None) -> dict:
         kn_pct = 100.0
         overall_pct = 100.0
 
+    # Overall Simple/Full contribution (tổng XP kiếm được từ mỗi mode)
+    total_simple = cfg_int(_KEY_XP_EARNED_SIMPLE, 0)
+    total_full   = cfg_int(_KEY_XP_EARNED_FULL, 0)
+    total_both   = total_simple + total_full
+    simple_pct   = round(total_simple / total_both * 100, 1) if total_both > 0 else 0.0
+    full_pct     = round(total_full / total_both * 100, 1) if total_both > 0 else 0.0
+
     return {
         "xp":           xp,
         "kn":           kn,
@@ -190,6 +221,8 @@ def get_rank_status(balance: int | None = None) -> dict:
         "bal_needed":   max(0, nxt["bal"] - balance) if nxt else 0,
         "kn_needed":    max(0, nxt.get("kn", 0) - kn) if nxt else 0,
         "is_max":       nxt is None,
+        "simple_pct":   simple_pct,
+        "full_pct":     full_pct,
     }
 
 def _empty_status() -> dict:
@@ -198,7 +231,77 @@ def _empty_status() -> dict:
             "rank_emoji":r["emoji"],"rank_color":r["color"],
             "rank_group":r["group"],"next_rank":RANKS[1],
             "xp_pct":0,"bal_pct":0,"kn_pct":0,"overall_pct":0,
-            "xp_needed":RANKS[1]["xp"],"bal_needed":RANKS[1]["bal"],"kn_needed":RANKS[1].get("kn",0),"is_max":False}
+            "xp_needed":RANKS[1]["xp"],"bal_needed":RANKS[1]["bal"],"kn_needed":RANKS[1].get("kn",0),"is_max":False,
+            "simple_pct":0.0,"full_pct":0.0}
 
 def get_all_ranks() -> list:
     return RANKS
+
+
+# ── Rank contribution tracking (% Simple / Full) ──────────────────
+
+def get_rank_history() -> dict:
+    """Trả về dict: {rank_id: {simple_xp, full_xp, achieved_at, simple_pct, full_pct}}."""
+    if not col_ready(): return {}
+    raw = cfg_dict(_KEY_RANK_HISTORY, {})
+    out = {}
+    for rid, snap in raw.items():
+        if not isinstance(snap, dict):
+            continue
+        s = int(snap.get("simple_xp", 0) or 0)
+        f = int(snap.get("full_xp", 0) or 0)
+        total = s + f
+        out[rid] = {
+            "simple_xp":   s,
+            "full_xp":     f,
+            "achieved_at": snap.get("achieved_at", ""),
+            "simple_pct":  round(s / total * 100, 1) if total > 0 else 0.0,
+            "full_pct":    round(f / total * 100, 1) if total > 0 else 0.0,
+        }
+    return out
+
+
+def snapshot_rank_if_changed(new_rank_id: str) -> dict | None:
+    """
+    Gọi mỗi khi phát hiện rank up. Snapshot delta XP (simple/full) từ rank trước
+    đến rank mới. Idempotent: nếu rank này đã snapshot rồi thì bỏ qua.
+    Trả về snapshot vừa tạo, hoặc None nếu không tạo gì.
+    """
+    if not col_ready(): return None
+    history = cfg_dict(_KEY_RANK_HISTORY, {})
+    if new_rank_id in history:
+        return None
+
+    earned_simple = cfg_int(_KEY_XP_EARNED_SIMPLE, 0)
+    earned_full   = cfg_int(_KEY_XP_EARNED_FULL, 0)
+    cursor        = cfg_dict(_KEY_RANK_HIST_CURSOR, {"simple": 0, "full": 0})
+
+    delta_simple = max(0, earned_simple - int(cursor.get("simple", 0) or 0))
+    delta_full   = max(0, earned_full   - int(cursor.get("full",   0) or 0))
+
+    import time
+    snap = {
+        "simple_xp":   delta_simple,
+        "full_xp":     delta_full,
+        "achieved_at": time.strftime("%Y-%m-%d", time.localtime(time.time())),
+    }
+    history[new_rank_id] = snap
+    cfg_set(_KEY_RANK_HISTORY, history)
+    cfg_set(_KEY_RANK_HIST_CURSOR, {"simple": earned_simple, "full": earned_full})
+    return snap
+
+
+def reset_rank_contribution_for_mode(mode: str) -> None:
+    """Reset XP contribution counter của 1 mode (dùng khi reset mode đó)."""
+    if not col_ready(): return
+    if mode == "simple":
+        cfg_set(_KEY_XP_EARNED_SIMPLE, 0)
+    elif mode == "full":
+        cfg_set(_KEY_XP_EARNED_FULL, 0)
+    # Cập nhật lại cursor để đoạn delta tiếp theo không âm
+    cursor = cfg_dict(_KEY_RANK_HIST_CURSOR, {"simple": 0, "full": 0})
+    if mode == "simple":
+        cursor["simple"] = 0
+    elif mode == "full":
+        cursor["full"] = 0
+    cfg_set(_KEY_RANK_HIST_CURSOR, cursor)

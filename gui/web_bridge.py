@@ -16,6 +16,8 @@ logger = get_logger(__name__)
 from ..balance import get_balance, set_balance_and_log, get_stats, record_purchase as record_purchase_balance
 from ..inventory import get_inventory, add_to_inventory, count_item, can_add_to_inventory, get_inventory_slots_info
 from ..shop_data import load_shop_items, get_items_map
+from .._safe_config import cfg_str, cfg_set
+from ..config import CONFIG_KEY_GAME_MODE, GAME_MODE_FULL, GAME_MODE_SIMPLE, DEFAULT_GAME_MODE
 from ..transactions import get_transactions, clear_transactions
 from ..finance import (
     get_budget, set_budget, get_monthly_spending,
@@ -376,6 +378,13 @@ class TycoonBridge(QObject):
 
         new_balance = get_balance()
         self.balanceChanged.emit(new_balance)
+
+        # Quest trigger: no_purchase fail
+        try:
+            from ..daily_quest import record_purchase
+            record_purchase()
+        except Exception as e:
+            logger.debug("buyItem: record_purchase — %s", e)
 
         logger.debug("buyItem(%s): hoàn tất — new_balance=%d", item_id, new_balance)
         return json.dumps({
@@ -842,7 +851,15 @@ class TycoonBridge(QObject):
 
     @pyqtSlot(str, result=str)
     def performReset(self, confirm_input: str):
-        return json.dumps(perform_reset(confirm_input), ensure_ascii=False)
+        """Reset cục bộ (toàn bộ data + cấp lại 10M). Tương thích ngược."""
+        return json.dumps(perform_reset(confirm_input, mode_scope="all"), ensure_ascii=False)
+
+    @pyqtSlot(str, str, result=str)
+    def performResetScoped(self, confirm_input: str, scope: str):
+        """Reset theo scope: 'all' (cục bộ) | 'simple' | 'full'.
+        Scope 'simple'/'full' chỉ xoá quest + achievement + rank-contribution
+        của mode đó, GIỮ tài sản chung (tiền, bank, stocks, crypto, RE, vehicles)."""
+        return json.dumps(perform_reset(confirm_input, mode_scope=scope), ensure_ascii=False)
 
     @pyqtSlot(str, result=str)
     def performHardReset(self, confirm_input: str):
@@ -1292,6 +1309,46 @@ class TycoonBridge(QObject):
 
         return json.dumps(owned, ensure_ascii=False)
 
+    @pyqtSlot(result=str)
+    def getCategorizedInventory(self):
+        """
+        Trả về toàn bộ inventory đã phân loại: regular_items, garage, tech_lab.
+        Dùng cho UI Inventory unified với sub-tabs.
+        """
+        import json
+        # 1. Regular items
+        from ..inventory import get_categorized_inventory
+        cat_data = get_categorized_inventory()
+
+        # 2. Garage data
+        from ..vehicle_system import get_garage_summary, get_total_garage_slots, get_active_vehicle
+        garage_vehicles = get_garage_summary()
+        garage_data = {
+            "garage": garage_vehicles,
+            "total_slots": get_total_garage_slots(),
+            "active_vehicle": get_active_vehicle(),
+        }
+
+        # 3. Tech Lab data
+        from ..tech_system import get_tech_summary, get_active_tech
+        tech_list = get_tech_summary()
+        tech_data = {
+            "tech_lab": tech_list,
+            "active_tech": get_active_tech(),
+        }
+
+        # 4. Inventory slots info
+        from ..inventory import get_inventory_slots_info
+        slots_info = get_inventory_slots_info()
+
+        result = {
+            **cat_data,
+            "garage": garage_data,
+            "tech_lab": tech_data,
+            "slots_info": slots_info,
+        }
+        return json.dumps(result, ensure_ascii=False)
+
     # ── Tax ───────────────────────────────────────────────────────
     @pyqtSlot(result=str)
     def getTaxStatus(self):
@@ -1336,6 +1393,13 @@ class TycoonBridge(QObject):
     def getAllRanks(self):
         from ..rank_system import get_all_ranks
         return json.dumps(get_all_ranks(), ensure_ascii=False)
+
+    @pyqtSlot(result=str)
+    def getRankHistory(self):
+        """Trả về dict {rank_id: {simple_pct, full_pct, achieved_at, ...}} —
+        tỷ lệ Simple/Full đóng góp vào mỗi rank đã đạt. Rank chưa đạt không có entry."""
+        from ..rank_system import get_rank_history
+        return json.dumps(get_rank_history(), ensure_ascii=False)
 
     # ── Daily Quest (Tier 1) ──────────────────────────────────────
     @pyqtSlot(result=str)
@@ -2272,6 +2336,34 @@ class TycoonBridge(QObject):
         except Exception as e:
             logger.debug("getEmergencyLog: %s", e)
             return json.dumps([], ensure_ascii=False)
+
+    # ── Game Mode ─────────────────────────────────────────────────────
+
+    @pyqtSlot(result=str)
+    def getGameMode(self):
+        """Trả về chế độ hiện tại: 'full' hoặc 'simple'."""
+        try:
+            mode = cfg_str(CONFIG_KEY_GAME_MODE, DEFAULT_GAME_MODE)
+            if mode not in (GAME_MODE_FULL, GAME_MODE_SIMPLE):
+                mode = DEFAULT_GAME_MODE
+            return json.dumps({"ok": True, "mode": mode}, ensure_ascii=False)
+        except Exception as e:
+            return json.dumps({"ok": False, "mode": DEFAULT_GAME_MODE, "error": str(e)}, ensure_ascii=False)
+
+    @pyqtSlot(str, result=str)
+    def setGameMode(self, mode: str):
+        """Thay đổi chế độ game. Yêu cầu restart Anki để áp dụng đầy đủ.
+        Args:
+            mode: 'full' hoặc 'simple'
+        """
+        try:
+            if mode not in (GAME_MODE_FULL, GAME_MODE_SIMPLE):
+                return json.dumps({"ok": False, "error": f"Chế độ '{mode}' không hợp lệ. Chỉ hỗ trợ: {GAME_MODE_FULL}, {GAME_MODE_SIMPLE}"})
+            cfg_set(CONFIG_KEY_GAME_MODE, mode)
+            logger.info("Game mode changed to: %s", mode)
+            return json.dumps({"ok": True, "mode": mode}, ensure_ascii=False)
+        except Exception as e:
+            return json.dumps({"ok": False, "error": str(e)}, ensure_ascii=False)
 
     # ── Auto Update ───────────────────────────────────────────────────
 

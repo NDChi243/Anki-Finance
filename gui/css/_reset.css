@@ -1,0 +1,17 @@
+/* ═══════════════════════════════════════
+   Base Reset & Body
+   ═══════════════════════════════════════ */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{
+  height:100%;
+  font-family:var(--font-ui);
+  background:
+    radial-gradient(1200px 600px at 12% -10%, rgba(124,58,237,.10), transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, rgba(59,130,246,.07), transparent 55%),
+    var(--bg);
+  background-attachment:fixed;
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+body{display:flex;flex-direction:column}

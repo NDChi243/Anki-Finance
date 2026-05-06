@@ -147,14 +147,26 @@ KEYS_TO_CLEAR = [
     "anki_tycoon_goal",
     # ── Streak / Rank / Quest ────────────────────────────────
     "anki_tycoon_xp",
+    "anki_tycoon_kn_points",
     "anki_tycoon_rank",
+    "anki_tycoon_xp_earned_simple",
+    "anki_tycoon_xp_earned_full",
+    "anki_tycoon_rank_history",
+    "anki_tycoon_rank_history_cursor",
     "anki_tycoon_streak",
     "anki_tycoon_streak_date",
     "anki_tycoon_best_streak",
     "anki_tycoon_streak_today_cards",
     "anki_tycoon_streak_today_date",
-    "anki_tycoon_daily_quests",
-    "anki_tycoon_quest_seed",
+    "anki_tycoon_daily_quests",                  # legacy
+    "anki_tycoon_quest_seed",                    # legacy
+    "anki_tycoon_daily_quests_simple",
+    "anki_tycoon_daily_quests_full",
+    "anki_tycoon_quest_seed_simple",
+    "anki_tycoon_quest_seed_full",
+    "anki_tycoon_quest_daily_state_simple",
+    "anki_tycoon_quest_daily_state_full",
+    "anki_tycoon_per_mode_migrated",
     # ── Real estate ──────────────────────────────────────────
     "anki_tycoon_re_portfolio",
     "anki_tycoon_re_last_collect",
@@ -206,8 +218,12 @@ KEYS_TO_CLEAR = [
     # ── Passive effects ──────────────────────────────────────
     "anki_tycoon_passive_effects",
     # ── Achievements ───────────────────────────────────────────
-    "anki_tycoon_achievement_data",
-    "anki_tycoon_achievement_effects",
+    "anki_tycoon_achievement_data",              # legacy
+    "anki_tycoon_achievement_effects",           # legacy
+    "anki_tycoon_achievement_data_simple",
+    "anki_tycoon_achievement_data_full",
+    "anki_tycoon_achievement_effects_simple",
+    "anki_tycoon_achievement_effects_full",
     # ── Credit Banking (tín dụng & vay ngân hàng) ─────────────
     "anki_tycoon_credit_score",
     "anki_tycoon_credit_cards",
@@ -252,13 +268,31 @@ KEYS_TO_CLEAR = [
 #   anki_tycoon_tax_log      — Lịch sử thuế (audit)
 
 
-def perform_reset(confirm_input: str, hard: bool = False) -> dict:
+# ── Per-mode keys: chỉ xoá khi reset 1 mode cụ thể ─────────────────
+# Khi reset Simple → chỉ xoá keys có hậu tố "_simple".
+# Khi reset Full   → chỉ xoá keys có hậu tố "_full".
+# KHÔNG xoá tài sản chung (balance, bank, stocks, crypto, RE, vehicles).
+def _per_mode_keys(mode: str) -> list:
+    return [
+        f"anki_tycoon_daily_quests_{mode}",
+        f"anki_tycoon_quest_seed_{mode}",
+        f"anki_tycoon_quest_daily_state_{mode}",
+        f"anki_tycoon_achievement_data_{mode}",
+        f"anki_tycoon_achievement_effects_{mode}",
+    ]
+
+
+def perform_reset(confirm_input: str, hard: bool = False,
+                  mode_scope: str = "all") -> dict:
     """
-    Thực hiện reset toàn bộ game.
+    Thực hiện reset.
 
     Parameters:
         confirm_input: Chuỗi xác nhận (phải đúng CONFIRM_PHRASE)
-        hard: Nếu True → xoá cả tax_log, knowledge_base để xoá sạch hoàn toàn
+        hard: Nếu True và mode_scope=="all" → xoá cả tax_log, knowledge_base
+        mode_scope: "all" (cục bộ — wipe tất cả + cấp lại vốn) |
+                    "simple" / "full" (chỉ wipe quest/achievement/rank-contribution của mode đó,
+                    GIỮ tài sản chung)
 
     Returns:
         {"ok": True, "snapshot": {...}} hoặc {"ok": False, "error": "..."}
@@ -269,6 +303,31 @@ def perform_reset(confirm_input: str, hard: bool = False) -> dict:
     if mw is None or mw.col is None:
         return {"ok": False, "error": "Hệ thống chưa sẵn sàng, thử lại sau."}
 
+    scope = (mode_scope or "all").lower()
+    if scope not in ("all", "simple", "full"):
+        return {"ok": False, "error": f"mode_scope không hợp lệ: {mode_scope}"}
+
+    # ── Reset theo mode (chỉ xoá data của mode đó, giữ tài sản) ──
+    if scope in ("simple", "full"):
+        keys = _per_mode_keys(scope)
+        for k in keys:
+            _safe_remove(k)
+        # Reset XP contribution counter của mode đó (rank vẫn shared)
+        try:
+            from .rank_system import reset_rank_contribution_for_mode
+            reset_rank_contribution_for_mode(scope)
+        except Exception as e:
+            logger.warning("reset_rank_contribution_for_mode: %s", e)
+        _flush_all_cache()
+        # Refresh topbar
+        try:
+            if hasattr(mw, "tycoon_topbar") and mw.tycoon_topbar:
+                mw.tycoon_topbar.refresh()
+        except Exception as e:
+            logger.warning("perform_reset(mode): refresh topbar thất bại: %s", e)
+        return {"ok": True, "scope": scope, "keys_cleared": len(keys)}
+
+    # ── Reset cục bộ (all) ──
     from .balance import get_balance
     balance = get_balance()
     if balance < 0:
@@ -283,10 +342,7 @@ def perform_reset(confirm_input: str, hard: bool = False) -> dict:
         "net_worth": int(get_total_current_value()) + balance,
     }
 
-    # ── Bước 1: Xoá toàn bộ keys ──────────────────────────────
     keys = list(KEYS_TO_CLEAR)
-
-    # Hard reset: xoá thêm tax_log + knowledge
     if hard:
         keys.extend([
             "anki_tycoon_tax_log",
@@ -296,13 +352,9 @@ def perform_reset(confirm_input: str, hard: bool = False) -> dict:
     for key in keys:
         _safe_remove(key)
 
-    # ── Bước 2: Flush toàn bộ cache để tránh dữ liệu cũ ───────
     _flush_all_cache()
-
-    # ── Bước 3: Cấp lại vốn khởi đầu 10 triệu + nhà trọ ──────
     _re_init_player()
 
-    # ── Bước 4: Ghi log reset (chỉ 1 bản ghi) ────────────────
     try:
         mw.col.set_config(_KEY_RESET_LOG, [{
             "date":     datetime.now().strftime("%d/%m/%Y %H:%M"),
@@ -312,14 +364,13 @@ def perform_reset(confirm_input: str, hard: bool = False) -> dict:
     except Exception as e:
         logger.warning("perform_reset: ghi log reset thất bại: %s", e)
 
-    # ── Bước 5: Refresh topbar ────────────────────────────────
     try:
         if hasattr(mw, "tycoon_topbar") and mw.tycoon_topbar:
             mw.tycoon_topbar.refresh()
     except Exception as e:
         logger.warning("perform_reset: refresh topbar thất bại: %s", e)
 
-    return {"ok": True, "snapshot": snapshot}
+    return {"ok": True, "scope": "all", "snapshot": snapshot}
 
 
 def perform_hard_reset(confirm_input: str) -> dict:
@@ -327,7 +378,7 @@ def perform_hard_reset(confirm_input: str) -> dict:
     Reset cục bộ — xoá sạch mọi dữ liệu kể cả lịch sử reset, lịch sử thuế, kiến thức tài chính.
     Là wrapper gọi perform_reset() với hard=True.
     """
-    return perform_reset(confirm_input, hard=True)
+    return perform_reset(confirm_input, hard=True, mode_scope="all")
 
 
 def get_reset_log() -> list:

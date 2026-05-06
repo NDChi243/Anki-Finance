@@ -1732,6 +1732,13 @@ def sell_stock(symbol: str, shares: int) -> dict:
     try:
         from .achievements import check_and_unlock
         check_and_unlock("stock_traded", True)
+        # Tổng lợi nhuận cộng dồn từ trade này (chỉ tăng khi pnl > 0)
+        if pnl and pnl > 0:
+            from ._safe_config import cfg_int, cfg_set
+            _key = "anki_tycoon_stocks_total_profit"
+            new_total = cfg_int(_key, 0) + int(pnl)
+            cfg_set(_key, new_total)
+            check_and_unlock("stock_profit_updated", new_total)
     except Exception as e:
         logger.debug("sell_stock (achievement): %s", e)
 

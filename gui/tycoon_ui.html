@@ -38,9 +38,9 @@
 
     <button class="nb" onclick="go('realestate')" id="nb-realestate">🏠 BĐS</button>
 
-    <button class="nb" onclick="go('garage')"    id="nb-garage">🚗 Garage</button>
+    <button class="nb" onclick="go('inventory');switchInvTab('vehicles')" id="nb-garage">🚗 Xe cộ</button>
 
-    <button class="nb" onclick="go('techlab')"   id="nb-techlab">💻 Tech Lab</button>
+    <button class="nb" onclick="go('inventory');switchInvTab('tech')" id="nb-techlab">💻 Công nghệ</button>
 
     <button class="nb" onclick="go('knowledge')" id="nb-knowledge">💡 Kiến thức</button>
 
@@ -1159,16 +1159,269 @@
 <div class="page" id="page-inventory">
 
   <div class="row-sb" style="margin-bottom:6px">
+    <div class="section-title">🎒 Kho tài sản</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span id="inv-badge" class="badge badge-purple"></span>
+      <span id="inv-slot-badge" class="badge badge-blue" style="font-size:10px"></span>
+    </div>
+  </div>
 
-    <div class="section-title">🎒 Tài sản/Kho đồ</div>
+  <!-- Inventory Sub-Tabs -->
+  <div class="inv-tabs" style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap">
+    <button class="btn inv-tab active" id="itab-items" style="font-size:12px;padding:6px 14px" onclick="switchInvTab('items')">📦 Vật phẩm</button>
+    <button class="btn inv-tab" id="itab-vehicles" style="font-size:12px;padding:6px 14px" onclick="switchInvTab('vehicles')">🚗 Xe cộ</button>
+    <button class="btn inv-tab" id="itab-tech" style="font-size:12px;padding:6px 14px" onclick="switchInvTab('tech')">💻 Công nghệ</button>
+  </div>
 
-    <span id="inv-badge" class="badge badge-purple"></span>
+  <!-- ════════ TAB: VẬT PHẨM ════════ -->
+  <div id="inv-tab-items">
+
+    <!-- Filter Bar for Regular Items -->
+    <div class="card" style="margin-bottom:14px;padding:10px 14px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <span style="font-size:11px;color:var(--muted2);font-weight:600">🔍 Bộ lọc:</span>
+        <select id="inv-filter-type" class="inp" style="width:auto;min-width:100px;font-size:11px;padding:4px 8px" onchange="applyInvFilter()">
+          <option value="">📦 Tất cả loại</option>
+          <option value="food">🍽️ Ẩm thực</option>
+          <option value="study">🎓 Học tập</option>
+          <option value="finance">🏦 Tài chính</option>
+          <option value="electronics">📱 Điện tử</option>
+          <option value="luxury">💎 Xa xỉ phẩm</option>
+          <option value="travel">✈️ Du lịch</option>
+          <option value="other">📦 Khác</option>
+        </select>
+        <select id="inv-filter-status" class="inp" style="width:auto;min-width:100px;font-size:11px;padding:4px 8px" onchange="applyInvFilter()">
+          <option value="">📊 Mọi trạng thái</option>
+          <option value="fresh">✅ Còn hạn</option>
+          <option value="expiring">⚠️ Sắp hết hạn</option>
+          <option value="expired">❌ Hết hạn</option>
+          <option value="active">⚡ Đang active</option>
+        </select>
+        <span style="font-size:11px;color:var(--muted2)">💰 Giá:</span>
+        <input class="inp" id="inv-filter-price-min" type="number" placeholder="Từ" style="width:80px;font-size:11px;padding:3px 6px" onchange="applyInvFilter()">
+        <span style="font-size:11px;color:var(--muted2)">→</span>
+        <input class="inp" id="inv-filter-price-max" type="number" placeholder="Đến" style="width:80px;font-size:11px;padding:3px 6px" onchange="applyInvFilter()">
+        <select id="inv-filter-sort" class="inp" style="width:auto;min-width:100px;font-size:11px;padding:3px 6px" onchange="applyInvFilter()">
+          <option value="">🔀 Mặc định</option>
+          <option value="price_asc">💰 Giá thấp → cao</option>
+          <option value="price_desc">💎 Giá cao → thấp</option>
+          <option value="name_asc">🔤 Tên A→Z</option>
+          <option value="name_desc">🔤 Tên Z→A</option>
+          <option value="qty_asc">📦 Số lượng tăng</option>
+          <option value="qty_desc">📦 Số lượng giảm</option>
+        </select>
+        <button class="btn btn-ghost" style="font-size:10px;padding:3px 8px" onclick="resetInvFilter()">✕ Xoá lọc</button>
+        <span id="inv-filter-count" style="font-size:11px;color:var(--muted2);margin-left:auto"></span>
+      </div>
+    </div>
+
+    <!-- Regular Items Grid -->
+    <div class="grid-auto" style="--min:175px" id="inv-grid"></div>
 
   </div>
 
-  <div class="section-sub">Các vật phẩm bạn đã mua</div>
+  <!-- ════════ TAB: XE CỘ ════════ -->
+  <div id="inv-tab-vehicles" style="display:none">
 
-  <div class="grid-auto" style="--min:175px" id="inv-grid"></div>
+    <!-- Garage Slots Info -->
+    <div class="card" style="margin-bottom:14px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <span style="font-size:13px;font-weight:700">Chỗ đậu xe</span>
+        <span style="font-size:12px;color:var(--muted2);margin-left:8px" id="inv-garage-slot-text">…</span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-ghost" style="font-size:11px" onclick="buyGarageSlot()">➕ Mua thêm slot</button>
+        <button class="btn btn-ghost" style="font-size:10px;padding:3px 8px;display:none;color:var(--accent2)" id="inv-garage-compare-btn" onclick="openGarageCompare()">📊 So sánh (<span id="inv-garage-compare-count">0</span>)</button>
+      </div>
+    </div>
+
+    <!-- Active Vehicle Banner -->
+    <div id="inv-garage-active-banner" style="display:none;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.3);border-radius:10px;padding:10px 14px;margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:20px" id="inv-gab-emoji">🚗</span>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:700" id="inv-gab-name">…</div>
+          <div style="margin-top:6px">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted2)">
+              <span>🔧 Độ bền</span>
+              <span id="inv-gab-dup">…</span>
+            </div>
+            <div class="fresh-wrap" style="width:100%;margin-top:2px">
+              <div id="inv-gab-dup-bar" style="height:100%;width:100%;background:var(--green);border-radius:2px;transition:width .4s ease"></div>
+            </div>
+          </div>
+          <div id="inv-gab-fuel-section" style="margin-top:4px;display:none">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted2)">
+              <span id="inv-gab-fuel-label">⛽ Xăng</span>
+              <span id="inv-gab-fuel">…</span>
+            </div>
+            <div class="fresh-wrap" style="width:100%;margin-top:2px">
+              <div id="inv-gab-fuel-bar" style="height:100%;width:100%;background:var(--green);border-radius:2px;transition:width .4s ease"></div>
+            </div>
+            <div id="inv-gab-fuel-warning" style="display:none;margin-top:2px;font-size:10px;color:var(--red);font-weight:600">⚠️ Nhiên liệu sắp hết!</div>
+            <div id="inv-gab-fuel-actions" style="display:none;margin-top:4px;gap:6px"></div>
+          </div>
+          <div id="inv-gab-manual-label" style="margin-top:4px;font-size:10px;color:var(--muted2);display:none">🚲 Không tốn nhiên liệu</div>
+          <div id="inv-gab-km-section" style="margin-top:4px;display:none">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted2)">
+              <span>📍 Số Km đã đi</span>
+              <span id="inv-gab-km" style="font-weight:600">0 km</span>
+            </div>
+            <div style="font-size:9px;color:var(--muted2);margin-top:1px">
+              <span id="inv-gab-cards-driven">0</span> thẻ đã học &nbsp;•&nbsp; 10 thẻ = 1km
+            </div>
+          </div>
+          <div id="inv-gab-energy-save-section" style="margin-top:4px;display:none">
+            <div style="display:flex;justify-content:space-between;font-size:10px;">
+              <span>⚡ Tiết kiệm năng lượng</span>
+              <span id="inv-gab-energy-save" style="font-weight:600;color:var(--green)">0%</span>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-ghost" style="font-size:11px;padding:4px 8px" onclick="stopCurrentVehicle()">🛑 Dừng</button>
+      </div>
+    </div>
+
+    <!-- Vehicle Filter Bar -->
+    <div class="card" style="margin-bottom:14px;padding:10px 14px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <span style="font-size:11px;color:var(--muted2);font-weight:600">🔍 Bộ lọc xe:</span>
+        <select id="inv-vehicle-filter-group" class="inp" style="width:auto;min-width:100px;font-size:11px;padding:4px 8px" onchange="applyInvVehicleFilter()">
+          <option value="">🚗 Tất cả nhóm</option>
+          <option value="ô tô">🚗 Ô tô</option>
+          <option value="xe máy">🏍️ Xe máy</option>
+          <option value="xe máy điện">🛵 Xe máy điện</option>
+          <option value="xe điện">⚡ Xe điện</option>
+          <option value="xe đạp">🚲 Xe đạp</option>
+        </select>
+        <select id="inv-vehicle-filter-status" class="inp" style="width:auto;min-width:100px;font-size:11px;padding:4px 8px" onchange="applyInvVehicleFilter()">
+          <option value="">📊 Tất cả trạng thái</option>
+          <option value="active">✅ Đang lái</option>
+          <option value="idle">🟢 Sẵn sàng</option>
+          <option value="repair">🔧 Đang sửa</option>
+          <option value="breakdown">💥 Sự cố</option>
+          <option value="maint_due">⚠️ Cần bảo dưỡng</option>
+          <option value="no_fuel">🪫 Hết nhiên liệu</option>
+          <option value="broken">💔 Hết độ bền</option>
+        </select>
+        <select id="inv-vehicle-filter-durability" class="inp" style="width:auto;min-width:100px;font-size:11px;padding:4px 8px" onchange="applyInvVehicleFilter()">
+          <option value="">🔩 Mọi độ bền</option>
+          <option value="critical">🔴 Nguy kịch (≤20%)</option>
+          <option value="low">🟡 Thấp (21-50%)</option>
+          <option value="medium">🟢 Trung bình (51-80%)</option>
+          <option value="high">💪 Cao (>80%)</option>
+        </select>
+        <select id="inv-vehicle-filter-fuel" class="inp" style="width:auto;min-width:100px;font-size:11px;padding:4px 8px" onchange="applyInvVehicleFilter()">
+          <option value="">⛽ Mọi nhiên liệu</option>
+          <option value="gasoline">⛽ Xăng</option>
+          <option value="electric">🔋 Điện</option>
+          <option value="manual">🚲 Tay (xe đạp)</option>
+        </select>
+        <button class="btn btn-ghost" style="font-size:10px;padding:3px 8px" onclick="toggleInvVehicleAdvFilter()" id="inv-vehicle-adv-toggle">⚙️ Nâng cao</button>
+        <div id="inv-vehicle-adv-filters" style="display:none;width:100%;margin-top:6px;padding-top:6px;border-top:1px solid var(--border);gap:8px;flex-wrap:wrap;align-items:center">
+          <span style="font-size:11px;color:var(--muted2)">💰 Giá:</span>
+          <input class="inp" id="inv-vehicle-filter-price-min" type="number" placeholder="Từ" style="width:80px;font-size:11px;padding:3px 6px" onchange="applyInvVehicleFilter()">
+          <span style="font-size:11px;color:var(--muted2)">→</span>
+          <input class="inp" id="inv-vehicle-filter-price-max" type="number" placeholder="Đến" style="width:80px;font-size:11px;padding:3px 6px" onchange="applyInvVehicleFilter()">
+          <span style="font-size:11px;color:var(--muted2);margin-left:4px">⭐ Sao:</span>
+          <select id="inv-vehicle-filter-stars" class="inp" style="width:auto;min-width:70px;font-size:11px;padding:3px 6px" onchange="applyInvVehicleFilter()">
+            <option value="">Mọi sao</option>
+            <option value="1">⭐ 1+</option>
+            <option value="2">⭐⭐ 2+</option>
+            <option value="3">⭐⭐⭐ 3+</option>
+            <option value="4">⭐⭐⭐⭐ 4+</option>
+            <option value="5">⭐⭐⭐⭐⭐ 5</option>
+          </select>
+          <span style="font-size:11px;color:var(--muted2);margin-left:4px">📊 Sắp xếp:</span>
+          <select id="inv-vehicle-filter-sort" class="inp" style="width:auto;min-width:100px;font-size:11px;padding:3px 6px" onchange="applyInvVehicleFilter()">
+            <option value="">🔀 Mặc định</option>
+            <option value="price_asc">💰 Giá thấp → cao</option>
+            <option value="price_desc">💎 Giá cao → thấp</option>
+            <option value="dup_asc">🔩 Độ bền thấp → cao</option>
+            <option value="dup_desc">💪 Độ bền cao → thấp</option>
+            <option value="fuel_asc">🪫 Nhiên liệu thấp → cao</option>
+            <option value="fuel_desc">⛽ Nhiên liệu cao → thấp</option>
+            <option value="km_asc">📍 Km thấp → cao</option>
+            <option value="km_desc">📍 Km cao → thấp</option>
+            <option value="name_asc">🔤 Tên A→Z</option>
+            <option value="name_desc">🔤 Tên Z→A</option>
+          </select>
+        </div>
+        <button class="btn btn-ghost" style="font-size:10px;padding:3px 8px" onclick="resetInvVehicleFilter()">✕ Xoá lọc</button>
+        <span id="inv-vehicle-filter-count" style="font-size:11px;color:var(--muted2);margin-left:auto"></span>
+      </div>
+    </div>
+
+    <!-- Vehicle Grid -->
+    <div id="inv-vehicle-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px"></div>
+
+  </div>
+
+  <!-- ════════ TAB: CÔNG NGHỆ ════════ -->
+  <div id="inv-tab-tech" style="display:none">
+
+    <!-- Active Tech Banner -->
+    <div id="inv-tech-active-banner" style="display:none;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.3);border-radius:10px;padding:10px 14px;margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:20px" id="inv-tlab-emoji">💻</span>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:700" id="inv-tlab-name">…</div>
+          <div style="margin-top:6px">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted2)">
+              <span>🔧 Độ bền</span>
+              <span id="inv-tlab-dup">…</span>
+            </div>
+            <div class="fresh-wrap" style="width:100%;margin-top:2px">
+              <div id="inv-tlab-dup-bar" style="height:100%;width:100%;background:var(--green);border-radius:2px;transition:width .4s ease"></div>
+            </div>
+          </div>
+          <div style="margin-top:4px;font-size:10px;color:var(--muted2)" id="inv-tlab-status">✅ Đang hoạt động</div>
+        </div>
+        <button class="btn btn-ghost" style="font-size:11px;padding:4px 8px" onclick="deactivateCurrentTech()">🛑 Tắt</button>
+      </div>
+    </div>
+
+    <!-- Tech Filter Bar -->
+    <div class="card" style="margin-bottom:14px;padding:10px 14px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <span style="font-size:11px;color:var(--muted2);font-weight:600">🔍 Bộ lọc:</span>
+        <select id="inv-tech-filter-status" class="inp" style="width:auto;min-width:100px;font-size:11px;padding:4px 8px" onchange="applyInvTechFilter()">
+          <option value="">📊 Tất cả trạng thái</option>
+          <option value="active">✅ Đang dùng</option>
+          <option value="idle">💤 Không dùng</option>
+          <option value="repair">🔧 Đang sửa</option>
+          <option value="maint_due">⚠️ Cần bảo dưỡng</option>
+          <option value="broken">💔 Hết độ bền</option>
+        </select>
+        <select id="inv-tech-filter-durability" class="inp" style="width:auto;min-width:100px;font-size:11px;padding:4px 8px" onchange="applyInvTechFilter()">
+          <option value="">🔩 Mọi độ bền</option>
+          <option value="critical">🔴 Nguy kịch (≤20%)</option>
+          <option value="low">🟡 Thấp (21-50%)</option>
+          <option value="medium">🟢 Trung bình (51-80%)</option>
+          <option value="high">💪 Cao (>80%)</option>
+        </select>
+        <span style="font-size:11px;color:var(--muted2)">💰 Giá:</span>
+        <input class="inp" id="inv-tech-filter-price-min" type="number" placeholder="Từ" style="width:80px;font-size:11px;padding:3px 6px" onchange="applyInvTechFilter()">
+        <span style="font-size:11px;color:var(--muted2)">→</span>
+        <input class="inp" id="inv-tech-filter-price-max" type="number" placeholder="Đến" style="width:80px;font-size:11px;padding:3px 6px" onchange="applyInvTechFilter()">
+        <select id="inv-tech-filter-sort" class="inp" style="width:auto;min-width:100px;font-size:11px;padding:3px 6px" onchange="applyInvTechFilter()">
+          <option value="">🔀 Mặc định</option>
+          <option value="price_asc">💰 Giá thấp → cao</option>
+          <option value="price_desc">💎 Giá cao → thấp</option>
+          <option value="dup_asc">🔩 Độ bền thấp → cao</option>
+          <option value="dup_desc">💪 Độ bền cao → thấp</option>
+          <option value="name_asc">🔤 Tên A→Z</option>
+          <option value="name_desc">🔤 Tên Z→A</option>
+        </select>
+        <button class="btn btn-ghost" style="font-size:10px;padding:3px 8px" onclick="resetInvTechFilter()">✕ Xoá lọc</button>
+        <span id="inv-tech-filter-count" style="font-size:11px;color:var(--muted2);margin-left:auto"></span>
+      </div>
+    </div>
+
+    <!-- Tech Grid -->
+    <div id="inv-tech-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px"></div>
+
+  </div>
 
 </div>
 
@@ -4583,6 +4836,37 @@
 
 
 
+  <!-- Game Mode Toggle -->
+
+  <div class="card" style="margin-bottom:14px;border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.04)" id="game-mode-card">
+
+    <div style="font-size:14px;font-weight:700;margin-bottom:6px">🎮 Chế độ chơi</div>
+
+    <p style="font-size:12px;color:var(--muted2);margin-bottom:12px;line-height:1.6">
+      <strong>Simple</strong> — Chỉ giữ các tính năng học tập cơ bản (Dashboard, Shop, Kho đồ, Ngân hàng, Tài chính, Quests, Thành tựu, Kiến thức).<br>
+      <strong>Full</strong> — Trải nghiệm đầy đủ với BĐS, Xe cộ, Công nghệ, Chứng khoán, Tài sản số, Thi thử.
+    </p>
+
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:8px;background:var(--surface2);border-radius:8px;padding:6px 12px">
+        <span style="font-size:13px;color:var(--muted2)">Hiện tại:</span>
+        <span id="settings-game-mode" style="font-weight:700;font-size:14px">...</span>
+      </div>
+      <select id="game-mode-select" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-size:13px;outline:none;cursor:pointer">
+        <option value="simple">🔰 Simple</option>
+        <option value="full">🚀 Full</option>
+      </select>
+      <button class="btn btn-primary" id="apply-game-mode-btn" onclick="applyGameMode()">
+        💾 Áp dụng & Khởi động lại
+      </button>
+    </div>
+
+    <div id="game-mode-info" style="display:none;margin-top:10px;padding:10px;background:var(--surface2);border-radius:8px;font-size:12px;color:var(--muted2);line-height:1.6"></div>
+
+  </div>
+
+
+
   <!-- Again Penalty config -->
 
   <div class="card" style="margin-bottom:14px">
@@ -4709,6 +4993,46 @@
     <!-- Debug log nhỏ -->
 
     <div id="debug-mini-status" style="font-size:11px;color:var(--muted2);margin-top:4px"></div>
+
+  </div>
+
+
+
+  <!-- Reset theo chế độ chơi (scope) -->
+
+  <div class="card" style="border-color:rgba(249,115,22,.4);margin-bottom:14px">
+
+    <div style="font-size:14px;font-weight:700;color:var(--orange);margin-bottom:6px">🎯 Reset theo chế độ chơi</div>
+
+    <p style="font-size:12px;color:var(--muted2);margin-bottom:10px;line-height:1.6">
+
+      Chỉ xoá dữ liệu của chế độ <strong>Simple</strong> hoặc <strong>Full</strong> (quest, thành tựu, đóng góp rank).
+
+      <strong style="color:var(--green)">Giữ nguyên</strong> tài sản chung (tiền, ngân hàng, CK, crypto, BĐS, xe cộ).
+
+    </p>
+
+    <div style="background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.3);border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:13px">
+
+      Nhập cụm xác nhận trước khi reset:<br/>
+
+      <code id="scope-reset-phrase" style="font-size:15px;font-weight:900;color:var(--orange);letter-spacing:1px"></code>
+
+    </div>
+
+    <input id="scope-reset-confirm-inp" class="inp" placeholder="Nhập cụm xác nhận…" style="border-color:rgba(249,115,22,.6);margin-bottom:10px"/>
+
+    <div id="scope-reset-error" style="color:var(--red);font-size:12px;margin-bottom:8px;min-height:18px"></div>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+
+      <button class="btn" style="background:var(--red);border-color:#7f1d1d;color:#fff" onclick="doScopedReset('all')">🗑️ Reset cục bộ</button>
+
+      <button class="btn" style="background:var(--surface2);color:var(--yellow);border:1px solid rgba(234,179,8,.4)" onclick="doScopedReset('simple')">🔄 Reset Simple</button>
+
+      <button class="btn" style="background:var(--surface2);color:var(--accent2);border:1px solid rgba(59,130,246,.4)" onclick="doScopedReset('full')">🔄 Reset Full</button>
+
+    </div>
 
   </div>
 

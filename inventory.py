@@ -115,3 +115,147 @@ def get_unique_items() -> list:
     """Trả về danh sách item_id duy nhất trong kho."""
     from collections import Counter
     return list(Counter(get_inventory()).keys())
+
+
+# ─── Unified Inventory API ──────────────────────────────────────
+
+def get_categorized_inventory() -> dict:
+    """
+    Trả về inventory đã phân loại: items thường, xe (garage), tech.
+    Dùng cho UI Inventory unified với sub-tabs.
+    """
+    from .shop_data import load_shop_items, get_items_map
+    from .gui.image_manager import get_image_url
+    from .item_effects import get_item_effects, format_item_effects_html, get_item_effect_descriptions
+
+    inv = get_inventory()
+    items_map = get_items_map()
+    
+    # Lấy freshness info
+    try:
+        from .food_effects import _get_fresh, get_effect_for_item, _get_item_category
+    except ImportError:
+        _get_fresh = lambda: {}
+        get_effect_for_item = lambda iid, item: {}
+        _get_item_category = lambda iid, item: ""
+
+    fresh = _get_fresh()
+    
+    # Đếm số lượng mỗi item trong inventory
+    counts = {}
+    for iid in inv:
+        counts[iid] = counts.get(iid, 0) + 1
+
+    # Freshness slots by item_id
+    slots_by_item = {}
+    for sid, info in fresh.items():
+        iid = info.get("item_id", "")
+        if iid:
+            slots_by_item.setdefault(iid, []).append(sid)
+
+    # Phân loại
+    regular_items = []
+    vehicle_ids = set()
+    tech_ids = set()
+    
+    # Lấy danh sách xe và tech từ garage/tech_lab
+    try:
+        from .vehicle_system import _get_data as _get_vehicle_data
+        vdata = _get_vehicle_data()
+        vehicle_ids = set(vdata.get("garage", {}).keys())
+    except Exception:
+        pass
+    
+    try:
+        from .tech_system import _get_data as _get_tech_data
+        tdata = _get_tech_data()
+        tech_ids = set(tdata.get("tech_lab", {}).keys())
+    except Exception:
+        pass
+
+    now = __import__('time').time()
+
+    for iid, qty in counts.items():
+        item = items_map.get(iid)
+        if not item:
+            continue
+
+        # Nếu là xe hoặc tech, skip (sẽ lấy từ garage/tech_lab API riêng)
+        if iid in vehicle_ids or iid in tech_ids:
+            continue
+
+        entry = {**item, "quantity": qty}
+        url = get_image_url(iid)
+        entry["image_url"] = url if url else ""
+
+        item_cat = _get_item_category(iid, item) if callable(_get_item_category) else ""
+        if item_cat in ("food", "drink") or item_cat == "study":
+            effect = get_effect_for_item(iid, item) if callable(get_effect_for_item) else {}
+            entry["effect"] = effect
+            entry["is_food"] = (item_cat in ("food", "drink"))
+            entry["is_study"] = (item_cat == "study")
+            entry["expire_h"] = item.get("expire_h", effect.get("expire_h", 24) if effect else 24)
+
+            real_slots = slots_by_item.get(iid, [])
+            entry["food_slots"] = []
+            for sid in real_slots:
+                finfo = fresh[sid]
+                buy_ts = float(finfo.get("buy_ts", now))
+                expire_h = float(finfo.get("expire_h", 24))
+                elapsed_h = (now - buy_ts) / 3600
+                remaining_h = max(0.0, expire_h - elapsed_h)
+                fresh_pct = round(remaining_h / expire_h * 100, 1) if expire_h > 0 else 0
+                entry["food_slots"].append({
+                    "slot_id": sid,
+                    "remaining_h": round(remaining_h, 2),
+                    "fresh_pct": fresh_pct,
+                })
+            entry["active_slot"] = real_slots[0] if real_slots else ""
+        else:
+            entry["is_food"] = False
+            entry["is_study"] = False
+            entry["food_slots"] = []
+            entry["active_slot"] = ""
+            try:
+                eff_list = get_item_effects(item)
+                if eff_list:
+                    entry["effect_descriptions"] = get_item_effect_descriptions(item)
+                    entry["effect_html"] = format_item_effects_html(eff_list)
+            except Exception:
+                pass
+        
+        # Thêm item_type để phân loại
+        entry["item_type"] = _categorize_item_type(item, item_cat)
+        regular_items.append(entry)
+
+    return {
+        "regular_items": regular_items,
+        "total_count": len(inv),
+        "unique_count": len(counts),
+    }
+
+
+def _categorize_item_type(item: dict, item_cat: str = "") -> str:
+    """Phân loại item type dựa trên category và effect."""
+    cat = (item.get("category", "") + item_cat).lower()
+    
+    if "ẩm thực" in cat or "đồ uống" in cat or item_cat in ("food", "drink"):
+        return "food"
+    if "vật phẩm học tập" in cat or "study" in cat or item_cat == "study":
+        return "study"
+    if "vật phẩm tài chính" in cat or "finance" in cat:
+        return "finance"
+    if "xa xỉ" in cat or "luxury" in cat:
+        return "luxury"
+    if "du lịch" in cat or "travel" in cat:
+        return "travel"
+    if "điện tử" in cat or "electronics" in cat:
+        return "electronics"
+    if "sức khỏe" in cat or "health" in cat:
+        return "health"
+    return "other"
+
+
+def get_inventory_slots_used() -> int:
+    """Trả về số slot inventory đã dùng."""
+    return len(get_inventory())

@@ -136,6 +136,13 @@ def record_card_reviewed() -> dict:
     except Exception as e:
         logger.debug("update_streak: achievements trigger — %s", e)
 
+    # Quest trigger (streak_reach + no_penalty_streak)
+    try:
+        from .daily_quest import record_streak
+        record_streak(streak)
+    except Exception as e:
+        logger.debug("update_streak: record_streak — %s", e)
+
     return result
 
 

@@ -358,6 +358,12 @@ def add_property(item_id: str, item_data: dict) -> dict:
     portfolio = _get_portfolio()
     portfolio.append(entry)
     _save_portfolio(portfolio)
+    # Achievement trigger: BĐS đầu tiên
+    try:
+        from .achievements import check_and_unlock
+        check_and_unlock("property_purchased", True)
+    except Exception:
+        pass
     return {"ok": True, "slot_id": slot_id}
 
 

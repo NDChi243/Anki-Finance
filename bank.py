@@ -17,6 +17,20 @@ _KEY_SEND_MORE_LOG = "anki_tycoon_term_send_more_log"
 _KEY_INSTANT_INTEREST = "anki_tycoon_instant_interest"  # {last_claim_ts: float}
 _SEND_MORE_WEEKLY_LIMIT = 3
 
+
+def _on_savings_changed(amount: int, source: str) -> None:
+    """Trigger quest save_money + achievement savings_updated khi user gửi tiền."""
+    try:
+        from .daily_quest import record_save_money
+        record_save_money(int(amount))
+    except Exception as e:
+        logger.debug("_on_savings_changed: record_save_money — %s", e)
+    try:
+        from .achievements import check_and_unlock
+        check_and_unlock("savings_updated", None)
+    except Exception as e:
+        logger.debug("_on_savings_changed: achievements — %s", e)
+
 DEMAND_PRODUCT = {
     "code": "demand",
     "label": "Tiền gửi không kỳ hạn",
@@ -281,6 +295,7 @@ def deposit_demand(amount: int) -> dict:
     d["amount"] = int(d.get("amount", 0) or 0) + amount
     _save_demand(d)
     add_transaction("bank_deposit", amount, "Gửi không kỳ hạn")
+    _on_savings_changed(amount, "deposit_demand")
     return {"ok": True}
 
 
@@ -579,6 +594,7 @@ def open_term_deposit(amount: int, term_months: int, product_code: str) -> dict:
     add_transaction("deposit", amount, f"Mở sổ {dep['label']} — {rate*100:.2f}%/năm")
     if upfront_interest > 0:
         add_transaction("interest", upfront_interest, f"Nhận lãi trước sổ {dep['label']} #{dep['id']}")
+    _on_savings_changed(amount, "open_term_deposit")
 
     return {
         "ok": True,

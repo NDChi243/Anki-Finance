@@ -285,6 +285,47 @@ function renderRankFull(r) {
 
   }
 
+  // ── Simple / Full contribution ───────────────────────────
+  renderRankContribution(r);
+
+}
+
+function renderRankContribution(r) {
+  const card = document.getElementById('rank-full-card');
+  if (!card) return;
+
+  let contEl = document.getElementById('rank-contribution');
+  if (!contEl) {
+    contEl = document.createElement('div');
+    contEl.id = 'rank-contribution';
+    contEl.style.cssText = 'margin-top:10px;padding:8px 10px;background:var(--surface2);border-radius:8px;font-size:11px';
+    // Insert after rank-requirements
+    const reqEl = document.getElementById('rank-requirements');
+    if (reqEl && reqEl.nextSibling) {
+      reqEl.parentNode.insertBefore(contEl, reqEl.nextSibling);
+    } else {
+      card.appendChild(contEl);
+    }
+  }
+
+  const sPct = r.simple_pct || 0;
+  const fPct = r.full_pct || 0;
+  const hasData = (sPct > 0 || fPct > 0);
+
+  contEl.innerHTML = hasData
+    ? `<div style="display:flex;align-items:center;gap:10px;justify-content:space-between">
+        <span style="color:var(--muted2)">📊 Đóng góp XP:</span>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="color:#f59e0b">🟡 Simple ${sPct}%</span>
+          <span style="color:var(--muted2)">|</span>
+          <span style="color:#3b82f6">🔵 Full ${fPct}%</span>
+        </div>
+       </div>
+       <div style="display:flex;height:6px;border-radius:3px;overflow:hidden;margin-top:4px">
+        <div style="flex:${sPct};background:#f59e0b;border-radius:3px 0 0 3px"></div>
+        <div style="flex:${fPct};background:#3b82f6;border-radius:0 3px 3px 0"></div>
+       </div>`
+    : '<div style="color:var(--muted2);text-align:center">📊 Chưa có dữ liệu đóng góp XP</div>';
 }
 
 
@@ -416,13 +457,20 @@ async function claimQuest(questId) {
 
 
 let _allRanks = null;
+let _rankHistory = null;
 
 async function renderRanksTable() {
 
   if (!_allRanks) {
-
     _allRanks = JSON.parse(await B.getAllRanks());
+  }
 
+  if (!_rankHistory) {
+    try {
+      _rankHistory = JSON.parse(await B.getRankHistory());
+    } catch(e) {
+      _rankHistory = {};
+    }
   }
 
   const el = document.getElementById('ranks-table');
@@ -432,18 +480,30 @@ async function renderRanksTable() {
   el.innerHTML = _allRanks.map(r => {
 
     const isCur = r.id === curRankId;
+    const hist = _rankHistory ? _rankHistory[r.id] : null;
+    let contribHtml = '';
+    if (hist) {
+      const s = hist.simple_pct || 0;
+      const f = hist.full_pct || 0;
+      contribHtml = `<span style="font-size:10px;color:var(--muted2);flex-shrink:0">
+        <span style="color:#f59e0b">S${s}%</span>
+        <span style="color:#3b82f6">F${f}%</span>
+      </span>`;
+    }
 
-    return `<div style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:12px;
+    return `<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;font-size:12px;
 
         ${isCur ? 'background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.3)' : 'background:var(--surface2)'}">
 
       <span style="font-size:20px">${r.emoji}</span>
 
-      <span style="flex:1;font-weight:${isCur?700:500};color:${isCur?r.color:'var(--text)'}">${r.label}</span>
+      <span style="flex:1;font-weight:${isCur?700:500};color:${isCur?r.color:'var(--text)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.label}</span>
 
-      <span style="color:var(--accent2);font-size:11px">⭐ ${r.xp.toLocaleString('vi-VN')} XP</span>
+      <span style="color:var(--accent2);font-size:11px;flex-shrink:0">⭐ ${r.xp.toLocaleString('vi-VN')}</span>
 
-      <span style="color:var(--yellow);font-size:11px">💰 ${fmtVND(r.bal)}</span>
+      <span style="color:var(--yellow);font-size:11px;flex-shrink:0">💰 ${fmtVND(r.bal)}</span>
+
+      ${contribHtml}
 
       ${isCur ? '<span class="badge badge-purple" style="font-size:9px">← Bạn</span>' : ''}
 

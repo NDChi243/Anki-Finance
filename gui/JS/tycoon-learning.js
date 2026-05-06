@@ -1186,6 +1186,34 @@ async function loadSettings() {
 
   updateResetButtonState();
 
+  // ── Game Mode ─────────────────────────────────
+
+  await _loadGameModeUI();
+
+  // ── Scope Reset phrase ────────────────────────
+
+  try {
+
+    const phrase = await B.getConfirmPhrase();
+
+    const phraseEl = document.getElementById('scope-reset-phrase');
+
+    if (phraseEl) phraseEl.textContent = phrase;
+
+  } catch (e) {
+
+    // silently ignore
+
+  }
+
+  const scopeInp = document.getElementById('scope-reset-confirm-inp');
+
+  if (scopeInp) scopeInp.value = '';
+
+  const scopeErr = document.getElementById('scope-reset-error');
+
+  if (scopeErr) scopeErr.textContent = '';
+
   // Hiển thị phiên bản hiện tại
 
   try {
@@ -1230,6 +1258,97 @@ async function loadSettings() {
 
   await loadTaxLog();
 
+}
+
+
+/**
+ * Load game mode từ bridge và cập nhật UI.
+ */
+async function _loadGameModeUI() {
+  try {
+    const raw = await B.getGameMode();
+    const res = JSON.parse(raw);
+    const mode = res.ok ? res.mode : 'full';
+    TycoonState.gameMode = mode;
+    // Backward compatibility
+    window.gameMode = mode;
+
+    const el = document.getElementById('settings-game-mode');
+    const sel = document.getElementById('game-mode-select');
+    if (!el || !sel) return;
+
+    if (mode === 'simple') {
+      el.textContent = '🔰 Simple';
+      el.style.color = 'var(--green)';
+    } else {
+      el.textContent = '🚀 Full';
+      el.style.color = 'var(--accent)';
+    }
+    sel.value = mode;
+  } catch (e) {
+    console.warn('_loadGameModeUI:', e);
+  }
+}
+
+
+/**
+ * Áp dụng game mode: lưu qua bridge và yêu cầu restart Anki.
+ */
+async function applyGameMode() {
+  const sel = document.getElementById('game-mode-select');
+  const info = document.getElementById('game-mode-info');
+  const btn = document.getElementById('apply-game-mode-btn');
+  if (!sel || !info || !btn) return;
+
+  const newMode = sel.value;
+  const currentMode = TycoonState.gameMode;
+
+  if (newMode === currentMode) {
+    info.style.display = 'block';
+    info.innerHTML = '⚠️ Bạn đang ở chế độ này rồi. Không cần thay đổi.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Đang lưu...';
+
+  try {
+    const raw = await B.setGameMode(newMode);
+    const res = JSON.parse(raw);
+
+    if (!res.ok) {
+      info.style.display = 'block';
+      info.innerHTML = `❌ Lỗi: ${res.error || 'Không thể lưu chế độ'}`;
+      btn.disabled = false;
+      btn.textContent = '💾 Áp dụng & Khởi động lại';
+      return;
+    }
+
+    // Cập nhật state ngay
+    TycoonState.gameMode = newMode;
+    window.gameMode = newMode;
+
+    info.style.display = 'block';
+    const modeLabel = newMode === 'simple' ? '🔰 Simple' : '🚀 Full';
+    info.innerHTML =
+      `✅ Đã chuyển sang chế độ <strong>${modeLabel}</strong>!<br><br>` +
+      `🔄 Vui lòng <strong>khởi động lại Anki</strong> để áp dụng thay đổi đầy đủ.<br><br>` +
+      `📌 <em>Mẹo: Vào Tools → Add-ons → chọn Anki Finance → nhấn nút restart ở góc dưới.</em>`;
+
+    // Cập nhật label hiện tại
+    const el = document.getElementById('settings-game-mode');
+    if (el) {
+      el.textContent = modeLabel;
+      el.style.color = newMode === 'simple' ? 'var(--green)' : 'var(--accent)';
+    }
+
+    btn.textContent = '✅ Đã lưu — Hãy restart Anki';
+  } catch (e) {
+    info.style.display = 'block';
+    info.innerHTML = `❌ Lỗi: ${e.message || 'Không thể kết nối'}`;
+    btn.disabled = false;
+    btn.textContent = '💾 Áp dụng & Khởi động lại';
+  }
 }
 
 

@@ -200,5 +200,72 @@ async function runDebugReport() {
 
 }
 
+/**
+ * Reset theo scope: 'all' (cục bộ) | 'simple' | 'full'.
+ * Gọi bridge.performResetScoped(phrase, scope) đã có sẵn ở Python backend.
+ */
+async function doScopedReset(scope) {
 
+  const inp = document.getElementById('scope-reset-confirm-inp');
 
+  const err = document.getElementById('scope-reset-error');
+
+  if (!inp || !inp.value.trim()) {
+
+    if (err) err.textContent = 'Vui lòng nhập cụm xác nhận.';
+
+    toast('err', '❌ Vui lòng nhập cụm xác nhận trước khi reset!');
+
+    return;
+
+  }
+
+  const phrase = inp.value.trim();
+
+  // Xác nhận thêm nếu là scope "all" (nguy hiểm hơn)
+  if (scope === 'all' && !confirm('🔥 Bạn có chắc muốn Reset CỤC BỘ? Toàn bộ dữ liệu game sẽ bị xoá và bạn bắt đầu lại từ đầu với 10 triệu VND.')) return;
+
+  if (scope === 'simple' && !confirm('🔄 Xác nhận reset chế độ Simple? Quest, thành tựu và đóng góp rank của chế độ Simple sẽ bị xoá. Tài sản chung được giữ nguyên.')) return;
+
+  if (scope === 'full' && !confirm('🔄 Xác nhận reset chế độ Full? Quest, thành tựu và đóng góp rank của chế độ Full sẽ bị xoá. Tài sản chung được giữ nguyên.')) return;
+
+  try {
+
+    const raw = await B.performResetScoped(phrase, scope);
+
+    const res = JSON.parse(raw);
+
+    if (res.ok) {
+
+      if (err) err.textContent = '';
+
+      inp.value = '';
+
+      const labels = { all: 'cục bộ 🗑️', simple: 'Simple 🔄', full: 'Full 🔄' };
+
+      toast('ok', `✅ Reset ${labels[scope] || scope} thành công!`);
+
+      // Refresh UI
+      await refreshBalance();
+
+      await loadSettings();
+
+      await loadDashboard();
+
+    } else {
+
+      if (err) err.textContent = res.error;
+
+      toast('err', '❌ ' + (res.error || 'Reset thất bại.'));
+
+    }
+
+  } catch (e) {
+
+    if (err) err.textContent = e.message;
+
+    toast('err', '❌ Lỗi: ' + e.message);
+
+  }
+
+}

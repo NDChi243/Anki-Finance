@@ -284,6 +284,15 @@ def _simulate_price_changes(market: dict, streak_days: int = 0) -> dict:
             if rug_risk > 0 and _seeded_random() < rug_risk * 0.005:
                 new_price = base * (_seeded_random() * 0.04 + 0.01)
                 asset = {**asset, "rug_pulled": True, "rug_pull_event": _fmt_ts()}
+                # Achievement ẩn: chỉ trigger khi user thực sự đang giữ coin này
+                try:
+                    portfolio_check = _get_portfolio()
+                    if any(h.get("symbol") == sym and float(h.get("quantity", 0)) > 0
+                           for h in portfolio_check):
+                        from .achievements import check_and_unlock
+                        check_and_unlock("rugpull_victim", True)
+                except Exception:
+                    pass
 
             min_price = base * 0.001
             max_price = base * 10.0
@@ -502,6 +511,13 @@ def buy_crypto(symbol: str, amount_vnd: int) -> dict:
     # Ghi transaction
     _add_txn("buy", symbol, quantity, current_price, amount_vnd, asset.get("emoji", "🪙"), asset.get("exchange", ""))
 
+    # Achievement trigger
+    try:
+        from .achievements import check_and_unlock
+        check_and_unlock("crypto_traded", True)
+    except Exception:
+        pass
+
     return {
         "ok":          True,
         "symbol":      symbol,
@@ -628,6 +644,13 @@ def stake_crypto(symbol: str, stake_pct: float) -> dict:
 
     _add_txn("stake", symbol, stake_qty, float(asset.get("current_price", 0)), 0,
              asset.get("emoji", "🪙"), "", note=f"APY {apy*100:.1f}%")
+
+    # Achievement trigger
+    try:
+        from .achievements import check_and_unlock
+        check_and_unlock("crypto_staked", True)
+    except Exception:
+        pass
 
     return {
         "ok":        True,

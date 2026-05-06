@@ -1,0 +1,121 @@
+/* ═══════════════════════════════════════
+   Shop
+   ═══════════════════════════════════════ */
+.shop-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.shop-toolbar select{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-size:13px;outline:none;cursor:pointer}
+.item-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:18px 14px 14px;display:flex;flex-direction:column;align-items:center;
+  text-align:center;gap:7px;position:relative;overflow:hidden;
+  transition:transform .2s,border-color .2s,box-shadow .2s;
+}
+.item-card:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 8px 28px var(--glow)}
+.item-card .owned-badge{position:absolute;top:9px;right:9px}
+
+.item-emoji{font-size:40px;line-height:1}
+.item-img{width:120px;height:120px;object-fit:cover;border-radius:10px;border:1px solid var(--border)}
+.item-img-wrap{width:120px;height:120px;display:flex;align-items:center;justify-content:center}
+.item-name{font-size:13px;font-weight:700}
+.item-desc{font-size:11px;color:var(--muted2)}
+.item-price{font-size:17px;font-weight:900;color:var(--yellow);margin-top:2px}
+
+/* Shop category cards */
+.shop-modal .modal-footer{justify-content:flex-end}
+.stars-row{display:flex;gap:2px;font-size:14px}
+.star-filled{color:#f59e0b}
+.star-empty{color:var(--muted);opacity:.3}
+.car-info{font-size:11px;color:var(--muted2);margin-top:2px}
+.car-info span{margin:0 4px}
+.origin-badge{display:inline-flex;align-items:center;padding:1px 6px;border-radius:8px;font-size:10px;font-weight:600}
+.origin-asia{background:rgba(245,158,11,.15);color:#f59e0b}
+.origin-europe{background:rgba(59,130,246,.15);color:#3b82f6}
+.origin-america{background:rgba(239,68,68,.15);color:#ef4444}
+
+/* Rarity badge */
+.rarity-badge{font-size:10px;padding:2px 7px;border-radius:8px}
+.rarity-uncommon{background:rgba(16,185,129,.15);color:#10b981;border:1px solid rgba(16,185,129,.3)}
+.rarity-rare{background:rgba(59,130,246,.15);color:#3b82f6;border:1px solid rgba(59,130,246,.3)}
+.rarity-epic{background:rgba(124,58,237,.15);color:#a855f7;border:1px solid rgba(124,58,237,.3)}
+.rarity-legendary{
+  background:linear-gradient(135deg,rgba(245,158,11,.15),rgba(236,72,153,.15));
+  color:#f59e0b;border:1px solid rgba(245,158,11,.4);
+  animation:legendaryGlow 2s infinite;
+}
+@keyframes legendaryGlow{0%,100%{box-shadow:0 0 6px rgba(245,158,11,.2)}50%{box-shadow:0 0 16px rgba(245,158,11,.5)}}
+
+/* Shop modal filter */
+.filter-select{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-size:13px;outline:none;cursor:pointer}
+.filter-select:focus{border-color:var(--accent)}
+.shm-star-btn{font-size:12px;padding:4px 8px;border:1px solid transparent;transition:all .2s}
+.shm-star-btn.active{border-color:#f59e0b;background:rgba(245,158,11,.12)}
+.shm-rarity-btn{font-size:11px;padding:4px 8px;border:1px solid transparent;transition:all .2s}
+.shm-rarity-btn.active{border-color:var(--accent);background:var(--glow)}
+.car-brand{font-size:11px;font-weight:700;color:var(--text)}
+.shop-modal .item-card{border-color:var(--border)}
+.shop-modal .item-card .badge-purple{display:none}
+
+/* vg badge (vehicle group) */
+.vg-badge{display:inline-flex;align-items:center;padding:1px 6px;border-radius:8px;font-size:10px;font-weight:600;background:rgba(59,130,246,.15);color:#3b82f6}
+
+/* Shop category grid */
+.shop-cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:4px}
+.shop-cat-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:22px 18px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;
+  min-height:180px;
+}
+.shop-cat-card:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 12px 36px var(--glow)}
+.shop-cat-card::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  opacity:0;transition:opacity .25s;
+}
+.shop-cat-card:hover::after{opacity:1}
+.shop-cat-card .scc-icon{font-size:56px;line-height:1;margin-bottom:4px}
+.shop-cat-card .scc-name{font-size:15px;font-weight:800}
+.shop-cat-card .scc-desc{font-size:12px;color:var(--muted2);line-height:1.5}
+.shop-cat-card .scc-count{font-size:12px;color:var(--accent2);font-weight:700;margin-top:auto}
+.shop-cat-card .scc-badge{
+  position:absolute;top:10px;right:10px;font-size:10px;padding:2px 8px;
+  border-radius:10px;background:var(--glow);color:var(--accent2);border:1px solid var(--accent);
+}
+.shop-cat-card.food-card{border-color:rgba(16,185,129,.3)}
+.shop-cat-card.food-card::after{background:linear-gradient(90deg,#10b981,#34d399)}
+.shop-cat-card.car-card{border-color:rgba(59,130,246,.3)}
+.shop-cat-card.car-card::after{background:linear-gradient(90deg,#3b82f6,#60a5fa)}
+.shop-cat-card.tech-card{border-color:rgba(124,58,237,.3)}
+.shop-cat-card.tech-card::after{background:linear-gradient(90deg,#7c3aed,#a855f7)}
+.shop-cat-card.luxury-card{border-color:rgba(245,158,11,.3)}
+.shop-cat-card.luxury-card::after{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+.shop-cat-card.re-card{border-color:rgba(6,182,212,.3)}
+.shop-cat-card.re-card::after{background:linear-gradient(90deg,#06b6d4,#22d3ee)}
+.shop-cat-card.study-card{border-color:rgba(236,72,153,.3)}
+.shop-cat-card.study-card::after{background:linear-gradient(90deg,#ec4899,#f472b6)}
+
+/* Shop detail modal */
+.shop-detail-modal{border:none;background:var(--surface);border-radius:16px;overflow:hidden;max-width:100%}
+.shop-detail-header{position:relative;background:linear-gradient(135deg,#1a1a2e,#16213e);min-height:260px;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:24px;overflow:hidden}
+.shop-detail-img-wrap{display:flex;align-items:center;justify-content:center;width:100%;max-height:220px;overflow:hidden;border-radius:12px}
+.shop-detail-img{max-width:100%;max-height:220px;object-fit:contain;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,.4)}
+.shop-detail-emoji{font-size:72px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.3))}
+.shop-detail-badges{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;justify-content:center;max-width:100%}
+.shop-detail-body{padding:20px 24px 24px;overflow-x:hidden;box-sizing:border-box;width:100%}
+.sd-name{font-size:20px;font-weight:800;margin-bottom:6px;word-break:break-word}
+.sd-desc{font-size:13px;color:var(--muted2);line-height:1.6;margin-bottom:14px;word-break:break-word}
+.sd-specs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:16px}
+.sd-spec{background:var(--surface2);border-radius:8px;padding:8px 10px;font-size:12px;min-width:0;overflow:hidden}
+.sd-spec .label{color:var(--muted2);font-size:10px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sd-spec .value{font-weight:700;color:var(--text);margin-top:2px;word-break:break-word;overflow-wrap:anywhere}
+.sd-effects-title{font-size:13px;font-weight:700;margin-bottom:8px;color:var(--muted2)}
+.sd-effects{display:flex;flex-direction:column;gap:6px;margin-bottom:18px}
+.sd-effect{background:var(--surface2);border-radius:8px;padding:10px 12px;font-size:12px;display:flex;align-items:center;gap:10px;border-left:3px solid var(--accent);overflow:hidden}
+.sd-effect-icon{font-size:18px;flex-shrink:0}
+.sd-effect-name{font-weight:700;color:var(--text);word-break:break-word}
+.sd-effect-desc{color:var(--muted2);font-size:11px;word-break:break-word}
+.sd-price-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:14px;border-top:1px solid var(--border)}
+.sd-price{font-size:22px;font-weight:800;color:var(--yellow)}
+
+/* Shop category label */
+.shop-cat-header{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;
+  color:var(--muted2);padding:14px 4px 6px;grid-column:1/-1;border-bottom:1px solid var(--border);margin-bottom:4px}

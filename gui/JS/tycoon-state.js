@@ -26,12 +26,19 @@ window.TycoonState = {
   // Tax
   taxFullData: null,
 
+  // Game Mode
+  gameMode: 'full',   // 'full' | 'simple'
+
   // Constants
   RESET_MIN_BALANCE: 50000,
 
   // ── Balance helpers ─────────────────────
   setBal(v) { this.curBal = v; },
   setSavings(v) { this.curSavings = v; },
+
+  // ── Game Mode helpers ───────────────────
+  isSimpleMode() { return this.gameMode === 'simple'; },
+  isFullMode() { return this.gameMode === 'full'; },
 
   // ── Bridge check ────────────────────────
   isBridgeReady() { return this.B !== null; }
@@ -51,6 +58,7 @@ window.selectedResidencePreview = TycoonState.selectedResidencePreview;
 window.loanStatusData       = TycoonState.loanStatusData;
 window.taxFullData          = TycoonState.taxFullData;
 window.RESET_MIN_BALANCE    = TycoonState.RESET_MIN_BALANCE;
+window.gameMode             = TycoonState.gameMode;
 
 // ── Debounce utility ──────────────────────────
 

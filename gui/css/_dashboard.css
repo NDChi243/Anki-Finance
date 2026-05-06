@@ -1,0 +1,52 @@
+/* ═══════════════════════════════════════
+   Dashboard
+   ═══════════════════════════════════════ */
+.hero{
+  text-align:center;padding:36px 0 24px;position:relative;
+}
+.hero::before{
+  content:'';position:absolute;left:50%;top:8px;transform:translateX(-50%);
+  width:520px;max-width:80%;height:200px;
+  background:radial-gradient(closest-side,rgba(16,185,129,.18),transparent 70%);
+  pointer-events:none;z-index:0;
+  filter:blur(14px);
+}
+.hero > *{position:relative;z-index:1}
+.hero .bal{
+  font-size:54px;font-weight:900;letter-spacing:-1.5px;
+  background:linear-gradient(135deg,#10b981 0%,#34d399 50%,#fbbf24 110%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  font-variant-numeric:tabular-nums;
+  filter:drop-shadow(0 4px 22px rgba(16,185,129,.25));
+  display:inline-block;line-height:1.05;
+  font-family:var(--font-mono);
+}
+.hero .bal-sub{font-size:13.5px;color:var(--muted2);margin-top:8px;letter-spacing:.1px}
+.hero-meta{display:inline-flex;align-items:center;gap:8px;margin-top:12px}
+.reward-row{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s}
+.reward-row:hover{background:rgba(255,255,255,.02)}
+.reward-row:last-child{border-bottom:none}
+.reward-row .ease-badge{width:64px;text-align:center;padding:4px 0;border-radius:7px;font-size:12px;font-weight:800;letter-spacing:.3px}
+.reward-row .cnt{flex:1;color:var(--muted2);font-size:13px}
+.reward-row .val{font-weight:800;color:var(--green);font-size:13px;font-variant-numeric:tabular-nums}
+
+/* PASSIVE EFFECTS PANEL (Dashboard) */
+.passive-panel{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:14px;margin-bottom:14px;
+}
+.passive-panel-title{
+  font-size:13px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px;
+}
+.passive-grid{
+  display:flex;flex-wrap:wrap;gap:3px;align-items:center;
+}
+.passive-item{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 8px;border-radius:8px;font-size:11px;font-weight:600;
+  background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);
+  color:var(--muted2);
+}
+.passive-item .pi-val{
+  color:var(--green);font-weight:800;
+}

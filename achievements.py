@@ -15,12 +15,32 @@ Trigger points gọi check_and_unlock() từ:
   - emergency_events.py → emergency_handled
 """
 
-from ._safe_config import col_ready, cfg_dict, cfg_set
+from ._safe_config import col_ready, cfg_dict, cfg_set, cfg_str
 from .logger import get_logger
 logger = get_logger(__name__)
 
-_KEY_ACH_DATA    = "anki_tycoon_achievement_data"     # {stats, unlocked_ids, claimed_ids}
-_KEY_ACH_EFFECTS = "anki_tycoon_achievement_effects"  # {effect_type: value, ...}
+
+def _get_mode_suffix() -> str:
+    try:
+        from .config import CONFIG_KEY_GAME_MODE, DEFAULT_GAME_MODE
+        return cfg_str(CONFIG_KEY_GAME_MODE, DEFAULT_GAME_MODE) or DEFAULT_GAME_MODE
+    except Exception:
+        return "full"
+
+
+def _key_data() -> str:
+    """Achievement data riêng theo mode hiện tại."""
+    return f"anki_tycoon_achievement_data_{_get_mode_suffix()}"
+
+
+def _key_effects() -> str:
+    """Achievement passive effects riêng theo mode."""
+    return f"anki_tycoon_achievement_effects_{_get_mode_suffix()}"
+
+
+# Modes shortcuts
+_M_BOTH = ["simple", "full"]
+_M_FULL = ["full"]
 
 # ── Achievement definitions ─────────────────────────────────────────
 
@@ -316,6 +336,24 @@ ACHIEVEMENTS = [
 
 _ACH_MAP = {a["id"]: a for a in ACHIEVEMENTS}
 
+# ── Mode filtering ──────────────────────────────────────────────────
+# Achievement nào chỉ thuộc Full Mode (vì cần stocks/crypto/RE/garage/tech/sự kiện).
+_FULL_ONLY_CATEGORIES = {"Đầu tư", "Sưu tập"}
+_FULL_ONLY_IDS = {"ach_emergency_10", "ach_hidden_rugpull"}
+
+
+def _ach_modes(ach: dict) -> list:
+    """Trả về list các mode mà achievement này có thể đạt được."""
+    if ach.get("id", "") in _FULL_ONLY_IDS:
+        return ["full"]
+    if ach.get("category", "") in _FULL_ONLY_CATEGORIES:
+        return ["full"]
+    return ["simple", "full"]
+
+
+def _ach_in_current_mode(ach: dict) -> bool:
+    return _get_mode_suffix() in _ach_modes(ach)
+
 
 # ── Data helpers ────────────────────────────────────────────────────
 
@@ -346,7 +384,7 @@ def _default_data() -> dict:
 def _load_data() -> dict:
     if not col_ready():
         return _default_data()
-    d = cfg_dict(_KEY_ACH_DATA, _default_data())
+    d = cfg_dict(_key_data(), _default_data())
     # Đảm bảo đủ keys
     def_data = _default_data()
     for k, v in def_data.items():
@@ -360,15 +398,15 @@ def _load_data() -> dict:
 
 
 def _save_data(data: dict):
-    cfg_set(_KEY_ACH_DATA, data)
+    cfg_set(_key_data(), data)
 
 
 def _load_effects() -> dict:
-    return cfg_dict(_KEY_ACH_EFFECTS, {})
+    return cfg_dict(_key_effects(), {})
 
 
 def _save_effects(effects: dict):
-    cfg_set(_KEY_ACH_EFFECTS, effects)
+    cfg_set(_key_effects(), effects)
 
 
 # ── Core logic ──────────────────────────────────────────────────────
@@ -554,9 +592,11 @@ def check_and_unlock(trigger_type: str, trigger_value=None) -> list:
     if trigger_type == "rank_changed":
         data["stats"]["current_rank_id"] = str(trigger_value)
 
-    # Kiểm tra tất cả achievements chưa unlock
+    # Kiểm tra tất cả achievements chưa unlock — chỉ trong mode hiện tại
     just_unlocked = []
     for ach in ACHIEVEMENTS:
+        if not _ach_in_current_mode(ach):
+            continue
         aid = ach["id"]
         if aid in data.get("unlocked_ids", []):
             continue
@@ -727,6 +767,9 @@ def get_all_achievements() -> list:
 
     result = []
     for ach in ACHIEVEMENTS:
+        # Filter theo mode hiện tại — Simple Mode không thấy ach Đầu tư/Sưu tập/...
+        if not _ach_in_current_mode(ach):
+            continue
         aid = ach["id"]
         unlocked = aid in unlocked_set
         claimed = aid in claimed_set
@@ -825,12 +868,13 @@ def get_unlocked_count() -> int:
     return len(data.get("unlocked_ids", []))
 
 def get_total_count() -> int:
-    """Tổng số achievements (không tính hidden)."""
-    return len([a for a in ACHIEVEMENTS if not a.get("hidden", False)])
+    """Tổng số achievements (không tính hidden) trong mode hiện tại."""
+    return len([a for a in ACHIEVEMENTS
+                if not a.get("hidden", False) and _ach_in_current_mode(a)])
 
 def get_all_count() -> int:
-    """Tổng số achievements kể cả hidden."""
-    return len(ACHIEVEMENTS)
+    """Tổng số achievements kể cả hidden trong mode hiện tại."""
+    return len([a for a in ACHIEVEMENTS if _ach_in_current_mode(a)])
 
 def get_recent_unlocked(limit: int = 3) -> list:
     """Trả về N achievements unlock gần nhất."""

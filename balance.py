@@ -15,15 +15,37 @@ def get_balance() -> int:
 
 def set_balance(amount: int) -> None:
     """Cập nhật số dư ví."""
-    cfg_set(CONFIG_KEY_BALANCE, int(amount))
+    new_bal = int(amount)
+    cfg_set(CONFIG_KEY_BALANCE, new_bal)
     _refresh_topbar()
+    _check_balance_dropped(new_bal)
 
 
 def set_balance_and_log(amount: int, txn_type: str, txn_amount: int,
                         description: str = "") -> None:
     """Set balance + ghi transaction history."""
-    cfg_set(CONFIG_KEY_BALANCE, int(amount))
+    new_bal = int(amount)
+    cfg_set(CONFIG_KEY_BALANCE, new_bal)
     _refresh_topbar()
+    # Ghi nhận tiền thưởng cho quest earn_money (chỉ khi là reward và amount > 0)
+    if txn_type == "reward" and txn_amount and txn_amount > 0:
+        try:
+            from .daily_quest import record_earn_money
+            record_earn_money(int(txn_amount))
+        except Exception as e:
+            logger.debug("set_balance_and_log: record_earn_money — %s", e)
+    _check_balance_dropped(new_bal)
+
+
+def _check_balance_dropped(new_bal: int) -> None:
+    """Trigger achievement ẩn 'Về 0' khi balance < 1.000đ."""
+    if new_bal >= 1000:
+        return
+    try:
+        from .achievements import check_and_unlock
+        check_and_unlock("balance_dropped", True)
+    except Exception as e:
+        logger.debug("_check_balance_dropped: %s", e)
 
 
 def _consume_energy_and_stamina() -> float:

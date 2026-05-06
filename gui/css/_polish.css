@@ -1,0 +1,101 @@
+/* ════════════════════════════════════════════════
+   ► DESIGN POLISH LAYER
+   Áp dụng tinh chỉnh cuối cùng lên các selector hiện có.
+   Không xoá class cũ — chỉ enhance bằng các thuộc tính an toàn.
+   ════════════════════════════════════════════════ */
+
+/* Tabs — gradient cho .active state để cảm giác premium hơn */
+.bank-tab.active,
+.food-tab.active,
+.fin-tab.active,
+.stock-tab.active,
+.crypto-panel + .crypto-tabs .crypto-tab.active,
+.cb-tab.active{
+  background:linear-gradient(135deg,rgba(124,58,237,.18),rgba(168,85,247,.10));
+  color:#e9d5ff;
+  box-shadow:inset 0 0 0 1px rgba(168,85,247,.25),0 2px 8px rgba(124,58,237,.18);
+}
+.bank-tabs,.food-tabs,.fin-tabs,.stock-tabs,.cb-tabs{
+  border:1px solid rgba(255,255,255,.04);
+  background:rgba(255,255,255,.02);
+  backdrop-filter:blur(6px);
+}
+
+/* Inputs — focus ring đậm và mượt hơn */
+.inp,.txn-search,.txn-filter-select,.filter-select,
+.shop-toolbar select,.stock-filter-row select,.stock-filter-row input,
+.crypto-filter-row select,.crypto-filter-row input{
+  background:rgba(28,28,42,.75);
+  border:1px solid rgba(255,255,255,.06);
+  transition:border-color .18s var(--ease-out),box-shadow .18s var(--ease-out),background .18s;
+}
+.inp:focus,.txn-search:focus,.stock-filter-row .search-inp:focus{
+  border-color:var(--accent2);
+  background:rgba(28,28,42,.95);
+  box-shadow:0 0 0 3px rgba(168,85,247,.18);
+}
+
+/* Scrollbar — tinh chỉnh hơn (preserve chức năng) */
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#3a3a55,#2a2a40);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,var(--accent2),var(--accent))}
+
+/* Selection mặc định */
+::selection{background:rgba(168,85,247,.35);color:#fff}
+
+/* Page transition — mượt hơn */
+.page{animation:pageIn .35s var(--ease-out)}
+@keyframes pageIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* Shop category card — thêm inner glow on hover */
+.shop-cat-card{
+  background:linear-gradient(180deg,rgba(28,28,42,.7),rgba(18,18,28,.7));
+  border:1px solid rgba(255,255,255,.05);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+}
+.shop-cat-card:hover{box-shadow:0 16px 44px var(--glow),inset 0 1px 0 rgba(255,255,255,.08)}
+
+/* Stock / crypto cards — refine border accents */
+.stock-card,.crypto-card,.holding-card,.crypto-holding-card{
+  background:linear-gradient(180deg,rgba(28,28,42,.7),rgba(18,18,28,.65));
+  border:1px solid rgba(255,255,255,.05);
+}
+
+/* Numbers cố định: VN Index, stock prices, balance — tabular-nums */
+.stock-hero .vnindex,.stock-card .sc-price,.stock-card .sc-change,
+.crypto-card .cc-price,.crypto-card .cc-chg,
+.holding-card .hc-pnl,.crypto-holding-card .ch-val,.crypto-holding-card .ch-pnl,
+.cb-score-big,.fin-stat-card .fsc-val,.bank-ov-card .bov-val,
+.stat .s-val,.fin-cf-card .cfc-val,.fin-card .fc-val,
+.stock-ov-card .sov-val,.crypto-ov-card .cov-val,.portfolio-summary .ps-val{
+  font-variant-numeric:tabular-nums;
+  font-feature-settings:"tnum","cv11";
+  letter-spacing:-.3px;
+}
+
+/* Hero balance — pulsing glow ring around */
+.hero .bal-sub{display:inline-flex;align-items:center;gap:8px;justify-content:center}
+
+/* Goal progress refine */
+.goal-progress-bar{
+  background:linear-gradient(90deg,#7c3aed,#a855f7,#ec4899);
+  position:relative;overflow:hidden;
+}
+.goal-progress-bar::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent 30%,rgba(255,255,255,.18) 50%,transparent 70%);
+  animation:progressShine 2.4s linear infinite;
+}
+
+/* Holding / Loan / Term card — gradient subtle */
+.term-card,.loan-card,.cc-card,.kb-card,.re-card,.holding-card{
+  background:linear-gradient(180deg,rgba(28,28,42,.7),rgba(18,18,28,.65));
+  border:1px solid rgba(255,255,255,.05);
+}
+
+/* Reduce motion — tôn trọng user prefers */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.001s !important;
+    transition-duration:.001s !important;
+  }
+}

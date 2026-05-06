@@ -1,0 +1,69 @@
+/* ═══════════════════════════════════════
+   Top Navigation
+   ═══════════════════════════════════════ */
+nav{
+  position:sticky;top:0;z-index:200;
+  height:var(--nav-h);
+  background:linear-gradient(180deg,rgba(13,13,20,.92),rgba(13,13,20,.78));
+  backdrop-filter:blur(18px) saturate(160%);
+  -webkit-backdrop-filter:blur(18px) saturate(160%);
+  border-bottom:1px solid rgba(255,255,255,.05);
+  box-shadow:0 1px 0 rgba(255,255,255,.03) inset, 0 8px 24px rgba(0,0,0,.35);
+  display:flex;align-items:center;
+  padding:0 14px;gap:4px;
+  flex-shrink:0;
+  overflow:hidden;
+}
+.brand{
+  font-size:14.5px;font-weight:900;margin-right:8px;white-space:nowrap;flex-shrink:0;letter-spacing:-.2px;
+  background:linear-gradient(135deg,#7c3aed,#a855f7,#ec4899);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  filter:drop-shadow(0 0 12px rgba(168,85,247,.25));
+}
+.nav-links{display:flex;gap:3px;flex:1;overflow-x:auto;padding-bottom:2px;padding-right:6px;mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 24px),transparent);}
+.nav-links::-webkit-scrollbar{height:3px}
+.nav-links::-webkit-scrollbar-track{background:transparent}
+.nav-links::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:2px}
+.nav-links::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+.nb{
+  background:none;border:none;color:var(--muted2);
+  font-size:12px;font-weight:600;
+  padding:6px 10px;border-radius:9px;cursor:pointer;
+  transition:background .18s var(--ease-out),color .18s var(--ease-out),transform .12s;
+  white-space:nowrap;display:flex;align-items:center;gap:5px;
+  flex-shrink:0;position:relative;
+}
+.nb:hover{background:rgba(255,255,255,.04);color:var(--text)}
+.nb:active{transform:scale(.96)}
+.nb.active{
+  background:linear-gradient(135deg,rgba(124,58,237,.22),rgba(168,85,247,.14));
+  color:#e9d5ff;font-weight:700;
+  box-shadow:inset 0 0 0 1px rgba(168,85,247,.28),0 2px 8px rgba(124,58,237,.18);
+}
+.nav-bal{
+  margin-left:auto;display:flex;align-items:center;gap:6px;
+  background:linear-gradient(135deg,rgba(28,28,42,.85),rgba(36,36,52,.65));
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:24px;padding:5px 8px 5px 14px;
+  font-size:13px;font-weight:800;color:var(--green);white-space:nowrap;
+  backdrop-filter:blur(8px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 4px 14px rgba(0,0,0,.3);
+}
+.nav-bal #nav-bal{font-family:var(--font-mono);font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+
+/* Nav stat chips (EXP / KN / Rank) */
+.nav-chip{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:11px;font-weight:700;
+  padding:3px 9px;border-radius:14px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.05);
+  color:var(--muted2);
+  font-variant-numeric:tabular-nums;
+  transition:background .15s,transform .15s;
+}
+.nav-chip:hover{background:rgba(255,255,255,.07);transform:translateY(-1px)}
+.nav-chip.chip-xp{color:#fbbf24}
+.nav-chip.chip-kn{color:#34d399}
+.nav-chip.chip-rank{color:#c4b5fd;background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(236,72,153,.08));border-color:rgba(168,85,247,.2)}

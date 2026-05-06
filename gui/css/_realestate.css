@@ -1,0 +1,10 @@
+/* ═══════════════════════════════════════
+   Real Estate
+   ═══════════════════════════════════════ */
+.re-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.re-card.vacant{border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.03)}
+.sat-bar-wrap{height:14px;background:var(--surface2);border-radius:7px;overflow:hidden;margin:6px 0}
+.sat-bar{height:100%;border-radius:7px;transition:width .4s ease,background .4s ease}
+.sat-label{font-size:12px;font-weight:700}
+.rent-slider{width:100%;accent-color:var(--accent);cursor:pointer;margin:6px 0}
+#page-settings{overflow-y:auto}

@@ -72,14 +72,19 @@ def on_review_done(reviewer, card, ease):
 
         _show_review_fx(reviewer, ease, result)
         _update_gamification(ease, result)
-        stock_record_review(1)
-        crypto_record_review(1)
-        # Bond system: ghi nhận thẻ review để tính coupon
-        try:
-            from .bond_system import record_review as bond_record_review
-            bond_record_review(1)
-        except Exception as e:
-            logger.warning("bond_record_review: %s", e)
+
+        # ── Advanced features (chỉ chạy ở Full Mode) ──
+        _is_simple = _is_simple_mode()
+        if not _is_simple:
+            stock_record_review(1)
+            crypto_record_review(1)
+            # Bond system: ghi nhận thẻ review để tính coupon
+            try:
+                from .bond_system import record_review as bond_record_review
+                bond_record_review(1)
+            except Exception as e:
+                logger.warning("bond_record_review: %s", e)
+
         # Hồi năng lượng từ food boost (energy_regen)
         _apply_energy_regen(result)
         # Áp dụng hiệu ứng học tập thực tế lên interval của thẻ
@@ -91,56 +96,60 @@ def on_review_done(reviewer, card, ease):
         except Exception as e:
             logger.warning("check_and_unlock(card_reviewed): %s", e)
 
-        # ── Economy Controls & Vehicle Integration ──
-        try:
-            from .economy_controls import (
-                increment_daily_cards_count,
-                increment_total_system_cards,
-                check_breakdown_on_review,
-            )
-            from .vehicle_system import get_active_vehicle, consume_durability as veh_consume_durability
+        # Random KN reward (10% xác suất, 5–10 KN)
+        _award_random_kn(ease)
 
-            increment_daily_cards_count()
-            increment_total_system_cards()
-
-            # Tiêu hao độ bền + nhiên liệu cho xe đang active
-            # Truyền learning_speed (thời gian học thẻ) để tính hệ số tốc độ (v1.1.5b)
-            # Năng lượng tiêu hao đã được balance.py xử lý với % tiết kiệm từ xe
-            active_veh = get_active_vehicle()
-            if active_veh:
-                veh_id = active_veh.get("item_id") or active_veh.get("vehicle_id")
-                if veh_id:
-                    # Gọi consume_durability với learning_speed (tốc độ học)
-                    # Nếu _learning_speed là None (không có timestamp), truyền None → dùng mặc định
-                    veh_consume_durability(1, learning_speed=_learning_speed)
-
-                    # Kiểm tra sự cố ngẫu nhiên
-                    breakdown = check_breakdown_on_review(veh_id)
-                    if breakdown.get("broken"):
-                        from .economy_controls import start_breakdown_repair
-                        start_breakdown_repair(veh_id)
-                        try:
-                            from aqt.utils import showInfo
-                            name = breakdown.get("name", "Xe của bạn")
-                            emoji = breakdown.get("emoji", "🚗")
-                            cost = breakdown.get("repair_cost", 0)
-                            reviews_req = breakdown.get("reviews_required", 30)
-                            showInfo(
-                                f"{emoji} <b>{name} gặp sự cố!</b><br>"
-                                f"Chi phí sửa chữa: <b>{cost:,}đ</b><br>"
-                                f"<small>Hoàn thành {reviews_req} thẻ review để sửa xong.</small>"
-                            )
-                        except Exception as e:
-                            logger.warning("showInfo(breakdown): %s", e)
-
-            # Tiêu hao độ bền cho tech item đang active
+        # ── Economy Controls & Vehicle Integration (chỉ Full Mode) ──
+        if not _is_simple:
             try:
-                from .tech_system import consume_durability as tech_consume_durability
-                tech_consume_durability(1)
+                from .economy_controls import (
+                    increment_daily_cards_count,
+                    increment_total_system_cards,
+                    check_breakdown_on_review,
+                )
+                from .vehicle_system import get_active_vehicle, consume_durability as veh_consume_durability
+
+                increment_daily_cards_count()
+                increment_total_system_cards()
+
+                # Tiêu hao độ bền + nhiên liệu cho xe đang active
+                # Truyền learning_speed (thời gian học thẻ) để tính hệ số tốc độ (v1.1.5b)
+                # Năng lượng tiêu hao đã được balance.py xử lý với % tiết kiệm từ xe
+                active_veh = get_active_vehicle()
+                if active_veh:
+                    veh_id = active_veh.get("item_id") or active_veh.get("vehicle_id")
+                    if veh_id:
+                        # Gọi consume_durability với learning_speed (tốc độ học)
+                        # Nếu _learning_speed là None (không có timestamp), truyền None → dùng mặc định
+                        veh_consume_durability(1, learning_speed=_learning_speed)
+
+                        # Kiểm tra sự cố ngẫu nhiên
+                        breakdown = check_breakdown_on_review(veh_id)
+                        if breakdown.get("broken"):
+                            from .economy_controls import start_breakdown_repair
+                            start_breakdown_repair(veh_id)
+                            try:
+                                from aqt.utils import showInfo
+                                name = breakdown.get("name", "Xe của bạn")
+                                emoji = breakdown.get("emoji", "🚗")
+                                cost = breakdown.get("repair_cost", 0)
+                                reviews_req = breakdown.get("reviews_required", 30)
+                                showInfo(
+                                    f"{emoji} <b>{name} gặp sự cố!</b><br>"
+                                    f"Chi phí sửa chữa: <b>{cost:,}đ</b><br>"
+                                    f"<small>Hoàn thành {reviews_req} thẻ review để sửa xong.</small>"
+                                )
+                            except Exception as e:
+                                logger.warning("showInfo(breakdown): %s", e)
+
+                # Tiêu hao độ bền cho tech item đang active
+                try:
+                    from .tech_system import consume_durability as tech_consume_durability
+                    tech_consume_durability(1)
+                except Exception as e:
+                    logger.warning("tech_consume_durability: %s", e)
             except Exception as e:
-                logger.warning("tech_consume_durability: %s", e)
-        except Exception as e:
-            logger.warning("Economy Controls Integration: %s", e)
+                logger.warning("Economy Controls Integration: %s", e)
     except Exception:
         _log_error("on_review_done")
     finally:
@@ -279,6 +288,18 @@ def _update_gamification(ease: int, result: dict):
                 new_rank = new_status["rank_id"]
                 if _last_rank_cache is not None and _last_rank_cache != new_rank:
                     _show_rank_up(new_status)
+                    # Snapshot tỷ lệ Simple/Full đóng góp vào rank này
+                    try:
+                        from .rank_system import snapshot_rank_if_changed
+                        snapshot_rank_if_changed(new_rank)
+                    except Exception as e:
+                        logger.warning("snapshot_rank_if_changed: %s", e)
+                    # Trigger achievement rank_reach
+                    try:
+                        from .achievements import check_and_unlock as _ach_check
+                        _ach_check("rank_changed", new_rank)
+                    except Exception as e:
+                        logger.warning("rank_changed achievement: %s", e)
                 _last_rank_cache = new_rank
         # ── Quest progress ──
         update_quest_progress("cards_total", 1)
@@ -294,8 +315,67 @@ def _update_gamification(ease: int, result: dict):
         update_quest_progress("again_ratio", again_count, set_absolute=True)
         if not result.get("penalized"):
             update_quest_progress("no_penalty", 0, set_absolute=True)
+
+        # ── Quest tổng hợp (balanced, perfect_day, hero_day, session_cards, morning_cards) ──
+        try:
+            from .daily_quest import record_card_review, _load_state
+            ds = _load_state()
+            cards_today = int(ds.get("easy", 0) + ds.get("good", 0) + ds.get("hard", 0))
+            # cộng thẻ hiện tại sẽ được record_card_review thêm vào → +1 cho thẻ hiện tại đối với ease 2-4
+            if ease in (2, 3, 4):
+                cards_today += 1
+            elif ease == 1:
+                # Again không đếm vào easy/good/hard nhưng vẫn là 1 thẻ ôn
+                cards_today += 0  # không cộng vì balanced/quality_cards chỉ tính easy/good/hard
+            record_card_review(ease, cards_today, again_count, bool(result.get("penalized")))
+        except Exception as e:
+            logger.warning("record_card_review aggregate: %s", e)
+
+        # ── Net worth check (throttled mỗi 20 thẻ giống rank check) ──
+        if _rank_check_counter == 0:  # vừa reset trong rank check ở trên
+            try:
+                from .achievements import check_and_unlock as _ach_check
+                _ach_check("net_worth_updated", None)
+                _ach_check("savings_updated", None)
+            except Exception as e:
+                logger.warning("net_worth/savings check: %s", e)
     except Exception:
         _log_error("_update_gamification")
+
+
+def _award_random_kn(ease: int):
+    """10% xác suất cộng 5–10 KN cho mỗi thẻ ease >= 3 (Good/Easy).
+    Tránh exploit Again (ease=1) hoặc Hard (ease=2) farm KN."""
+    try:
+        if ease < 3:
+            return
+        import random
+        if random.random() > 0.10:
+            return
+        amount = random.randint(5, 10)
+        from .rank_system import add_kn
+        add_kn(amount)
+        # Hiển thị notification nhẹ trên reviewer
+        try:
+            from aqt import mw
+            if hasattr(mw, "reviewer") and mw.reviewer:
+                js = (
+                    "(function(){var el=document.createElement('div');"
+                    f"el.textContent='+{amount} KN \\U0001f9e0';"
+                    "el.style.cssText='position:fixed;bottom:120px;right:22px;"
+                    "background:#7c3aed1a;border:2px solid #7c3aed;color:#7c3aed;"
+                    "font-size:15px;font-weight:800;padding:5px 14px;border-radius:24px;"
+                    "z-index:99999;pointer-events:none;font-family:-apple-system,Segoe UI,sans-serif;"
+                    "box-shadow:0 2px 12px #7c3aed44;transition:all .5s ease;';"
+                    "document.body.appendChild(el);"
+                    "setTimeout(()=>{el.style.opacity='0';el.style.transform='translateY(-12px)';},900);"
+                    "setTimeout(()=>el.remove(),1500);})();"
+                )
+                mw.reviewer.web.eval(js)
+        except Exception:
+            pass
+    except Exception as e:
+        logger.warning("_award_random_kn: %s", e)
 
 def _show_streak_milestone(days: int, mult: float):
     """Hiệu ứng milestone streak trên reviewer."""
@@ -453,6 +533,43 @@ def _migrate_none_keys():
     except Exception:
         _log_error("_migrate_none_keys")
 
+def _migrate_per_mode_data():
+    """v1.1.9: Quests/Achievements giờ namespace theo mode (simple/full).
+    Migrate dữ liệu cũ (không có hậu tố) → gắn vào Full Mode."""
+    try:
+        from ._safe_config import cfg_dict, cfg_set, _cache_invalidate
+        flag = cfg_dict("anki_tycoon_per_mode_migrated", {})
+        if flag.get("v") == 1:
+            return
+        # Mapping: old_key → new_key (Full Mode)
+        mapping = {
+            "anki_tycoon_daily_quests":         "anki_tycoon_daily_quests_full",
+            "anki_tycoon_quest_seed":           "anki_tycoon_quest_seed_full",
+            "anki_tycoon_achievement_data":     "anki_tycoon_achievement_data_full",
+            "anki_tycoon_achievement_effects":  "anki_tycoon_achievement_effects_full",
+        }
+        moved = 0
+        for old_k, new_k in mapping.items():
+            old_val = mw.col.get_config(old_k, None)
+            if old_val is None:
+                continue
+            new_val = mw.col.get_config(new_k, None)
+            if new_val:
+                # Đã có dữ liệu mới → không ghi đè
+                continue
+            mw.col.set_config(new_k, old_val)
+            try:
+                _cache_invalidate(new_k)
+            except Exception:
+                pass
+            moved += 1
+        cfg_set("anki_tycoon_per_mode_migrated", {"v": 1})
+        if moved:
+            logger.info("Migration per-mode: copied %d keys → Full namespace", moved)
+    except Exception as e:
+        logger.warning("_migrate_per_mode_data: %s", e)
+
+
 def _on_profile_loaded():
     # Khởi tạo logging framework
     setup_logging()
@@ -465,6 +582,7 @@ def _on_profile_loaded():
         logger.warning("clear_reset_flag: %s", e)
 
     _migrate_none_keys()
+    _migrate_per_mode_data()
 
     # ── Quick Repair: tự động sửa lỗi dữ liệu nhẹ khi khởi động ──
     try:
@@ -488,54 +606,74 @@ def _on_profile_loaded():
     _collect_daily_living_costs()
     _accrue_loan_interest()
     _seed_knowledge()
-    _auto_collect_rent()
-    _update_stock_prices()
-    _update_crypto_prices()
-    _auto_collect_staking_yield()
+
+    # ── Kiểm tra game mode ──────────────────────────────────────────
+    # Nếu là Simple Mode, bỏ qua tất cả tính năng advanced
+    _is_simple = _is_simple_mode()
+
+    if not _is_simple:
+        _auto_collect_rent()
+        _update_stock_prices()
+        _update_crypto_prices()
+        _auto_collect_staking_yield()
+        _check_emergency_event()
+        _process_daily_credit_banking()
+        _auto_collect_bond_coupon()
+
+    # Inactivity penalty là core feature (ảnh hưởng balance) → luôn chạy
     _check_inactivity_penalty()
-    _check_emergency_event()
-    _process_daily_credit_banking()
-    _auto_collect_bond_coupon()
 
-    # ── v1.1.3: Sửa passive effects cho crypto items đã mua trước khi có fix ──
-    try:
-        from .item_effects import repair_crypto_passive_effects
-        repair_crypto_passive_effects()
-    except Exception as e:
-        logger.warning("repair_crypto_passive_effects: %s", e)
-
-    # ── v1.1.6: Migration: sửa xe bị lưu nhầm vào inventory (thiếu vehicle_group) ──
-    try:
-        from .inventory import get_inventory, remove_from_inventory
-        from .shop_data import get_items_map
-        from .vehicle_system import register_vehicle, _get_data, _save_data
-        items_map = get_items_map()
-        inv = get_inventory()
-        
-        # Diagnostic: kiểm tra garage state TRƯỚC migration
+    if not _is_simple:
+        # ── v1.1.3: Sửa passive effects cho crypto items đã mua trước khi có fix ──
         try:
-            veh_data = _get_data()
-            garage_before = len(veh_data.get("garage", {}))
-        except Exception:
-            garage_before = -1
-        
-        migrated = 0
-        for iid in list(inv):
-            item = items_map.get(iid)
-            if item and item.get("vehicle_group"):
-                # Xe này đang bị lưu nhầm trong inventory → đưa về garage
-                register_vehicle(iid, item)
-                remove_from_inventory(iid)
-                migrated += 1
-        if migrated:
-            logger.info("Migration garage: đã sửa %d xe bị lưu nhầm vào inventory → garage (trước migration: %d xe trong garage)", migrated, garage_before)
-        else:
-            logger.debug("Migration garage: không có xe nào cần sửa (garage có %d xe)", garage_before)
-    except Exception as e:
-        logger.warning("repair_vehicle_inventory_migration: %s", e)
+            from .item_effects import repair_crypto_passive_effects
+            repair_crypto_passive_effects()
+        except Exception as e:
+            logger.warning("repair_crypto_passive_effects: %s", e)
 
-    # ── Economy Controls: thu phí đỗ xe garage hàng ngày ──
-    _collect_garage_fees()
+        # ── v1.1.6: Migration: sửa xe bị lưu nhầm vào inventory (thiếu vehicle_group) ──
+        try:
+            from .inventory import get_inventory, remove_from_inventory
+            from .shop_data import get_items_map
+            from .vehicle_system import register_vehicle, _get_data, _save_data
+            items_map = get_items_map()
+            inv = get_inventory()
+            
+            # Diagnostic: kiểm tra garage state TRƯỚC migration
+            try:
+                veh_data = _get_data()
+                garage_before = len(veh_data.get("garage", {}))
+            except Exception:
+                garage_before = -1
+            
+            migrated = 0
+            for iid in list(inv):
+                item = items_map.get(iid)
+                if item and item.get("vehicle_group"):
+                    # Xe này đang bị lưu nhầm trong inventory → đưa về garage
+                    register_vehicle(iid, item)
+                    remove_from_inventory(iid)
+                    migrated += 1
+            if migrated:
+                logger.info("Migration garage: đã sửa %d xe bị lưu nhầm vào inventory → garage (trước migration: %d xe trong garage)", migrated, garage_before)
+            else:
+                logger.debug("Migration garage: không có xe nào cần sửa (garage có %d xe)", garage_before)
+        except Exception as e:
+            logger.warning("repair_vehicle_inventory_migration: %s", e)
+
+        # ── Economy Controls: thu phí đỗ xe garage hàng ngày ──
+        _collect_garage_fees()
+
+
+def _is_simple_mode() -> bool:
+    """Kiểm tra xem game mode có đang là Simple không."""
+    try:
+        from ._safe_config import cfg_str
+        from .config import CONFIG_KEY_GAME_MODE, DEFAULT_GAME_MODE
+        mode = cfg_str(CONFIG_KEY_GAME_MODE, DEFAULT_GAME_MODE)
+        return mode == "simple"
+    except Exception:
+        return False
 
 
 def _update_stock_prices():
