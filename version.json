@@ -1,8 +1,8 @@
 {
-  "version": "1.2.0b",
+  "version": "1.2.0c",
   "changelog": [
     {
-      "version": "1.2.0b",
+      "version": "1.2.0c",
       "changes": [
         "Cải thiện hiệu suất Add-on: cache _cached_time() 100ms thay vì gọi time.time() mỗi lần, fix _LONG_CACHE_KEYS chứa key dict gây cache miss liên tục, tối ưu _is_simple_mode() chỉ đọc 1 lần trong add_reward(), thêm _simple_mode_cache toàn cục, xóa lru_cache vô dụng trên _calc_rank.",
         "Sửa lỗi tiềm năng: _is_simple_mode() được định nghĩa sớm hơn trong __init__.py thay vì ở cuối file gây lỗi import trước khi định nghĩa, xóa debug logging verbose trong _safe_config.py.",

@@ -93,7 +93,7 @@ TIME_SLOTS = [
     ("noon",     11, 13, 0.90,  "☀️ Buổi trưa — Cơ thể mệt mỏi, ×0.90 hiệu quả"),
     ("afternoon",13, 18, 1.05,  "🌤️ Buổi chiều — Ổn định, ×1.05 hiệu quả"),
     ("evening",  18, 23, 1.20,  "🌙 Buổi tối — Thời gian vàng, ×1.20 hiệu quả!"),
-    ("late_night", 23, 6, 0.80, "🌃 Khuya — Cơ thể cần nghỉ ngơi, ×0.80 hiệu quả"),
+    ("late_night", 23, 6, 0.70, "🌃 Khuya — Cơ thể cần nghỉ ngơi, ×0.70 hiệu quả"),
 ]
 
 def _get_current_time_slot() -> tuple:

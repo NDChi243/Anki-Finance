@@ -7,7 +7,7 @@ Cơ chế:
   - Nếu hết năng lượng: tiền thưởng giảm 50%
   - Food/study items có thể hồi năng lượng (stamina_regen)
   - Equipment tăng giới hạn năng lượng tối đa (energy_limit)
-  - Năng lượng hồi phục tự nhiên 1 điểm mỗi 30 phút
+  - Năng lượng hồi phục tự nhiên 1 điểm mỗi 1 phút
 """
 
 import time
@@ -20,7 +20,7 @@ _KEY_MAX_ENERGY   = "anki_tycoon_max_energy_base"
 _KEY_LAST_REGEN   = "anki_tycoon_energy_last_regen"
 
 BASE_MAX_ENERGY = 100
-REGEN_INTERVAL  = 1800  # 30 phút hồi 1 điểm
+REGEN_INTERVAL  = 60  # 1 phút hồi 1 điểm
 
 # Keys được bảo vệ khỏi debug_tools scan — tránh bị clear type
 _PROTECTED_KEYS = {_KEY_ENERGY, _KEY_MAX_ENERGY, _KEY_LAST_REGEN}

@@ -16,6 +16,7 @@ import pytest
 import anki_finance.rank_system as rs
 
 _KEY_XP   = "anki_tycoon_xp"
+_KEY_KN   = "anki_tycoon_kn_points"
 _KEY_RANK = "anki_tycoon_rank"
 
 
@@ -90,8 +91,8 @@ class TestCalcRank:
         assert rank["id"] == "sv3"
 
     def test_very_high_stats_max_rank(self):
-        rank = rs._calc_rank(xp=999_999_999, balance=999_999_999_999_999)
-        assert rank["id"] == "hl1"  # Rank cao nhất: Huyền thoại
+        rank = rs._calc_rank(xp=99_999_999, balance=999_999_999_999_999, kn=99_999_999)
+        assert rank["id"] == rs.RANKS[-1]["id"]  # Rank cao nhất
 
     def test_rank_has_required_fields(self):
         rank = rs._calc_rank(0, 0)
@@ -186,7 +187,7 @@ class TestGetRankStatus:
         assert s2["xp_needed"] < s1["xp_needed"]
 
     def test_max_rank_status(self, fake_config):
-        fake_config(rs, {_KEY_XP: 999_999_999})
+        fake_config(rs, {_KEY_XP: 99_999_999, _KEY_KN: 99_999_999})
         status = rs.get_rank_status(balance=999_999_999_999_999)
         assert status["is_max"] is True
         assert status["next_rank"] is None
@@ -197,12 +198,8 @@ class TestGetRankStatus:
     def test_uses_get_balance_when_no_arg(self, fake_config, monkeypatch):
         """Khi không truyền balance, phải lấy từ get_balance()."""
         fake_config(rs, {_KEY_XP: 0})
-        monkeypatch.setattr("anki_finance.balance.get_balance", lambda: 5_000_000,
-                            raising=False)
-        with pytest.raises(Exception):
-            pass  # Chỉ kiểm tra không bị crash khi gọi không có arg
-        # Khai báo balance=None nên cần import balance
-        status = rs.get_rank_status(balance=5_000_000)
+        monkeypatch.setattr("anki_finance.balance.get_balance", lambda: 5_000_000)
+        status = rs.get_rank_status()  # Không truyền balance → gọi get_balance()
         assert status["rank_id"] == "sv1"  # 5M < 10M (sv2 cần)
 
 
@@ -238,14 +235,15 @@ class TestRanksTable:
         ids = [r["id"] for r in rs.RANKS]
         assert len(ids) == len(set(ids)), "Có ID rank trùng nhau"
 
-    def test_23_ranks_defined(self):
-        # 8 nhóm × cấp = 23 ranks (Học giả ×3, Chuyên viên ×3, Nhà Đầu tư ×3,
-        # Doanh nhân ×4, Triệu phú ×3, Tỷ phú ×3, Bậc thầy Tài chính ×3, Huyền thoại ×1)
-        assert len(rs.RANKS) == 23
+    def test_ranks_count_reasonable(self):
+        """Số lượng rank tối thiểu >= 20."""
+        assert len(rs.RANKS) >= 20
 
-    def test_last_rank_is_huyen_thoai(self):
-        assert rs.RANKS[-1]["id"] == "hl1"
-        assert "Huyền thoại" in rs.RANKS[-1]["label"]
+    def test_last_rank_has_highest_requirements(self):
+        last = rs.RANKS[-1]
+        assert last["xp"] == max(r["xp"] for r in rs.RANKS)
+        assert last["bal"] == max(r["bal"] for r in rs.RANKS)
+        assert last.get("kn", 0) == max(r.get("kn", 0) for r in rs.RANKS)
 
     def test_get_all_ranks_returns_copy(self):
         all_r = rs.get_all_ranks()

@@ -28,6 +28,10 @@ _ANKI_STUBS = [
     "anki.hooks", "anki.utils", "anki.consts", "anki.sound",
     "PyQt5", "PyQt5.QtCore", "PyQt5.QtWidgets",
     "PyQt5.QtWebEngineWidgets", "PyQt5.QtGui", "PyQt5.QtNetwork",
+    "PyQt6", "PyQt6.QtCore", "PyQt6.QtWidgets",
+    "PyQt6.QtWebEngineCore", "PyQt6.QtWebEngineWidgets",
+    "PyQt6.QtGui", "PyQt6.QtNetwork",
+    "_aqt", "_aqt.hooks",
 ]
 for _stub in _ANKI_STUBS:
     if _stub not in sys.modules:
